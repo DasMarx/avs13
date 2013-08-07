@@ -16,11 +16,11 @@ public class UserInterface extends JPanel{
 
 	@Override
     public void paintComponent(Graphics g) {
-		for (int i = 0; i < 20;i++) {
-			for (int j = 0;j < 20; j++) {
+		for (int i = 0; i < 30;i++) {
+			for (int j = 0;j < 30; j++) {
 				
 			
-			g.drawRect(i*32, j*32, 30, 30);
+			g.drawRect(i*22, j*22, 20, 20);
 			}
 		}
     	
