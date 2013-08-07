@@ -1,4 +1,4 @@
-package avs;
+package avs.game;
 
 public class Cell {
 private int x;

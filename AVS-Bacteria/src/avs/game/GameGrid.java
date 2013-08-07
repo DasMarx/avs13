@@ -1,7 +1,7 @@
 /**
  * 
  */
-package avs;
+package avs.game;
 
 import java.util.LinkedList;
 
@@ -42,7 +42,7 @@ public class GameGrid {
 	}
 	
 	
-	public GameGrid() {
+	public void initialize() {
 		//TODO: Initialize Gamegrid, Values, Directions, Cells, etc.
 	}
 	
