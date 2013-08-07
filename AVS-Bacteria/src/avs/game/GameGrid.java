@@ -18,6 +18,8 @@ public class GameGrid {
 	private int cellsPossessedByAI;
 	
 	public boolean chooseCell(int x, int y, int owner) {
+		//TODO:
+		checkTurn(x, y, owner);
 		return false;
 		//TODO: to complete
 	}
@@ -44,6 +46,10 @@ public class GameGrid {
 	
 	public void initialize() {
 		//TODO: Initialize Gamegrid, Values, Directions, Cells, etc.
+	}
+	
+	public Cell getCell(int x, int y) {
+		return gameGrid[x][y];
 	}
 	
 }
