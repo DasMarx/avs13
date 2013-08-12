@@ -13,17 +13,16 @@ import javax.swing.JPanel;
  *
  */
 public class UserInterface extends JPanel{
-
+private UIRenderer renderer;
+	public UserInterface() {
+		renderer = new UIRenderer(this);
+		new Thread(renderer).start();
+	}
+	
 	
 	@Override
     public void paintComponent(Graphics g) {
-		for (int i = 0; i < 30;i++) {
-			for (int j = 0;j < 30; j++) {
-			g.drawRect(i*22, j*22, 20, 20);
-			}
-		}
-    	
-   
+		renderer.draw(g);
     }
 
 

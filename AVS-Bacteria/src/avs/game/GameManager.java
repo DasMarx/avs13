@@ -21,10 +21,7 @@ public class GameManager {
 
 	public void run() {
 		//TODO Auto-generated method stub
-		
-		
-		
-		
+
 	}
 
 	
