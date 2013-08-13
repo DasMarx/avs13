@@ -6,6 +6,19 @@ package avs.ui;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
+
 
 /**
  * @author HZU
@@ -27,10 +40,29 @@ public class UIRenderer implements Runnable {
 	long fpscounter = 0;
 	long lastFPSTime = 0;
 	
+	private static int tilesX = 10;
+	private static int tilesY = 10;
+	
 	int screenMenuYOffset = 20;
+	
+	private BufferedImage iconArrowFriendly = null;
+	private BufferedImage iconArrowEnemy = null;
+	private BufferedImage iconArrowNeutral = null;
+	
+	private int dreh =0;
 	
 	public UIRenderer(UserInterface userInterface) {
 		this.userInterface = userInterface;
+		
+		//Init Images
+		try {
+			iconArrowFriendly = ImageIO.read(new File("img/arrow_friendly.png"));
+			iconArrowEnemy = ImageIO.read(new File("img/arrow_enemy.png"));
+			iconArrowNeutral = ImageIO.read(new File("img/arrow_neutral.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
@@ -83,6 +115,7 @@ public class UIRenderer implements Runnable {
 	}
 
 	public void draw(Graphics g) {
+		Graphics2D g2d = (Graphics2D)g;
 		fpscounter++;
 		g.clearRect(0, 0, (int)userInterface.getSize().getWidth(), (int)userInterface.getSize().getHeight());
 		
@@ -91,16 +124,41 @@ public class UIRenderer implements Runnable {
 		
 		g.setColor(colorBlack);
 		
+		dreh= (dreh+2) % 360;
+		
 		// TODO Auto-generated method stub
-		for (int i = 0; i < 30;i++) {
-			for (int j = 0;j < 30; j++) {
-			g.drawRect((int)(i*sizeX / 30), (int)(j*sizeY / 30)+screenMenuYOffset, (int)(sizeX/30-2), (int)(sizeY/30-2));
+		for (int i = 0; i < tilesX;i++) {
+			for (int j = 0;j < tilesY; j++) {
+			g.drawRect((int)(i*sizeX / tilesX), (int)(j*sizeY / tilesY)+screenMenuYOffset, (int)(sizeX/tilesX-2), (int)(sizeY/tilesY-2));
+			
+			
+			
+			
+			g2d.rotate(Math.toRadians(dreh+i*j),(int)(i*sizeX / tilesX +(sizeX / tilesX /2)),(int)(j*sizeY / tilesY+screenMenuYOffset)+(sizeY / tilesY /2));
+			
+			switch ((i+j) % 3) {
+			case 0:
+				g2d.drawImage(iconArrowFriendly, (int)(i*sizeX / tilesX), (int)(j*sizeY / tilesY)+screenMenuYOffset, (int)(i*sizeX / tilesX)+(int)(sizeX/tilesX-2), (int)(j*sizeY / tilesY)+screenMenuYOffset+(int)(sizeY/tilesY-2), 0, 0, iconArrowFriendly.getWidth(), iconArrowFriendly.getHeight(), null);				
+				break;
+			case 1:
+				g2d.drawImage(iconArrowNeutral, (int)(i*sizeX / tilesX), (int)(j*sizeY / tilesY)+screenMenuYOffset, (int)(i*sizeX / tilesX)+(int)(sizeX/tilesX-2), (int)(j*sizeY / tilesY)+screenMenuYOffset+(int)(sizeY/tilesY-2), 0, 0, iconArrowFriendly.getWidth(), iconArrowFriendly.getHeight(), null);				
+				break;
+			case 2:
+				g2d.drawImage(iconArrowEnemy, (int)(i*sizeX / tilesX), (int)(j*sizeY / tilesY)+screenMenuYOffset, (int)(i*sizeX / tilesX)+(int)(sizeX/tilesX-2), (int)(j*sizeY / tilesY)+screenMenuYOffset+(int)(sizeY/tilesY-2), 0, 0, iconArrowFriendly.getWidth(), iconArrowFriendly.getHeight(), null);				
+				break;
+			default:
+				break;
+			}
+			
+			g2d.rotate(-Math.toRadians(dreh+i*j),(int)(i*sizeX / tilesX+(sizeX / tilesX /2)),(int)(j*sizeY / tilesY+screenMenuYOffset)+(sizeY / tilesY /2));
 			}
 		}
 		
 		for (int i = 0; i < 10000; i++) {
 				g.drawOval((int)(Math.random()*userInterface.getSize().getWidth()), (int)(Math.random()*userInterface.getSize().getHeight())+screenMenuYOffset, 1, 1);
 		}
+		
+		
 		
 		g.setFont(font);
 		g.setColor(colorRed);
