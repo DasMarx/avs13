@@ -23,7 +23,8 @@ private GameManager gameManager;
     }
 
 	public void initialize(GameManager gameManager) {
-	    
+	    this.gameManager = gameManager;
+	    renderer.initialize(gameManager);
 	}
 
     @Override

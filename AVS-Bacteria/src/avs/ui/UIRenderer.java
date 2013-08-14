@@ -21,6 +21,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import avs.game.GameGrid;
+import avs.game.GameManager;
 
 /**
  * @author HZU
@@ -60,6 +61,8 @@ public class UIRenderer implements Runnable {
 
 	
 	private GameGrid gameGrid = null;
+    private GameManager gameManager;
+    private boolean initialized;
 	
 	public UIRenderer(UserInterface userInterface) {
 		this.userInterface = userInterface;
@@ -83,8 +86,10 @@ public class UIRenderer implements Runnable {
 
 	}
 
-	public void initialize(GameGrid gameGrid) {
-	    this.gameGrid = gameGrid;
+	public void initialize(GameManager gameManager) {
+	    this.gameManager = gameManager;
+	    this.gameGrid = gameManager.getGrid();
+	    this.initialized = true;
 	}
 	
 	
