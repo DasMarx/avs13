@@ -170,19 +170,29 @@ public class GameManager {
      * @param x
      * @param y
      * @param owner
-     * @return list of changes
+     * @return true = valid move, false invalid move
      */
-    public LinkedList<CellChanges> chooseCell(int x, int y, EnumOwner owner) {
+    public boolean chooseCell(int x, int y, EnumOwner owner) {
         if ((isPlayersTurn() && (owner == EnumOwner.PLAYER)) || (!isPlayersTurn() && (owner == EnumOwner.AI))) {
             if (checkTurn(x, y, owner)) {
                 LinkedList<CellChanges> changes = processChanges(x, y);
                 allChanges.add(changes);
+                userInterface.updateGrid(changes);
+                aiCore.updateGrid(changes);
+                if (isPlayersTurn()) {
+                    userInterface.setControl(false);
+                    aiCore.setControl(true);
+                    turn++;
+                } else {
+                    userInterface.setControl(true);
+                    aiCore.setControl(false);
+                    turn++;
+                }
 
-                return changes;
-
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     /**
