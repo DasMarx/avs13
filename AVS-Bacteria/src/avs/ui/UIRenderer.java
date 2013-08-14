@@ -23,6 +23,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import avs.game.CellChanges;
+import avs.game.EnumOwner;
 import avs.game.GameGrid;
 import avs.game.GameManager;
 
@@ -56,6 +57,9 @@ public class UIRenderer implements Runnable {
 	private BufferedImage imageFogFriendly = null;
 	private BufferedImage imageFogNeutral = null;
 	private BufferedImage imageFogEnemy = null;
+	private BufferedImage imageFloorFriendly = null;
+	private BufferedImage imageFloorNeutral = null;
+	private BufferedImage imageFloorEnemy = null;
 
 	private LinkedList<ParticleFog> particlesFog;
 
@@ -75,6 +79,10 @@ public class UIRenderer implements Runnable {
 			imageFogFriendly = ImageIO.read(new File("img/fog_friendly.png"));
 			imageFogNeutral = ImageIO.read(new File("img/fog_neutral.png"));
 			imageFogEnemy = ImageIO.read(new File("img/fog_enemy.png"));
+			
+			imageFloorFriendly = ImageIO.read(new File("img/floor_friendly.png"));
+			imageFloorNeutral = ImageIO.read(new File("img/floor_neutral.png"));
+			imageFloorEnemy = ImageIO.read(new File("img/floor_enemy.png"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -147,6 +155,8 @@ public class UIRenderer implements Runnable {
 
 			int x = (int)(Math.random()*gridSize);
 			int y = (int)(Math.random()*gridSize);
+			gameGrid.getCell(x, y).setOwner(x>(14+Math.random()*3)?EnumOwner.PLAYER:EnumOwner.AI);
+			
 			switch (gameGrid.getCell(x, y).getOwner()) {
 			case PLAYER:
 				particlesFog.add(new ParticleFog((x * (sizeX / gridSize) + (sizeX / gridSize / 2)), (y * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), 0));
@@ -186,8 +196,60 @@ public class UIRenderer implements Runnable {
 		double sizeX = userInterface.getSize().getWidth();
 		double sizeY = userInterface.getSize().getHeight() - screenMenuYOffset;
 
-		// Draw Fog
+		
 
+		g2d.setColor(colorBlack);
+
+
+		// TODO Auto-generated method stub
+		for (int i = 0; i < gridSize; i++) {
+			for (int j = 0; j < gridSize; j++) {
+				
+				
+				
+				//Draw Floor
+				switch (gameGrid.getCell(i, j).getOwner()) {
+				case PLAYER:
+					g2d.drawImage(imageFloorFriendly,
+							(int) (i * sizeX / gridSize),
+							(int) (j * sizeY / gridSize) + screenMenuYOffset,
+							(int) (i * sizeX / gridSize)
+									+ (int) (sizeX / gridSize ), (int) (j
+									* sizeY / gridSize)
+									+ screenMenuYOffset
+									+ (int) (sizeY / gridSize ), 0, 0,
+									imageFloorFriendly.getWidth(),
+									imageFloorFriendly.getHeight(), null);
+					break;
+				case NEUTRAL:
+					g2d.drawImage(imageFloorNeutral,
+							(int) (i * sizeX / gridSize),
+							(int) (j * sizeY / gridSize) + screenMenuYOffset,
+							(int) (i * sizeX / gridSize)
+									+ (int) (sizeX / gridSize ), (int) (j
+									* sizeY / gridSize)
+									+ screenMenuYOffset
+									+ (int) (sizeY / gridSize ), 0, 0,
+									imageFloorNeutral.getWidth(),
+									imageFloorNeutral.getHeight(), null);
+					break;
+				case AI:
+					g2d.drawImage(imageFloorEnemy,
+							(int) (i * sizeX / gridSize),
+							(int) (j * sizeY / gridSize) + screenMenuYOffset,
+							(int) (i * sizeX / gridSize)
+									+ (int) (sizeX / gridSize ), (int) (j
+									* sizeY / gridSize)
+									+ screenMenuYOffset
+									+ (int) (sizeY / gridSize ), 0, 0,
+									imageFloorEnemy.getWidth(),
+									imageFloorEnemy.getHeight(), null);
+					break;
+				}
+				
+			}}
+		
+		// Draw Fog
 		synchronized (particlesFog) {
 			Iterator it = particlesFog.iterator();
 			ParticleFog fogParticle;
@@ -232,17 +294,13 @@ public class UIRenderer implements Runnable {
 			}
 		}
 
-		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
-
-		g2d.setColor(colorBlack);
-
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));	
 		
 		double angle=0;
 		// TODO Auto-generated method stub
 		for (int i = 0; i < gridSize; i++) {
-			for (int j = 0; j < gridSize; j++) {
-				
-				
+			for (int j = 0; j < gridSize; j++) {		
+				//Draw Arrow
 				switch (gameGrid.getCell(i, j).getDirection()) {
 				case UP:
 					angle=0;
@@ -259,8 +317,8 @@ public class UIRenderer implements Runnable {
 				
 //				g.drawRect((int) (i * sizeX / gridSize),
 //						(int) (j * sizeY / gridSize) + screenMenuYOffset,
-//						(int) (sizeX / gridSize - 2),
-//						(int) (sizeY / gridSize - 2));
+//						(int) (sizeX / gridSize ),
+//						(int) (sizeY / gridSize  ));
 
 				g2d.rotate(Math.toRadians(angle), (int) (i * sizeX
 						/ gridSize + (sizeX / gridSize / 2)), (int) (j * sizeY
@@ -274,10 +332,10 @@ public class UIRenderer implements Runnable {
 							(int) (i * sizeX / gridSize),
 							(int) (j * sizeY / gridSize) + screenMenuYOffset,
 							(int) (i * sizeX / gridSize)
-									+ (int) (sizeX / gridSize - 2), (int) (j
+									+ (int) (sizeX / gridSize  ), (int) (j
 									* sizeY / gridSize)
 									+ screenMenuYOffset
-									+ (int) (sizeY / gridSize - 2), 0, 0,
+									+ (int) (sizeY / gridSize  ), 0, 0,
 							imageArrowFriendly.getWidth(),
 							imageArrowFriendly.getHeight(), null);
 					break;
@@ -286,10 +344,10 @@ public class UIRenderer implements Runnable {
 							(int) (i * sizeX / gridSize),
 							(int) (j * sizeY / gridSize) + screenMenuYOffset,
 							(int) (i * sizeX / gridSize)
-									+ (int) (sizeX / gridSize - 2), (int) (j
+									+ (int) (sizeX / gridSize  ), (int) (j
 									* sizeY / gridSize)
 									+ screenMenuYOffset
-									+ (int) (sizeY / gridSize - 2), 0, 0,
+									+ (int) (sizeY / gridSize  ), 0, 0,
 							imageArrowNeutral.getWidth(),
 							imageArrowNeutral.getHeight(), null);
 					break;
@@ -298,10 +356,10 @@ public class UIRenderer implements Runnable {
 							(int) (i * sizeX / gridSize),
 							(int) (j * sizeY / gridSize) + screenMenuYOffset,
 							(int) (i * sizeX / gridSize)
-									+ (int) (sizeX / gridSize - 2), (int) (j
+									+ (int) (sizeX / gridSize  ), (int) (j
 									* sizeY / gridSize)
 									+ screenMenuYOffset
-									+ (int) (sizeY / gridSize - 2), 0, 0,
+									+ (int) (sizeY / gridSize  ), 0, 0,
 									imageArrowEnemy.getWidth(),
 									imageArrowEnemy.getHeight(), null);
 					break;
@@ -314,6 +372,9 @@ public class UIRenderer implements Runnable {
 			}
 		}
 
+
+		
+		
 		// for (int i = 0; i < 10000; i++) {
 		// g.drawOval((int)(Math.random()*userInterface.getSize().getWidth()),
 		// (int)(Math.random()*userInterface.getSize().getHeight())+screenMenuYOffset,

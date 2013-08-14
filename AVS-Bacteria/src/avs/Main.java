@@ -26,7 +26,7 @@ public class Main {
         AICore aiCore = new AICore();
 
         frame.add(userInterface);
-        frame.setSize(670, 690);
+        frame.setSize(699, 708);
         frame.setLocation(100, 100);
         frame.setVisible(true);
 
