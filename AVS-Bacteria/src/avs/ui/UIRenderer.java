@@ -29,7 +29,7 @@ import avs.game.GameManager;
  */
 public class UIRenderer implements Runnable {
 	UserInterface userInterface;
-	final long timeDelta = 33;
+	final long timeDelta = 10;
 	long lastTime = 0;
 	long currentTime = System.currentTimeMillis();
 	long timeAccumulator = 0;
@@ -177,29 +177,29 @@ public class UIRenderer implements Runnable {
 		double sizeY = userInterface.getSize().getHeight() - screenMenuYOffset;
 
 		// Draw Fog
-		/*
-		 * synchronized (particlesFog) { Iterator it = particlesFog.iterator();
-		 * ParticleFog fogParticle;
-		 * 
-		 * int fieldSize = (int) (sizeY / tilesY); while (it.hasNext()) {
-		 * fogParticle = (ParticleFog) it.next();
-		 * g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-		 * fogParticle.getOpacity()));
-		 * 
-		 * switch (fogParticle.colortype) { case 0:
-		 * g2d.drawImage(imageFogFriendly, (int)(fogParticle.x-fieldSize),
-		 * (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
-		 * (int)(fogParticle.y+fieldSize), 0, 0, imageFogFriendly.getWidth(),
-		 * imageFogFriendly.getHeight(),null); break; case 1:
-		 * g2d.drawImage(imageFogNeutral, (int)(fogParticle.x-fieldSize),
-		 * (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
-		 * (int)(fogParticle.y+fieldSize), 0, 0, imageFogNeutral.getWidth(),
-		 * imageFogNeutral.getHeight(),null); break; case 2:
-		 * g2d.drawImage(imageFogEnemy, (int)(fogParticle.x-fieldSize),
-		 * (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
-		 * (int)(fogParticle.y+fieldSize), 0, 0, imageFogEnemy.getWidth(),
-		 * imageFogEnemy.getHeight(),null); break; default: break; } } }
-		 */
+		
+		  synchronized (particlesFog) { Iterator it = particlesFog.iterator();
+		  ParticleFog fogParticle;
+		  
+		  int fieldSize = (int) (sizeY / tilesY); while (it.hasNext()) {
+		  fogParticle = (ParticleFog) it.next();
+		  g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+		  fogParticle.getOpacity()));
+		  
+		  switch (fogParticle.colortype) { case 0:
+		  g2d.drawImage(imageFogFriendly, (int)(fogParticle.x-fieldSize),
+		  (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
+		  (int)(fogParticle.y+fieldSize), 0, 0, imageFogFriendly.getWidth(),
+		  imageFogFriendly.getHeight(),null); break; case 1:
+		  g2d.drawImage(imageFogNeutral, (int)(fogParticle.x-fieldSize),
+		  (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
+		  (int)(fogParticle.y+fieldSize), 0, 0, imageFogNeutral.getWidth(),
+		  imageFogNeutral.getHeight(),null); break; case 2:
+		  g2d.drawImage(imageFogEnemy, (int)(fogParticle.x-fieldSize),
+		  (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
+		  (int)(fogParticle.y+fieldSize), 0, 0, imageFogEnemy.getWidth(),
+		  imageFogEnemy.getHeight(),null); break; default: break; } } }
+		 
 
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 
