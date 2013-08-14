@@ -1,4 +1,3 @@
-
 package avs.ai;
 
 import java.util.Iterator;
@@ -26,6 +25,8 @@ public class AICore {
 
     private HazelcastWorker myWorker;
 
+    private Tree<Result> minMaxTree;
+
     public void initialize(GameManager gm) {
         gm = this.gm;
         myWorker = new HazelcastWorker();
@@ -37,6 +38,7 @@ public class AICore {
 
     public void run() {
         LinkedList<Cell> possessedCells = grid.getCellsPossessedByAI();
+
         while (running) {
 
             // executorService creation
