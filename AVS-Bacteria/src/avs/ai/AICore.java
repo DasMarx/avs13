@@ -1,10 +1,17 @@
 
 package avs.ai;
 
+import hazelcast.Echo;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IExecutorService;
 import avs.game.GameManager;
 import avs.game.GameGrid;
 import avs.game.Cell;
+import avs.hazelcast.HazelcastWorker;
 
 public class AICore {
 
@@ -14,10 +21,15 @@ public class AICore {
 
     private LinkedList<Workload> workQueue;
 
+    private LinkedList<Future<WorkLoadReturn>> futureQueue;
+
     private GameGrid grid;
+
+    private HazelcastWorker myWorker;
 
     public void initialize(GameManager gm) {
         gm = this.gm;
+        myWorker = new HazelcastWorker();
     }
 
     public void setGameGrid(GameGrid grid) {
@@ -26,20 +38,46 @@ public class AICore {
 
     public void run() {
         LinkedList<Cell> possessedCells = grid.getCellsPossessedByAI();
-        while(running){
+        while (running) {
+
+            // executorService creation
+            IExecutorService executorService = myWorker.getInstance().getExecutorService("default");
+
+            // create workload for all workers
             while (!possessedCells.isEmpty()) {
-                workQueue.add(new Workload(grid, possessedCells.getFirst().getX(), possessedCells.getFirst().getY()));
+                Workload myTmpWorkload = new Workload(grid, possessedCells.getFirst().getX(), possessedCells.getFirst().getY());
+                Future<WorkLoadReturn> future = executorService.submit(myTmpWorkload);
+                
+                //why do we need the workqueue?
+                workQueue.add(myTmpWorkload);
+
+                futureQueue.add(future);
                 possessedCells.removeFirst();
             }
-            //Distribute work
-            //collect and merge result trees
-            //get best result
-            //execute turn
-            //discard obsolete nodes
-            //get grid from leaves
-            //get cells from grids
             
+            Iterator<Future<WorkLoadReturn>> it = futureQueue.iterator();
+            
+            while (it.hasNext()){
+                Future<WorkLoadReturn> future = it.next();
+                WorkLoadReturn myReturn = future.get();
+            }
+
+            // Distribute work
+            // collect and merge result trees
+            // get best result
+            // execute turn
+            // discard obsolete nodes
+            // get grid from leaves
+            // get cells from grids
+
         }
 
+    }
+
+    private String resultOnClusterSomewhere(HazelcastInstance myInstance, String myString, int deepness, int count) throws InterruptedException, ExecutionException {
+
+        Future<String> future = executorService.submit(new Echo(myInstance.getName(), myString, deepness, count));
+        String echoResult = future.get();
+        return echoResult;
     }
 }

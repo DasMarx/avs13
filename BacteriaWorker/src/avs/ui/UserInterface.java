@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import avs.hazelcast.HazelcastWorker;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
@@ -44,6 +45,8 @@ public class UserInterface extends JFrame {
 
     private JTextArea anzeige;
 
+    private HazelcastWorker myWorker;
+    
     private HazelcastInstance myInstance;
 
     public UserInterface() {
@@ -54,6 +57,8 @@ public class UserInterface extends JFrame {
         // Das BorderLayout ist mal das erste - später fügen wir noch ein GridLayout im Westen hinzu
         getContentPane().setLayout(new BorderLayout(5, 5));
 
+        myWorker = new HazelcastWorker();
+        
         // Buttons erzeugen
         button1 = new JButton("Hazelcast starten");
         button2 = new JButton("Hazelcast stoppen");
@@ -107,6 +112,7 @@ public class UserInterface extends JFrame {
     }
 
     private synchronized void callbutton1() {
+        myInstance = myWorker.getInstance();
         if (myInstance == null) {
             myInstance = Hazelcast.newHazelcastInstance();
             eingabe("Hazelcast is started");
