@@ -15,7 +15,7 @@ public class GameManager {
 
     private final AICore aiCore;
 
-    private GameGrid gameGrid;
+    private GameGrid gameGrid = new GameGrid();
 
     private int turn = 0;
 
@@ -24,6 +24,11 @@ public class GameManager {
     public GameManager(UserInterface userInterface, AICore aiCore) {
         this.userInterface = userInterface;
         this.aiCore = aiCore;
+        gameGrid.initialize();
+        this.userInterface.initialize(this);
+        this.aiCore.initialize(this);
+        this.userInterface.setGameGrid(gameGrid.getCopy());
+        this.aiCore.setGameGrid(gameGrid.getCopy());
     }
 
     public void run() {
@@ -63,6 +68,17 @@ public class GameManager {
         int rs = 0;
         LinkedList<CellChanges> changes = new LinkedList<CellChanges>();
         Cell target = gameGrid.getCell(x, y);
+        Cell nextCell;
+        switch (target.getDirection()) {
+        case UP:
+            nextCell = gameGrid.getCell(x, y - 1);
+        case RIGHT:
+            nextCell = gameGrid.getCell(x + 1, y);
+        case DOWN:
+            nextCell = gameGrid.getCell(x, y + 1);
+        case LEFT:
+            nextCell = gameGrid.getCell(x - 1, y);
+        }
         LinkedList<Cell> neighbours = checkNeighbour(gameGrid.getCell(x, y));
         for (int i = 0; i < neighbours.size(); i++) {
             changes.add(new CellChanges(neighbours.get(i), rs));
@@ -123,12 +139,4 @@ public class GameManager {
             return allChanges.getLast();
         }
     }
-
-    public void initialize() {
-        gameGrid = new GameGrid();
-        gameGrid.initialize();
-        userInterface.initialize(this);
-        aiCore.initialize(this);
-    }
-
 }
