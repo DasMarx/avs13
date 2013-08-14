@@ -31,7 +31,6 @@ public class Main {
         frame.setVisible(true);
 
         GameManager gameManager = new GameManager(userInterface, aiCore);
-        gameManager.initialize();
         gameManager.run();
 
     }

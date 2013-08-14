@@ -20,6 +20,13 @@ public class GameGrid {
 
     Random r;
 
+    /**
+     * Initializes a new {@link GameGrid}.
+     */
+    public GameGrid() {
+        gameGrid = new Cell[30][30];
+    }
+
     public LinkedList<Cell> getCellsPossessedByPlayer() {
         return cellsPossessedByPlayer;
     }
@@ -34,10 +41,14 @@ public class GameGrid {
         gameGrid = new Cell[30][30];
         for (int i = 0; i < gameGrid.length; i++) {
             for (int j = 0; j < gameGrid.length; j++) {
-                if ((i == 0) && (j == 0))
+                if ((i == 0) && (j == 0)) {
                     gameGrid[i][j] = new Cell(i, j, EnumOwner.PLAYER, EnumDirection.UP);
-                if ((i == 29) && (j == 29))
+                    cellsPossessedByPlayer.add(getCell(i, j));
+                }
+                if ((i == 29) && (j == 29)) {
                     gameGrid[i][j] = new Cell(i, j, EnumOwner.AI, EnumDirection.DOWN);
+                    cellsPossessedByAI.add(getCell(i, j));
+                }
                 switch (r.nextInt(4)) {
                 case 0:
                     direction = EnumDirection.UP;
@@ -74,6 +85,21 @@ public class GameGrid {
         if (x < 0 || y < 0 || x > 29 || y > 29)
             return null;
         return gameGrid[x][y];
+    }
+
+    /**
+     * @return copy of the GameGrid
+     */
+    public GameGrid getCopy() {
+        GameGrid g = new GameGrid();
+        for (int i = 0; i < gameGrid.length; i++) {
+            for (int j = 0; j < gameGrid.length; j++) {
+                g.gameGrid[i][j] = gameGrid[i][j];
+            }
+        }
+        g.cellsPossessedByAI = cellsPossessedByAI;
+        g.cellsPossessedByPlayer = cellsPossessedByPlayer;
+        return g;
     }
 
 }
