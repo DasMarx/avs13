@@ -22,6 +22,9 @@ private GameManager gameManager;
         new Thread(renderer).start();
     }
 
+	public void initialize(GameManager gameManager) {
+	    
+	}
 
     @Override
     public void paintComponent(Graphics g) {
