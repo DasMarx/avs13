@@ -21,16 +21,20 @@ public class Echo implements Callable<String>, Serializable {
     String instanceName;
 
     int deepness = 1;
+    
+    int count = 1;
 
-    public Echo(String instanceName, int deepness) {
+    public Echo(String instanceName, int deepness, int count) {
         this.instanceName = instanceName;
         this.deepness = deepness;
+        this.count = count;
     }
 
-    public Echo(String instanceName, String input, int deepness) {
+    public Echo(String instanceName, String input, int deepness, int count) {
         this.instanceName = instanceName;
         this.input = input;
         this.deepness = deepness;
+        this.count = count;
     }
 
     public String call() {
@@ -39,10 +43,10 @@ public class Echo implements Callable<String>, Serializable {
         StringBuilder sb = new StringBuilder();
         if (deepness > 0) {
             try {
-                String myString = resultOnClusterSomewhere(tmpInstance,  input + " - deepness: " + deepness, deepness - 1);
-                sb.append(myString).append(System.getProperty("line.separator"));
-                myString = resultOnClusterSomewhere(tmpInstance,  input + " - deepness: " + deepness, deepness - 1);
-                sb.append(myString).append(System.getProperty("line.separator"));
+                for (int i = 1; i <= count; i++) {
+                    String myString = resultOnClusterSomewhere(tmpInstance,  input + " - deepness: " + deepness, deepness - 1,count);
+                    sb.append(myString).append(System.getProperty("line.separator"));
+                }
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -52,10 +56,10 @@ public class Echo implements Callable<String>, Serializable {
             }
         } else if (deepness < 0) {
             try {
-                String myString = resultOnClusterSomewhere(tmpInstance, input + " - deepness: " + deepness, deepness + 1);
-                sb.append(myString).append(System.getProperty("line.separator"));
-                myString = resultOnClusterSomewhere(tmpInstance, input + " - deepness: " + deepness, deepness + 1);
-                sb.append(myString).append(System.getProperty("line.separator"));
+                for (int i = 1; i <= count; i++) {
+                    String myString = resultOnClusterSomewhere(tmpInstance,  input + " - deepness: " + deepness, deepness - 1,count);
+                    sb.append(myString).append(System.getProperty("line.separator"));
+                }
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -69,9 +73,9 @@ public class Echo implements Callable<String>, Serializable {
         return sb.toString();
     }
 
-    private String resultOnClusterSomewhere(HazelcastInstance myInstance, String myString, int deepness) throws InterruptedException, ExecutionException {
+    private String resultOnClusterSomewhere(HazelcastInstance myInstance, String myString, int deepness,int count) throws InterruptedException, ExecutionException {
         IExecutorService executorService = myInstance.getExecutorService("default");
-        Future<String> future = executorService.submit(new Echo(myInstance.getName(), myString, deepness));
+        Future<String> future = executorService.submit(new Echo(myInstance.getName(), myString, deepness,count));
         String echoResult = future.get();
         return echoResult;
     }

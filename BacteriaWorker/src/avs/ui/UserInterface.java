@@ -49,7 +49,7 @@ public class UserInterface extends JFrame {
     public UserInterface() {
         super("Fenster");
         setLocation(300, 300);
-        setSize(1000,1000);
+        setSize(1000, 1000);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Das BorderLayout ist mal das erste - später fügen wir noch ein GridLayout im Westen hinzu
         getContentPane().setLayout(new BorderLayout(5, 5));
@@ -130,30 +130,21 @@ public class UserInterface extends JFrame {
     private void callbutton3() {
         if (myInstance != null) {
             try {
-                
-                String myString = resultOnClusterSomewhere(myInstance, "Test",5);
+
+                String myString = resultOnClusterSomewhere(myInstance, "Test", 5,1);
                 System.out.println(myString);
-                myString = resultOnClusterSomewhere(myInstance, "Test2",5);
+                myString = resultOnClusterSomewhere(myInstance, "Test2", 5,5);
                 System.out.println(myString);
-                myString = resultOnClusterSomewhere(myInstance, "Test3",5);
-                System.out.println(myString);
-                myString = resultOnClusterSomewhere(myInstance, "Test4",5);
-                System.out.println(myString);
-                myString = resultOnClusterSomewhere(myInstance, "Test5",5);
-                System.out.println(myString);
-                myString = resultOnClusterSomewhere(myInstance, "Test6",5);
-                System.out.println(myString);
-                myString = resultOnClusterSomewhere(myInstance, "Test7",5);
-                System.out.println(myString);
-                myString = resultOnClusterSomewhere(myInstance, "Test8",5);
-                System.out.println(myString);
-                
-                for (int i = -14; i <= 14; i = (i + 1)) {
-                    long startTime = System.currentTimeMillis();
-                    resultOnClusterSomewhere(myInstance, "boing", i);
-                    long time = System.currentTimeMillis() - startTime;
-                    System.out.println("Task with deepness of " + i + " took " + time + " ms");
+
+                for (int i = 0; i <= 14; i = (i + 1)) {
+                    for (int j = 1; j <= 10; j++) {
+                        long startTime = System.currentTimeMillis();
+                        resultOnClusterSomewhere(myInstance, "boing", i, j);
+                        long time = System.currentTimeMillis() - startTime;
+                        System.out.println("Task with deepness of " + i + " count " + j +" took " + time + " ms");
+                    }
                 }
+
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -168,9 +159,9 @@ public class UserInterface extends JFrame {
         anzeige.setText(a);
     }
 
-    private String resultOnClusterSomewhere(HazelcastInstance myInstance, String myString,int deepness) throws InterruptedException, ExecutionException {
+    private String resultOnClusterSomewhere(HazelcastInstance myInstance, String myString, int deepness, int count) throws InterruptedException, ExecutionException {
         IExecutorService executorService = myInstance.getExecutorService("default");
-        Future<String> future = executorService.submit(new Echo(myInstance.getName(), myString, deepness));
+        Future<String> future = executorService.submit(new Echo(myInstance.getName(), myString, deepness, count));
         String echoResult = future.get();
         return echoResult;
     }
