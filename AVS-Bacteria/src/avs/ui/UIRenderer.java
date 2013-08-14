@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import avs.game.CellChanges;
 import avs.game.GameGrid;
 import avs.game.GameManager;
 
@@ -175,30 +176,30 @@ public class UIRenderer implements Runnable {
 
 		// Draw Fog
 		
-		  synchronized (particlesFog) { Iterator it = particlesFog.iterator();
-		  ParticleFog fogParticle;
-		  
-		  int fieldSize = (int) (sizeY / gridSize); while (it.hasNext()) {
-		  fogParticle = (ParticleFog) it.next();
-		  g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-		  fogParticle.getOpacity()));
-		  
-		  switch (fogParticle.colortype) { case 0:
-		  g2d.drawImage(imageFogFriendly, (int)(fogParticle.x-fieldSize),
-		  (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
-		  (int)(fogParticle.y+fieldSize), 0, 0, imageFogFriendly.getWidth(),
-		  imageFogFriendly.getHeight(),null); break; case 1:
-		  g2d.drawImage(imageFogNeutral, (int)(fogParticle.x-fieldSize),
-		  (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
-		  (int)(fogParticle.y+fieldSize), 0, 0, imageFogNeutral.getWidth(),
-		  imageFogNeutral.getHeight(),null); break; case 2:
-		  g2d.drawImage(imageFogEnemy, (int)(fogParticle.x-fieldSize),
-		  (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
-		  (int)(fogParticle.y+fieldSize), 0, 0, imageFogEnemy.getWidth(),
-		  imageFogEnemy.getHeight(),null); break; default: break; } } }
+//		  synchronized (particlesFog) { Iterator it = particlesFog.iterator();
+//		  ParticleFog fogParticle;
+//		  
+//		  int fieldSize = (int) (sizeY / gridSize); while (it.hasNext()) {
+//		  fogParticle = (ParticleFog) it.next();
+//		  g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+//		  fogParticle.getOpacity()));
+//		  
+//		  switch (fogParticle.colortype) { case 0:
+//		  g2d.drawImage(imageFogFriendly, (int)(fogParticle.x-fieldSize),
+//		  (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
+//		  (int)(fogParticle.y+fieldSize), 0, 0, imageFogFriendly.getWidth(),
+//		  imageFogFriendly.getHeight(),null); break; case 1:
+//		  g2d.drawImage(imageFogNeutral, (int)(fogParticle.x-fieldSize),
+//		  (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
+//		  (int)(fogParticle.y+fieldSize), 0, 0, imageFogNeutral.getWidth(),
+//		  imageFogNeutral.getHeight(),null); break; case 2:
+//		  g2d.drawImage(imageFogEnemy, (int)(fogParticle.x-fieldSize),
+//		  (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
+//		  (int)(fogParticle.y+fieldSize), 0, 0, imageFogEnemy.getWidth(),
+//		  imageFogEnemy.getHeight(),null); break; default: break; } } }
 		 
 
-		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+//		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 
 		g2d.setColor(colorBlack);
 		dreh = (dreh + 2) % 360;
@@ -206,9 +207,9 @@ public class UIRenderer implements Runnable {
 		// TODO Auto-generated method stub
 		for (int i = 0; i < gridSize; i++) {
 			for (int j = 0; j < gridSize; j++) {
-				g.drawRect((int) (i * sizeX / gridSize),
-						(int) (j * sizeY / gridSize) + screenMenuYOffset,
-						(int) (sizeX / gridSize - 2), (int) (sizeY / gridSize - 2));
+//				g.drawRect((int) (i * sizeX / gridSize),
+//						(int) (j * sizeY / gridSize) + screenMenuYOffset,
+//						(int) (sizeX / gridSize - 2), (int) (sizeY / gridSize - 2));
 
 				g2d.rotate(Math.toRadians(dreh + i * j), (int) (i * sizeX
 						/ gridSize + (sizeX / gridSize / 2)), (int) (j * sizeY
@@ -262,12 +263,12 @@ public class UIRenderer implements Runnable {
 			}
 		}
 
-		// for (int i = 0; i < 10000; i++) {
-		// g.drawOval((int)(Math.random()*userInterface.getSize().getWidth()),
-		// (int)(Math.random()*userInterface.getSize().getHeight())+screenMenuYOffset,
-		// 1, 1);
-		// }
-		//
+//		 for (int i = 0; i < 10000; i++) {
+//		 g.drawOval((int)(Math.random()*userInterface.getSize().getWidth()),
+//		 (int)(Math.random()*userInterface.getSize().getHeight())+screenMenuYOffset,
+//		 1, 1);
+//		 }
+		
 
 		g2d.setFont(font);
 		g2d.setColor(colorRed);
@@ -279,6 +280,15 @@ public class UIRenderer implements Runnable {
     public void setGameGrid(GameGrid gameGrid) {
         this.gameGrid = gameGrid;
         gridSize = gameGrid.getLength();    
+    };
+    
+    public void updateGrid(LinkedList<CellChanges> changes) {
+        //TODO:
     }
+    
+    public void setControl(boolean controlflag) {
+        //TODO:
+    }
+    
 
 }
