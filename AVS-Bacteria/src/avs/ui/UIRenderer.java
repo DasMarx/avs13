@@ -141,7 +141,6 @@ public class UIRenderer implements Runnable {
 		//Calculate Fog
 		synchronized (particlesFog) {
 				particlesFog.add(new ParticleFog(((int)(Math.random()*tilesX)* (sizeX / tilesX)+(sizeX / tilesX/2)), ((int)(Math.random()*tilesY) *sizeY/ tilesY)+screenMenuYOffset+ (sizeY / tilesY/2),(int)(Math.random()*3)));			
-				particlesFog.add(new ParticleFog(((int)(Math.random()*tilesX)* (sizeX / tilesX)+(sizeX / tilesX/2)), ((int)(Math.random()*tilesY) *sizeY/ tilesY)+screenMenuYOffset+ (sizeY / tilesY/2),(int)(Math.random()*3)));			
 		
 		Iterator it = particlesFog.iterator();
 		ParticleFog fogParticle;
