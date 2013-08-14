@@ -25,13 +25,15 @@ private GameGrid gameGrid;
     }
 
 	public void initialize(GameManager gameManager) {
+	    System.out.println("Initialize");
 	    this.gameManager = gameManager;
 	    renderer.initialize(gameManager);
 	}
 
 	public void setGameGrid(GameGrid gameGrid) {
-	   
+        System.out.println("setGameGrid");
 	    this.gameGrid = gameGrid;
+	    renderer.setGameGrid(gameGrid);
 	}
 	
 	

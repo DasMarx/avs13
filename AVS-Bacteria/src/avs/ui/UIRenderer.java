@@ -43,8 +43,7 @@ public class UIRenderer implements Runnable {
 	long fpscounter = 0;
 	long lastFPSTime = 0;
 
-	private static int tilesX = 10;
-	private static int tilesY = 10;
+	private static int gridSize = 5;
 
 	int screenMenuYOffset = 20;
 
@@ -88,8 +87,6 @@ public class UIRenderer implements Runnable {
 
 	public void initialize(GameManager gameManager) {
 	    this.gameManager = gameManager;
-	    this.gameGrid = gameManager.getGrid();
-	    this.initialized = true;
 	}
 	
 	
@@ -144,10 +141,10 @@ public class UIRenderer implements Runnable {
 
 		// Calculate Fog
 		synchronized (particlesFog) {
-			particlesFog.add(new ParticleFog(((int) (Math.random() * tilesX)
-					* (sizeX / tilesX) + (sizeX / tilesX / 2)), ((int) (Math
-					.random() * tilesY) * sizeY / tilesY)
-					+ screenMenuYOffset + (sizeY / tilesY / 2), (int) (Math
+			particlesFog.add(new ParticleFog(((int) (Math.random() * gridSize)
+					* (sizeX / gridSize) + (sizeX / gridSize / 2)), ((int) (Math
+					.random() * gridSize) * sizeY / gridSize)
+					+ screenMenuYOffset + (sizeY / gridSize / 2), (int) (Math
 					.random() * 3)));
 
 			Iterator it = particlesFog.iterator();
@@ -181,7 +178,7 @@ public class UIRenderer implements Runnable {
 		  synchronized (particlesFog) { Iterator it = particlesFog.iterator();
 		  ParticleFog fogParticle;
 		  
-		  int fieldSize = (int) (sizeY / tilesY); while (it.hasNext()) {
+		  int fieldSize = (int) (sizeY / gridSize); while (it.hasNext()) {
 		  fogParticle = (ParticleFog) it.next();
 		  g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 		  fogParticle.getOpacity()));
@@ -207,50 +204,50 @@ public class UIRenderer implements Runnable {
 		dreh = (dreh + 2) % 360;
 
 		// TODO Auto-generated method stub
-		for (int i = 0; i < tilesX; i++) {
-			for (int j = 0; j < tilesY; j++) {
-				g.drawRect((int) (i * sizeX / tilesX),
-						(int) (j * sizeY / tilesY) + screenMenuYOffset,
-						(int) (sizeX / tilesX - 2), (int) (sizeY / tilesY - 2));
+		for (int i = 0; i < gridSize; i++) {
+			for (int j = 0; j < gridSize; j++) {
+				g.drawRect((int) (i * sizeX / gridSize),
+						(int) (j * sizeY / gridSize) + screenMenuYOffset,
+						(int) (sizeX / gridSize - 2), (int) (sizeY / gridSize - 2));
 
 				g2d.rotate(Math.toRadians(dreh + i * j), (int) (i * sizeX
-						/ tilesX + (sizeX / tilesX / 2)), (int) (j * sizeY
-						/ tilesY + screenMenuYOffset)
-						+ (sizeY / tilesY / 2));
+						/ gridSize + (sizeX / gridSize / 2)), (int) (j * sizeY
+						/ gridSize + screenMenuYOffset)
+						+ (sizeY / gridSize / 2));
 
 				switch ((i + j) % 3) {
 				case 0:
 					g2d.drawImage(imageArrowFriendly,
-							(int) (i * sizeX / tilesX),
-							(int) (j * sizeY / tilesY) + screenMenuYOffset,
-							(int) (i * sizeX / tilesX)
-									+ (int) (sizeX / tilesX - 2), (int) (j
-									* sizeY / tilesY)
+							(int) (i * sizeX / gridSize),
+							(int) (j * sizeY / gridSize) + screenMenuYOffset,
+							(int) (i * sizeX / gridSize)
+									+ (int) (sizeX / gridSize - 2), (int) (j
+									* sizeY / gridSize)
 									+ screenMenuYOffset
-									+ (int) (sizeY / tilesY - 2), 0, 0,
+									+ (int) (sizeY / gridSize - 2), 0, 0,
 							imageArrowFriendly.getWidth(),
 							imageArrowFriendly.getHeight(), null);
 					break;
 				case 1:
 					g2d.drawImage(imageArrowNeutral,
-							(int) (i * sizeX / tilesX),
-							(int) (j * sizeY / tilesY) + screenMenuYOffset,
-							(int) (i * sizeX / tilesX)
-									+ (int) (sizeX / tilesX - 2), (int) (j
-									* sizeY / tilesY)
+							(int) (i * sizeX / gridSize),
+							(int) (j * sizeY / gridSize) + screenMenuYOffset,
+							(int) (i * sizeX / gridSize)
+									+ (int) (sizeX / gridSize - 2), (int) (j
+									* sizeY / gridSize)
 									+ screenMenuYOffset
-									+ (int) (sizeY / tilesY - 2), 0, 0,
+									+ (int) (sizeY / gridSize - 2), 0, 0,
 							imageArrowFriendly.getWidth(),
 							imageArrowFriendly.getHeight(), null);
 					break;
 				case 2:
-					g2d.drawImage(imageArrowEnemy, (int) (i * sizeX / tilesX),
-							(int) (j * sizeY / tilesY) + screenMenuYOffset,
-							(int) (i * sizeX / tilesX)
-									+ (int) (sizeX / tilesX - 2), (int) (j
-									* sizeY / tilesY)
+					g2d.drawImage(imageArrowEnemy, (int) (i * sizeX / gridSize),
+							(int) (j * sizeY / gridSize) + screenMenuYOffset,
+							(int) (i * sizeX / gridSize)
+									+ (int) (sizeX / gridSize - 2), (int) (j
+									* sizeY / gridSize)
 									+ screenMenuYOffset
-									+ (int) (sizeY / tilesY - 2), 0, 0,
+									+ (int) (sizeY / gridSize - 2), 0, 0,
 							imageArrowFriendly.getWidth(),
 							imageArrowFriendly.getHeight(), null);
 					break;
@@ -259,9 +256,9 @@ public class UIRenderer implements Runnable {
 				}
 
 				g2d.rotate(-Math.toRadians(dreh + i * j), (int) (i * sizeX
-						/ tilesX + (sizeX / tilesX / 2)), (int) (j * sizeY
-						/ tilesY + screenMenuYOffset)
-						+ (sizeY / tilesY / 2));
+						/ gridSize + (sizeX / gridSize / 2)), (int) (j * sizeY
+						/ gridSize + screenMenuYOffset)
+						+ (sizeY / gridSize / 2));
 			}
 		}
 
@@ -278,5 +275,10 @@ public class UIRenderer implements Runnable {
 				5, 18);
 
 	}
+
+    public void setGameGrid(GameGrid gameGrid) {
+        this.gameGrid = gameGrid;
+        gridSize = gameGrid.getLength();    
+    }
 
 }
