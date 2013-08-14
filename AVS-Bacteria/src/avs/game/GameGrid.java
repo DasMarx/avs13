@@ -31,9 +31,9 @@ public class GameGrid {
     public void initialize() {
         r = new Random();
         EnumDirection direction = null;
-        gameGrid = new Cell[29][29];
-        for (int i = 0; i < 30; i++) {
-            for (int j = 0; j < 30; j++) {
+        gameGrid = new Cell[30][30];
+        for (int i = 0; i < gameGrid.length; i++) {
+            for (int j = 0; j < gameGrid.length; j++) {
                 if ((i == 0) && (j == 0))
                     gameGrid[i][j] = new Cell(i, j, EnumOwner.PLAYER, EnumDirection.UP);
                 if ((i == 29) && (j == 29))
