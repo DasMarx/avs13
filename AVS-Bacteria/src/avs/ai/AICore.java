@@ -1,3 +1,4 @@
+
 package avs.ai;
 
 import java.util.Iterator;
@@ -6,9 +7,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
-import avs.game.GameManager;
-import avs.game.GameGrid;
-import avs.game.Cell;
+import avs.game.*;
 import avs.hazelcast.HazelcastWorker;
 
 public class AICore {
@@ -34,6 +33,14 @@ public class AICore {
 
     public void setGameGrid(GameGrid grid) {
         grid = this.grid;
+    }
+    
+    public void updateGrid(LinkedList<CellChanges> cellChanges){
+//        TODO    
+    }
+    public void setControl(boolean Turn){
+//        TODO: true - KI ist dran
+//                false - KI ist nicht dran
     }
 
     public void run() {
