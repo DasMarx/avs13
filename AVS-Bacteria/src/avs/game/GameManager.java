@@ -127,6 +127,8 @@ public class GameManager {
     public void initialize() {
         gameGrid = new GameGrid();
         gameGrid.initialize();
+        userInterface.initialize(this);
+        aiCore.initialize(this);
     }
 
 }
