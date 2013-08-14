@@ -150,26 +150,35 @@ public class UIRenderer implements Runnable {
 
 		// Calculate Fog
 		synchronized (particlesFog) {
-			
-			for (int k=0;k<4;k++){
-
+			//TODO:Remove
 			int x = (int)(Math.random()*gridSize);
 			int y = (int)(Math.random()*gridSize);
-			
-			//TODO:Remove
 			gameGrid.getCell(x, y).setOwner(x>(14+Math.random()*3)?EnumOwner.PLAYER:EnumOwner.AI);
-			
+			for (int k=0;k<(1000-particlesFog.size());k++){
+
+			 x = (int)(Math.random()*(gridSize-2)+1);
+			 y = (int)(Math.random()*(gridSize-2)+1);
+		
+				
 			switch (gameGrid.getCell(x, y).getOwner()) {
 			case PLAYER:
-				particlesFog.add(new ParticleFog((x * (sizeX / gridSize) + (sizeX / gridSize / 2)), (y * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), 0));
+				if(gameGrid.getCell(x+1, y).getOwner() != EnumOwner.PLAYER || gameGrid.getCell(x-1, y).getOwner() != EnumOwner.PLAYER || gameGrid.getCell(x, y+1).getOwner() != EnumOwner.PLAYER || gameGrid.getCell(x, y-1).getOwner() != EnumOwner.PLAYER) {
+					particlesFog.add(new ParticleFog((x * (sizeX / gridSize) + (sizeX / gridSize / 2)), (y * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), 0));
+				}
 				break;
 			case NEUTRAL:
-				particlesFog.add(new ParticleFog((x * (sizeX / gridSize) + (sizeX / gridSize / 2)), (y * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), 1));
+				if(gameGrid.getCell(x+1, y).getOwner() != EnumOwner.NEUTRAL || gameGrid.getCell(x-1, y).getOwner() != EnumOwner.NEUTRAL || gameGrid.getCell(x, y+1).getOwner() != EnumOwner.NEUTRAL || gameGrid.getCell(x, y-1).getOwner() != EnumOwner.NEUTRAL) {
+					particlesFog.add(new ParticleFog((x * (sizeX / gridSize) + (sizeX / gridSize / 2)), (y * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), 1));
+				}
 				break;
+
 			case AI:
-				particlesFog.add(new ParticleFog((x * (sizeX / gridSize) + (sizeX / gridSize / 2)), (y * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), 2));
+				if(gameGrid.getCell(x+1, y).getOwner() != EnumOwner.AI || gameGrid.getCell(x-1, y).getOwner() != EnumOwner.AI || gameGrid.getCell(x, y+1).getOwner() != EnumOwner.AI || gameGrid.getCell(x, y-1).getOwner() != EnumOwner.AI) {
+					particlesFog.add(new ParticleFog((x * (sizeX / gridSize) + (sizeX / gridSize / 2)), (y * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), 2));
+				}
 				break;
 			}
+
 			}
 			
 			Iterator it = particlesFog.iterator();
@@ -181,8 +190,8 @@ public class UIRenderer implements Runnable {
 					it.remove();
 				}
 			}
+		
 		}
-
 	}
 
 	public void draw(Graphics g) {
