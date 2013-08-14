@@ -17,10 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import avs.game.GameGrid;
 
 /**
  * @author HZU
@@ -58,6 +58,9 @@ public class UIRenderer implements Runnable {
 
 	private int dreh = 0;
 
+	
+	private GameGrid gameGrid = null;
+	
 	public UIRenderer(UserInterface userInterface) {
 		this.userInterface = userInterface;
 
@@ -80,6 +83,11 @@ public class UIRenderer implements Runnable {
 
 	}
 
+	public void initialize(GameGrid gameGrid) {
+	    this.gameGrid = gameGrid;
+	}
+	
+	
 	@Override
 	public void run() {
 		lastTime = System.currentTimeMillis();
