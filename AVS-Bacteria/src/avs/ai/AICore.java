@@ -1,20 +1,32 @@
 
 package avs.ai;
 
+import java.util.LinkedList;
 import avs.game.GameManager;
 import avs.game.GameGrid;
+import avs.game.Cell;
 
 public class AICore {
 
     private GameManager gm;
     private boolean running = true;
-
+    private LinkedList<Workload> workQueue;
+    private GameGrid grid;
+    
     public void initialize(GameManager gm) {
         gm = this.gm;
     }
+    
+    public void setGameGrid(GameGrid grid){
+        grid = this.grid;
+    }
 
     public void run() {
-        GameGrid grid = gm.getGrid();
-        
+        LinkedList<Cell> possessedCells = grid.getCellsPossessedByAI();
+        while(!possessedCells.isEmpty()){
+            workQueue.add(new Workload(grid,possessedCells.getFirst().getX(),possessedCells.getFirst().getY()));
+            possessedCells.removeFirst();
+        }
+            
     }
 }
