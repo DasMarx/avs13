@@ -155,6 +155,8 @@ public class UIRenderer implements Runnable {
 
 			int x = (int)(Math.random()*gridSize);
 			int y = (int)(Math.random()*gridSize);
+			
+			//TODO:Remove
 			gameGrid.getCell(x, y).setOwner(x>(14+Math.random()*3)?EnumOwner.PLAYER:EnumOwner.AI);
 			
 			switch (gameGrid.getCell(x, y).getOwner()) {
