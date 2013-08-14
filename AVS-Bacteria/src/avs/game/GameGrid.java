@@ -14,9 +14,9 @@ public class GameGrid {
 
     private Cell[][] gameGrid;
 
-    private LinkedList<Cell> cellsPossessedByPlayer;
+    private LinkedList<Cell> cellsPossessedByPlayer = new LinkedList<Cell>();
 
-    private LinkedList<Cell> cellsPossessedByAI;
+    private LinkedList<Cell> cellsPossessedByAI = new LinkedList<Cell>();
 
     Random r;
 
