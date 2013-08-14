@@ -1,6 +1,6 @@
 
 package avs.game;
 
-enum EnumDirection {
+public enum EnumDirection {
     UP, RIGHT, DOWN, LEFT
 }
