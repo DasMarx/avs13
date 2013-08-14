@@ -1,7 +1,6 @@
 
 package avs.ai;
 
-import hazelcast.Echo;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
@@ -47,19 +46,27 @@ public class AICore {
             while (!possessedCells.isEmpty()) {
                 Workload myTmpWorkload = new Workload(grid, possessedCells.getFirst().getX(), possessedCells.getFirst().getY());
                 Future<WorkLoadReturn> future = executorService.submit(myTmpWorkload);
-                
-                //why do we need the workqueue?
-                workQueue.add(myTmpWorkload);
+
+                // why do we need the workqueue?
+                // workQueue.add(myTmpWorkload);
 
                 futureQueue.add(future);
                 possessedCells.removeFirst();
             }
-            
+
             Iterator<Future<WorkLoadReturn>> it = futureQueue.iterator();
-            
-            while (it.hasNext()){
+
+            while (it.hasNext()) {
                 Future<WorkLoadReturn> future = it.next();
-                WorkLoadReturn myReturn = future.get();
+                try {
+                    WorkLoadReturn myReturn = future.get();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
 
             // Distribute work
@@ -72,12 +79,5 @@ public class AICore {
 
         }
 
-    }
-
-    private String resultOnClusterSomewhere(HazelcastInstance myInstance, String myString, int deepness, int count) throws InterruptedException, ExecutionException {
-
-        Future<String> future = executorService.submit(new Echo(myInstance.getName(), myString, deepness, count));
-        String echoResult = future.get();
-        return echoResult;
     }
 }
