@@ -14,16 +14,16 @@ public class GameGrid {
 
 	private Cell[][] gameGrid;
 
-	private int cellsPossessedByPlayer;
-	private int cellsPossessedByAI;
+	private LinkedList<Cell> cellsPossessedByPlayer;
+	private LinkedList<Cell> cellsPossessedByAI;
 
 	Random r;
 
-	public int getCellsPossessedByPlayer() {
+	public LinkedList<Cell> getCellsPossessedByPlayer() {
 		return cellsPossessedByPlayer;
 	}
 
-	public int getCellsPossessedByAI() {
+	public LinkedList<Cell> getCellsPossessedByAI() {
 		return cellsPossessedByAI;
 	}
 
