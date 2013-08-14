@@ -1,6 +1,3 @@
-/**
- * 
- */
 
 package avs.game;
 
@@ -37,25 +34,25 @@ public class GameManager {
         LinkedList<Cell> neighbours = new LinkedList<Cell>();
         Cell nextNeighbour = gameGrid.getCell(c.getX(), c.getY() - 1);
         if (nextNeighbour != null) {
-            if (nextNeighbour.getDirection() == 2)
+            if (nextNeighbour.getDirection() == EnumDirection.DOWN)
                 neighbours.add(nextNeighbour);
         }
         nextNeighbour = null;
         nextNeighbour = gameGrid.getCell(c.getX() + 1, c.getY());
         if (nextNeighbour != null) {
-            if (nextNeighbour.getDirection() == 3)
+            if (nextNeighbour.getDirection() == EnumDirection.LEFT)
                 neighbours.add(nextNeighbour);
         }
         nextNeighbour = null;
         nextNeighbour = gameGrid.getCell(c.getX(), c.getY() + 1);
         if (nextNeighbour != null) {
-            if (nextNeighbour.getDirection() == 0)
+            if (nextNeighbour.getDirection() == EnumDirection.UP)
                 neighbours.add(nextNeighbour);
         }
         nextNeighbour = null;
         nextNeighbour = gameGrid.getCell(c.getX() - 1, c.getY());
         if (nextNeighbour != null) {
-            if (nextNeighbour.getDirection() == 1)
+            if (nextNeighbour.getDirection() == EnumDirection.RIGHT)
                 neighbours.add(nextNeighbour);
         }
 
@@ -63,24 +60,39 @@ public class GameManager {
     }
 
     public LinkedList<CellChanges> processChanges(int x, int y) {
+        int rs = 0;
         LinkedList<CellChanges> changes = new LinkedList<CellChanges>();
+        Cell target = gameGrid.getCell(x, y);
+        LinkedList<Cell> neighbours = checkNeighbour(gameGrid.getCell(x, y));
+        for (int i = 0; i < neighbours.size(); i++) {
+            changes.add(new CellChanges(neighbours.get(i), rs));
+        }
+        return changes;
+    }
+
+    private LinkedList<CellChanges> processChanges(int x, int y, int rs) {
         return null;
     }
 
-    private boolean checkTurn(int x, int y, int owner) {
-        Cell c1 = new Cell(x, y, owner, 0);
+    private boolean checkTurn(int x, int y, EnumOwner owner) {
+        Cell c1 = new Cell(x, y, owner, EnumDirection.UP);
         Cell c2 = gameGrid.getCell(x, y);
         return c1.getOwner() == c2.getOwner();
     }
 
-    public LinkedList<CellChanges> chooseCell(int x, int y, int owner) {
+    public LinkedList<CellChanges> chooseCell(int x, int y, EnumOwner owner) {
         if (checkTurn(x, y, owner)) {
+            synchronized (gameGrid) {
+                gameGrid.getCell(x, y).turn();
+            }
             LinkedList<CellChanges> changes = processChanges(x, y);
             // AI starten
 
             return changes;
 
         }
+
+        return null;
     }
 
     /**
@@ -98,7 +110,8 @@ public class GameManager {
      */
     public GameGrid getGrid() {
         synchronized (gameGrid) {
-            return gameGrid;
+            GameGrid g = gameGrid;
+            return g;
         }
     }
 
