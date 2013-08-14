@@ -17,20 +17,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-
-
+import avs.game.GameGrid;
+import avs.game.GameManager;
 
 /**
  * @author HZU
- *
+ * 
  */
 public class UIRenderer implements Runnable {
 	UserInterface userInterface;
-	final long timeDelta = 20;
+	final long timeDelta = 33;
 	long lastTime = 0;
 	long currentTime = System.currentTimeMillis();
 	long timeAccumulator = 0;
@@ -38,17 +37,17 @@ public class UIRenderer implements Runnable {
 	long timeRunning = 0;
 	long sleepTime = 0;
 	final Font font = new Font("Arial", Font.BOLD, 20);
-	Color colorRed = new Color(255,0,0);
-	Color colorBlack = new Color(0,0,0);
+	Color colorRed = new Color(255, 0, 0);
+	Color colorBlack = new Color(0, 0, 0);
 	long fps = 0;
 	long fpscounter = 0;
 	long lastFPSTime = 0;
-	
+
 	private static int tilesX = 10;
 	private static int tilesY = 10;
-	
+
 	int screenMenuYOffset = 20;
-	
+
 	private BufferedImage imageArrowFriendly = null;
 	private BufferedImage imageArrowEnemy = null;
 	private BufferedImage imageArrowNeutral = null;
@@ -56,186 +55,228 @@ public class UIRenderer implements Runnable {
 	private BufferedImage imageFogNeutral = null;
 	private BufferedImage imageFogEnemy = null;
 
-	
 	private LinkedList<ParticleFog> particlesFog;
+
+	private int dreh = 0;
+
 	
-	private int dreh =0;
+	private GameGrid gameGrid = null;
+    private GameManager gameManager;
+    private boolean initialized;
 	
 	public UIRenderer(UserInterface userInterface) {
 		this.userInterface = userInterface;
-		
-		//Init Images
+
+		// Init Images
 		try {
-			imageArrowFriendly = ImageIO.read(new File("img/arrow_friendly.png"));
+			imageArrowFriendly = ImageIO
+					.read(new File("img/arrow_friendly.png"));
 			imageArrowEnemy = ImageIO.read(new File("img/arrow_enemy.png"));
 			imageArrowNeutral = ImageIO.read(new File("img/arrow_neutral.png"));
 			imageFogFriendly = ImageIO.read(new File("img/fog_friendly.png"));
 			imageFogNeutral = ImageIO.read(new File("img/fog_neutral.png"));
 			imageFogEnemy = ImageIO.read(new File("img/fog_enemy.png"));
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		//Init GameFog
+
+		// Init GameFog
 		particlesFog = new LinkedList<ParticleFog>();
-		
-		
+
 	}
 
+	public void initialize(GameManager gameManager) {
+	    this.gameManager = gameManager;
+	    this.gameGrid = gameManager.getGrid();
+	    this.initialized = true;
+	}
+	
+	
 	@Override
 	public void run() {
 		lastTime = System.currentTimeMillis();
 		lastFPSTime = lastTime;
-		
+
 		while (running) {
-			//Akkumulator befüllen
+			// Akkumulator befüllen
 			currentTime = System.currentTimeMillis();
 
-			
-			if ((currentTime-lastTime) > timeDelta) {
-				timeAccumulator = (currentTime-lastTime);
+			if ((currentTime - lastTime) > timeDelta) {
+				timeAccumulator = (currentTime - lastTime);
 				lastTime = currentTime;
-				
-				}
-			
+
+			}
+
 			while (timeAccumulator > timeDelta) {
 				timeAccumulator -= timeDelta;
 				timeRunning += timeDelta;
 				calculate();
 			}
-			
-			
+
 			userInterface.repaint();
-			
-			if (lastFPSTime < currentTime-500) {
+
+			if (lastFPSTime < currentTime - 500) {
 				fps = fpscounter;
-				fpscounter=0;
+				fpscounter = 0;
 				lastFPSTime = currentTime;
 			}
-			
-			
-			
-			
-			sleepTime = lastTime-currentTime+timeDelta;
+
+			sleepTime = lastTime - currentTime + timeDelta;
 			if (sleepTime > 0) {
-			try {
-//				System.out.println(sleepTime);
-				Thread.sleep(sleepTime);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				try {
+					// System.out.println(sleepTime);
+					Thread.sleep(sleepTime);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
-		
-		
+
 	}
 
 	private void calculate() {
 		// TODO Auto-generated method stub
-		
+
 		double sizeX = userInterface.getSize().getWidth();
-		double sizeY = userInterface.getSize().getHeight() -screenMenuYOffset;
-		
-		//Calculate Fog
+		double sizeY = userInterface.getSize().getHeight() - screenMenuYOffset;
+
+		// Calculate Fog
 		synchronized (particlesFog) {
-				particlesFog.add(new ParticleFog(((int)(Math.random()*tilesX)* (sizeX / tilesX)+(sizeX / tilesX/2)), ((int)(Math.random()*tilesY) *sizeY/ tilesY)+screenMenuYOffset+ (sizeY / tilesY/2),(int)(Math.random()*3)));			
-		
-		Iterator it = particlesFog.iterator();
-		ParticleFog fogParticle;
-		while (it.hasNext()) {
-			fogParticle = (ParticleFog) it.next();
-			fogParticle.calculate();
-			if (fogParticle.getOpacity() == 0) {it.remove();}
+			particlesFog.add(new ParticleFog(((int) (Math.random() * tilesX)
+					* (sizeX / tilesX) + (sizeX / tilesX / 2)), ((int) (Math
+					.random() * tilesY) * sizeY / tilesY)
+					+ screenMenuYOffset + (sizeY / tilesY / 2), (int) (Math
+					.random() * 3)));
+
+			Iterator it = particlesFog.iterator();
+			ParticleFog fogParticle;
+			while (it.hasNext()) {
+				fogParticle = (ParticleFog) it.next();
+				fogParticle.calculate();
+				if (fogParticle.getOpacity() == 0) {
+					it.remove();
+				}
+			}
 		}
-		}
-		
-		
+
 	}
 
 	public void draw(Graphics g) {
-		Graphics2D g2d = (Graphics2D)g;
-	    //set the opacity
-	    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-	    
-	    
+		Graphics2D g2d = (Graphics2D) g;
+		// set the opacity
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_OFF);
+
 		fpscounter++;
-		g.clearRect(0, 0, (int)userInterface.getSize().getWidth(), (int)userInterface.getSize().getHeight());
-		
+		g.clearRect(0, 0, (int) userInterface.getSize().getWidth(),
+				(int) userInterface.getSize().getHeight());
+
 		double sizeX = userInterface.getSize().getWidth();
-		double sizeY = userInterface.getSize().getHeight() -screenMenuYOffset;
-		
-		
-		//Draw Fog
-		synchronized (particlesFog) {
-		Iterator it = particlesFog.iterator();
-		ParticleFog fogParticle;
-		
-		int fieldSize = (int) (sizeY / tilesY);
-		while (it.hasNext()) {
-			fogParticle = (ParticleFog) it.next();
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fogParticle.getOpacity()));
-			
-			switch (fogParticle.colortype) {
-			case 0:
-				g2d.drawImage(imageFogFriendly, (int)(fogParticle.x-fieldSize), (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize), (int)(fogParticle.y+fieldSize), 0, 0, imageFogFriendly.getWidth(), imageFogFriendly.getHeight(),null);				
-				break;
-			case 1:
-				g2d.drawImage(imageFogNeutral, (int)(fogParticle.x-fieldSize), (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize), (int)(fogParticle.y+fieldSize), 0, 0, imageFogNeutral.getWidth(), imageFogNeutral.getHeight(),null);				
-				break;
-			case 2:
-				g2d.drawImage(imageFogEnemy, (int)(fogParticle.x-fieldSize), (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize), (int)(fogParticle.y+fieldSize), 0, 0, imageFogEnemy.getWidth(), imageFogEnemy.getHeight(),null);				
-				break;
-			default:
-				break;
-			}
-		}
-		}
-		
+		double sizeY = userInterface.getSize().getHeight() - screenMenuYOffset;
+
+		// Draw Fog
+		/*
+		 * synchronized (particlesFog) { Iterator it = particlesFog.iterator();
+		 * ParticleFog fogParticle;
+		 * 
+		 * int fieldSize = (int) (sizeY / tilesY); while (it.hasNext()) {
+		 * fogParticle = (ParticleFog) it.next();
+		 * g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+		 * fogParticle.getOpacity()));
+		 * 
+		 * switch (fogParticle.colortype) { case 0:
+		 * g2d.drawImage(imageFogFriendly, (int)(fogParticle.x-fieldSize),
+		 * (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
+		 * (int)(fogParticle.y+fieldSize), 0, 0, imageFogFriendly.getWidth(),
+		 * imageFogFriendly.getHeight(),null); break; case 1:
+		 * g2d.drawImage(imageFogNeutral, (int)(fogParticle.x-fieldSize),
+		 * (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
+		 * (int)(fogParticle.y+fieldSize), 0, 0, imageFogNeutral.getWidth(),
+		 * imageFogNeutral.getHeight(),null); break; case 2:
+		 * g2d.drawImage(imageFogEnemy, (int)(fogParticle.x-fieldSize),
+		 * (int)(fogParticle.y-fieldSize), (int)(fogParticle.x+fieldSize),
+		 * (int)(fogParticle.y+fieldSize), 0, 0, imageFogEnemy.getWidth(),
+		 * imageFogEnemy.getHeight(),null); break; default: break; } } }
+		 */
+
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
-		
-		
-		g.setColor(colorBlack);
-		dreh= (dreh+2) % 360;
-		
-		// TODO Auto-generated method stub
-		for (int i = 0; i < tilesX;i++) {
-			for (int j = 0;j < tilesY; j++) {
-			g.drawRect((int)(i*sizeX / tilesX), (int)(j*sizeY / tilesY)+screenMenuYOffset, (int)(sizeX/tilesX-2), (int)(sizeY/tilesY-2));
 
-			g2d.rotate(Math.toRadians(dreh+i*j),(int)(i*sizeX / tilesX +(sizeX / tilesX /2)),(int)(j*sizeY / tilesY+screenMenuYOffset)+(sizeY / tilesY /2));
-			
-			switch ((i+j) % 3) {
-			case 0:
-				g2d.drawImage(imageArrowFriendly, (int)(i*sizeX / tilesX), (int)(j*sizeY / tilesY)+screenMenuYOffset, (int)(i*sizeX / tilesX)+(int)(sizeX/tilesX-2), (int)(j*sizeY / tilesY)+screenMenuYOffset+(int)(sizeY/tilesY-2), 0, 0, imageArrowFriendly.getWidth(), imageArrowFriendly.getHeight(), null);				
-				break;
-			case 1:
-				g2d.drawImage(imageArrowNeutral, (int)(i*sizeX / tilesX), (int)(j*sizeY / tilesY)+screenMenuYOffset, (int)(i*sizeX / tilesX)+(int)(sizeX/tilesX-2), (int)(j*sizeY / tilesY)+screenMenuYOffset+(int)(sizeY/tilesY-2), 0, 0, imageArrowFriendly.getWidth(), imageArrowFriendly.getHeight(), null);				
-				break;
-			case 2:
-				g2d.drawImage(imageArrowEnemy, (int)(i*sizeX / tilesX), (int)(j*sizeY / tilesY)+screenMenuYOffset, (int)(i*sizeX / tilesX)+(int)(sizeX/tilesX-2), (int)(j*sizeY / tilesY)+screenMenuYOffset+(int)(sizeY/tilesY-2), 0, 0, imageArrowFriendly.getWidth(), imageArrowFriendly.getHeight(), null);				
-				break;
-			default:
-				break;
-			}
-			
-			g2d.rotate(-Math.toRadians(dreh+i*j),(int)(i*sizeX / tilesX+(sizeX / tilesX /2)),(int)(j*sizeY / tilesY+screenMenuYOffset)+(sizeY / tilesY /2));
+		g2d.setColor(colorBlack);
+		dreh = (dreh + 2) % 360;
+
+		// TODO Auto-generated method stub
+		for (int i = 0; i < tilesX; i++) {
+			for (int j = 0; j < tilesY; j++) {
+				g.drawRect((int) (i * sizeX / tilesX),
+						(int) (j * sizeY / tilesY) + screenMenuYOffset,
+						(int) (sizeX / tilesX - 2), (int) (sizeY / tilesY - 2));
+
+				g2d.rotate(Math.toRadians(dreh + i * j), (int) (i * sizeX
+						/ tilesX + (sizeX / tilesX / 2)), (int) (j * sizeY
+						/ tilesY + screenMenuYOffset)
+						+ (sizeY / tilesY / 2));
+
+				switch ((i + j) % 3) {
+				case 0:
+					g2d.drawImage(imageArrowFriendly,
+							(int) (i * sizeX / tilesX),
+							(int) (j * sizeY / tilesY) + screenMenuYOffset,
+							(int) (i * sizeX / tilesX)
+									+ (int) (sizeX / tilesX - 2), (int) (j
+									* sizeY / tilesY)
+									+ screenMenuYOffset
+									+ (int) (sizeY / tilesY - 2), 0, 0,
+							imageArrowFriendly.getWidth(),
+							imageArrowFriendly.getHeight(), null);
+					break;
+				case 1:
+					g2d.drawImage(imageArrowNeutral,
+							(int) (i * sizeX / tilesX),
+							(int) (j * sizeY / tilesY) + screenMenuYOffset,
+							(int) (i * sizeX / tilesX)
+									+ (int) (sizeX / tilesX - 2), (int) (j
+									* sizeY / tilesY)
+									+ screenMenuYOffset
+									+ (int) (sizeY / tilesY - 2), 0, 0,
+							imageArrowFriendly.getWidth(),
+							imageArrowFriendly.getHeight(), null);
+					break;
+				case 2:
+					g2d.drawImage(imageArrowEnemy, (int) (i * sizeX / tilesX),
+							(int) (j * sizeY / tilesY) + screenMenuYOffset,
+							(int) (i * sizeX / tilesX)
+									+ (int) (sizeX / tilesX - 2), (int) (j
+									* sizeY / tilesY)
+									+ screenMenuYOffset
+									+ (int) (sizeY / tilesY - 2), 0, 0,
+							imageArrowFriendly.getWidth(),
+							imageArrowFriendly.getHeight(), null);
+					break;
+				default:
+					break;
+				}
+
+				g2d.rotate(-Math.toRadians(dreh + i * j), (int) (i * sizeX
+						/ tilesX + (sizeX / tilesX / 2)), (int) (j * sizeY
+						/ tilesY + screenMenuYOffset)
+						+ (sizeY / tilesY / 2));
 			}
 		}
-		
-//		for (int i = 0; i < 10000; i++) {
-//				g.drawOval((int)(Math.random()*userInterface.getSize().getWidth()), (int)(Math.random()*userInterface.getSize().getHeight())+screenMenuYOffset, 1, 1);
-//		}
-		
-		
-		
-		
-		g.setFont(font);
-		g.setColor(colorRed);
-		g.drawString(fps + " FPS" + " --- Particles: " + particlesFog.size(), 5,18);
-		
-	}
 
+		// for (int i = 0; i < 10000; i++) {
+		// g.drawOval((int)(Math.random()*userInterface.getSize().getWidth()),
+		// (int)(Math.random()*userInterface.getSize().getHeight())+screenMenuYOffset,
+		// 1, 1);
+		// }
+		//
+
+		g2d.setFont(font);
+		g2d.setColor(colorRed);
+		g2d.drawString(fps + " FPS" + " --- Particles: " + particlesFog.size(),
+				5, 18);
+
+	}
 
 }
