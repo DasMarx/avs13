@@ -7,6 +7,12 @@ public class CellChanges {
 
     private int step;
 
+    /**
+     * Initializes a new {@link CellChanges}.
+     * 
+     * @param cell that was changed
+     * @param step in which the cell was changed
+     */
     public CellChanges(Cell cell, int step) {
         this.cell = cell;
         this.step = step;

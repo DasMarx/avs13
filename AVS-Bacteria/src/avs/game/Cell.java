@@ -46,6 +46,14 @@ public class Cell {
         return y;
     }
 
+    /**
+     * Initializes a new {@link Cell}.
+     * 
+     * @param x coordinate of the cell
+     * @param y coordinate of the cell
+     * @param owner of the cell
+     * @param direction of the cell
+     */
     public Cell(int x, int y, EnumOwner owner, EnumDirection direction) {
         this.x = x;
         this.y = y;
@@ -53,6 +61,19 @@ public class Cell {
         this.direction = direction;
     }
 
+    /**
+     * Initializes a new {@link Cell}.
+     */
+    public Cell() {
+        x = 0;
+        y = 0;
+        owner = EnumOwner.NEUTRAL;
+        direction = EnumDirection.UP;
+    }
+
+    /**
+     * turns the cell
+     */
     public void turn() {
         switch (direction) {
         case UP:

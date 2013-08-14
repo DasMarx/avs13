@@ -27,14 +27,23 @@ public class GameGrid {
         gameGrid = new Cell[30][30];
     }
 
+    /**
+     * @return list of cells possessed by player
+     */
     public LinkedList<Cell> getCellsPossessedByPlayer() {
         return cellsPossessedByPlayer;
     }
 
+    /**
+     * @return list of cells possessed by ai
+     */
     public LinkedList<Cell> getCellsPossessedByAI() {
         return cellsPossessedByAI;
     }
 
+    /**
+     * initializes the grid
+     */
     public void initialize() {
         r = new Random();
         EnumDirection direction = null;
@@ -100,6 +109,28 @@ public class GameGrid {
         g.cellsPossessedByAI = cellsPossessedByAI;
         g.cellsPossessedByPlayer = cellsPossessedByPlayer;
         return g;
+    }
+
+    /**
+     * @param c cell to be added
+     */
+    public void addCellPlayer(Cell c) {
+        cellsPossessedByPlayer.add(c);
+    }
+
+    /**
+     * @param c cell to be added
+     */
+    public void addCellAI(Cell c) {
+        cellsPossessedByAI.add(c);
+    }
+
+    /**
+     * @param c cell to be removed
+     */
+    public void removeCell(Cell c) {
+        cellsPossessedByAI.remove(c);
+        cellsPossessedByPlayer.remove(c);
     }
 
 }
