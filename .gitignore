@@ -21,6 +21,7 @@ tmp/**/*
 local.properties
 .settings/
 .loadpath
+.gitignore
 
 # External tool builders
 .externalToolBuilders/
