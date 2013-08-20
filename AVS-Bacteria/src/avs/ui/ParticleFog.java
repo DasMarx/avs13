@@ -3,7 +3,6 @@
  */
 package avs.ui;
 
-import java.awt.Point;
 
 /**
  * @author HZU

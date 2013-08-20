@@ -1,6 +1,5 @@
 package avs.ai;
 import avs.game.GameGrid;
-import avs.game.Cell;
 
 
 /**

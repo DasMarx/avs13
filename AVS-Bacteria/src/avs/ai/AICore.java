@@ -5,10 +5,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IExecutorService;
-import avs.game.*;
+import avs.game.Cell;
+import avs.game.CellChanges;
+import avs.game.GameGrid;
+import avs.game.GameManager;
 import avs.hazelcast.HazelcastWorker;
+import com.hazelcast.core.IExecutorService;
 
 public class AICore {
 
