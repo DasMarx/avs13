@@ -4,9 +4,13 @@
 package avs.ui;
 
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.LinkedList;
+
 import javax.swing.JPanel;
+
 import avs.game.CellChanges;
 import avs.game.GameGrid;
 import avs.game.GameManager;
@@ -15,7 +19,7 @@ import avs.game.GameManager;
  * @author HZU
  *
  */
-public class UserInterface extends JPanel{
+public class UserInterface extends JPanel implements MouseMotionListener{
 private UIRenderer renderer;
 private GameManager gameManager;
 private GameGrid gameGrid;
@@ -51,6 +55,19 @@ private GameGrid gameGrid;
         // TODO Auto-generated method stub
         renderer.updateGrid(changes);
     }
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		System.exit(0);
+		// TODO Auto-generated method stub
+		
+	}
 
 
 

@@ -35,7 +35,7 @@ import avs.game.GameManager;
  */
 public class UIRenderer implements Runnable {
 	UserInterface userInterface;
-	final long timeDelta = 10;
+	final long timeDelta = 30;
 	long lastTime = 0;
 	long currentTime = System.currentTimeMillis();
 	long timeAccumulator = 0;
