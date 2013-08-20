@@ -49,6 +49,7 @@ public class GameGrid {
         gameGrid = new Cell[30][30];
         for (int i = 0; i < gameGrid.length; i++) {
             for (int j = 0; j < gameGrid.length; j++) {
+                gameGrid[i][j] = new Cell(i, j, Attributes.NEUTRAL, r.nextInt(4));
                 if ((i == 0) && (j == 0)) {
                     gameGrid[i][j] = new Cell(i, j, Attributes.PLAYER, Attributes.UP);
                     cellsPossessedByPlayer.add(getCell(i, j));
@@ -57,7 +58,6 @@ public class GameGrid {
                     gameGrid[i][j] = new Cell(i, j, Attributes.AI, Attributes.DOWN);
                     cellsPossessedByAI.add(getCell(i, j));
                 }
-                gameGrid[i][j] = new Cell(i, j, Attributes.NEUTRAL, r.nextInt(4));
             }
         }
 
