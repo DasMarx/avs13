@@ -4,7 +4,6 @@
 package avs.ui;
 
 import java.awt.Graphics;
-import java.awt.event.MouseListener;
 import java.util.LinkedList;
 import javax.swing.JPanel;
 import avs.game.CellChanges;
@@ -16,6 +15,12 @@ import avs.game.GameManager;
  *
  */
 public class UserInterface extends JPanel{
+/**
+     * 
+     */
+    private static final long serialVersionUID = -1381602839153541975L;
+    
+    
 private UIRenderer renderer;
 private GameManager gameManager;
 private GameGrid gameGrid;
