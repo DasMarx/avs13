@@ -45,7 +45,9 @@ public class AICore {
 
     public void run() {
         LinkedList<Cell> possessedCells = grid.getCellsPossessedByAI();
-
+        //calculate first turn and create first Result from it
+        //create Tree from first Result
+        //Tree<Result> tree = new Tree<Result>(); 
         while (running) {
 
             // executorService creation
@@ -55,9 +57,6 @@ public class AICore {
             while (!possessedCells.isEmpty()) {
                 Workload myTmpWorkload = new Workload(grid, possessedCells.getFirst().getX(), possessedCells.getFirst().getY());
                 Future<WorkLoadReturn> future = executorService.submit(myTmpWorkload);
-
-                // why do we need the workqueue?
-                // workQueue.add(myTmpWorkload);
 
                 futureQueue.add(future);
                 possessedCells.removeFirst();
