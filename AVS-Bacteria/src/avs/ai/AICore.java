@@ -18,15 +18,11 @@ public class AICore {
 
     private boolean running = true;
 
-    private LinkedList<Workload> workQueue;
-
     private LinkedList<Future<WorkLoadReturn>> futureQueue;
 
     private GameGrid grid;
 
     private HazelcastWorker myWorker;
-
-    private Tree<Result> minMaxTree;
 
     public void initialize(GameManager gm) {
         gm = this.gm;
@@ -49,7 +45,7 @@ public class AICore {
         LinkedList<Cell> possessedCells = grid.getCellsPossessedByAI();
         //calculate first turn and create first Result from it
         //create Tree from first Result
-        //Tree<Result> tree = new Tree<Result>(); 
+        //Tree<Result> tree = new Tree<Result>();
         while (running) {
 
             // executorService creation
