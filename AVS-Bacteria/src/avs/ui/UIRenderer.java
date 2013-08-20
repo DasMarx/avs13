@@ -22,7 +22,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import avs.game.Attributes;
 import avs.game.CellChanges;
-import avs.game.EnumOwner;
 import avs.game.GameGrid;
 import avs.game.GameManager;
 
