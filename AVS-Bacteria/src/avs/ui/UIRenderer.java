@@ -150,9 +150,13 @@ public class UIRenderer implements Runnable {
 		// Calculate Fog
 		synchronized (particlesFog) {
 			//TODO:Remove
-			int x = (int)(Math.random()*gridSize);
-			int y = (int)(Math.random()*gridSize);
-			gameGrid.getCell(x, y).setOwner(x>(14+Math.random()*3)?Attributes.PLAYER:Attributes.AI);
+//			int x = (int)(Math.random()*gridSize);
+//			int y = (int)(Math.random()*gridSize);
+//			gameGrid.getCell(x, y).setOwner(x>(14+Math.random()*3)?Attributes.PLAYER:Attributes.AI);
+			
+			int x;
+			int y;
+			
 			for (int k=0;k<(1000-particlesFog.size());k++){
 
 			 x = (int)(Math.random()*(gridSize-2)+1);
