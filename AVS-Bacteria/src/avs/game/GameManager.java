@@ -216,11 +216,21 @@ public class GameManager {
     }
 
     /**
-     * @return all changes
+     * @return last change
      */
     public LinkedList<CellChanges> getChanges() {
         synchronized (allChanges) {
             return allChanges.getLast();
+        }
+    }
+    
+    /**
+     * @param the turn whos changes are requested
+     * @return the changes of the specified turn
+     */
+    public LinkedList<CellChanges> getChanges(int turn){
+        synchronized (allChanges){
+            return allChanges.get(turn);
         }
     }
 }

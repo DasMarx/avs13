@@ -91,8 +91,12 @@ public class GameGrid {
                 g.gameGrid[i][j] = gameGrid[i][j];
             }
         }
-        g.cellsPossessedByAI = cellsPossessedByAI;
-        g.cellsPossessedByPlayer = cellsPossessedByPlayer;
+        for (int i = 0; i < cellsPossessedByAI.size(); i++) {
+            g.cellsPossessedByAI.add(cellsPossessedByAI.get(i));
+        }
+        for (int i = 0; i < cellsPossessedByPlayer.size(); i++) {
+            g.cellsPossessedByPlayer.add(cellsPossessedByPlayer.get(i));
+        }
         return g;
     }
 
