@@ -13,15 +13,15 @@ public class GameManager {
 
     private final UserInterface userInterface;
 
-    //KI zur Berechnung der Spielzüge des Computers
+    // KI zur Berechnung der Spielzüge des Computers
     private final AICore aiCore;
-    
-    //Das Spielfeld
+
+    // Das Spielfeld
     private GameGrid gameGrid = new GameGrid();
-    
-    //Zeigt an, der wievielte Zug momentan läuft
+
+    // Zeigt an, der wievielte Zug momentan läuft
     private int turn = 0;
-    
+
     private boolean PlayersTurn = true;
 
     private LinkedList<LinkedList<CellChanges>> allChanges = new LinkedList<LinkedList<CellChanges>>();
