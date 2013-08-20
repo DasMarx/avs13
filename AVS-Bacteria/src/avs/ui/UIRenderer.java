@@ -17,10 +17,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
+
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+
 import avs.game.Attributes;
+import avs.game.Cell;
 import avs.game.CellChanges;
 import avs.game.EnumOwner;
 import avs.game.GameGrid;
@@ -71,17 +74,13 @@ public class UIRenderer implements Runnable {
 
 		// Init Images
 		try {
-			imageArrowFriendly = ImageIO
-					.read(new File("img/arrow_friendly.png"));
+			imageArrowFriendly = ImageIO.read(new File("img/arrow_friendly.png"));
 			imageArrowEnemy = ImageIO.read(new File("img/arrow_enemy.png"));
 			imageArrowNeutral = ImageIO.read(new File("img/arrow_neutral.png"));
 			imageFogFriendly = ImageIO.read(new File("img/fog_friendly.png"));
-			imageFogNeutral = ImageIO.read(new File("img/fog_neutral.png"));
 			imageFogEnemy = ImageIO.read(new File("img/fog_enemy.png"));
 
-			imageFloorFriendly = ImageIO
-					.read(new File("img/floor_friendly.png"));
-			imageFloorNeutral = ImageIO.read(new File("img/floor_neutral.png"));
+			imageFloorFriendly = ImageIO.read(new File("img/floor_friendly.png"));
 			imageFloorEnemy = ImageIO.read(new File("img/floor_enemy.png"));
 
 		} catch (IOException e) {
@@ -153,56 +152,26 @@ public class UIRenderer implements Runnable {
 		// Calculate Fog
 		synchronized (particlesFog) {
 			// TODO:Remove
-//			int x = (int) (Math.random() * gridSize);
-//			int y = (int) (Math.random() * gridSize);
-//			gameGrid.getCell(x, y).turn();
+			// int x = (int) (Math.random() * gridSize);
+			// int y = (int) (Math.random() * gridSize);
+			// gameGrid.getCell(x, y).turn();
 			int x;
 			int y;
 
-			for (int k = 0; k < (1000 - particlesFog.size()); k++) {
-
-				x = (int) (Math.random() * (gridSize - 2) + 1);
-				y = (int) (Math.random() * (gridSize - 2) + 1);
-
-				switch (gameGrid.getCell(x, y).getOwner()) {
-				case Attributes.PLAYER:
-					if (gameGrid.getCell(x + 1, y).getOwner() != Attributes.PLAYER
-							|| gameGrid.getCell(x - 1, y).getOwner() != Attributes.PLAYER
-							|| gameGrid.getCell(x, y + 1).getOwner() != Attributes.PLAYER
-							|| gameGrid.getCell(x, y - 1).getOwner() != Attributes.PLAYER) {
-						particlesFog.add(new ParticleFog((x
-								* (sizeX / gridSize) + (sizeX / gridSize / 2)),
-								(y * sizeY / gridSize) + screenMenuYOffset
-										+ (sizeY / gridSize / 2), 0));
-					}
-					break;
-				case Attributes.NEUTRAL:
-					if (gameGrid.getCell(x + 1, y).getOwner() != Attributes.NEUTRAL
-							|| gameGrid.getCell(x - 1, y).getOwner() != Attributes.NEUTRAL
-							|| gameGrid.getCell(x, y + 1).getOwner() != Attributes.NEUTRAL
-							|| gameGrid.getCell(x, y - 1).getOwner() != Attributes.NEUTRAL) {
-						particlesFog.add(new ParticleFog((x
-								* (sizeX / gridSize) + (sizeX / gridSize / 2)),
-								(y * sizeY / gridSize) + screenMenuYOffset
-										+ (sizeY / gridSize / 2), 1));
-					}
-					break;
-
-				case Attributes.AI:
-					if (gameGrid.getCell(x + 1, y).getOwner() != Attributes.AI
-							|| gameGrid.getCell(x - 1, y).getOwner() != Attributes.AI
-							|| gameGrid.getCell(x, y + 1).getOwner() != Attributes.AI
-							|| gameGrid.getCell(x, y - 1).getOwner() != Attributes.AI) {
-						particlesFog.add(new ParticleFog((x
-								* (sizeX / gridSize) + (sizeX / gridSize / 2)),
-								(y * sizeY / gridSize) + screenMenuYOffset
-										+ (sizeY / gridSize / 2), 2));
-					}
-					break;
-				}
-
+			synchronized (gameGrid) {
+				Cell cell;
+				
+				
+				cell = gameGrid.getCellsPossessedByPlayer().get((int)Math.random()*gameGrid.getCellsPossessedByPlayer().size());
+				particlesFog.add(new ParticleFog((cell.getX()	* (sizeX / gridSize) + (sizeX / gridSize / 2)), (cell.getY() * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), Attributes.PLAYER));
+				
+				cell = gameGrid.getCellsPossessedByAI().get((int)Math.random()*gameGrid.getCellsPossessedByAI().size());
+				particlesFog.add(new ParticleFog((cell.getX() * (sizeX / gridSize) + (sizeX / gridSize / 2)), (cell.getY() * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), Attributes.AI));
+					
 			}
-
+	
+			
+			
 			Iterator it = particlesFog.iterator();
 			ParticleFog fogParticle;
 			while (it.hasNext()) {
@@ -231,66 +200,47 @@ public class UIRenderer implements Runnable {
 
 		g2d.setColor(colorBlack);
 
-		// TODO Auto-generated method stub
-		for (int i = 0; i < gridSize; i++) {
-			for (int j = 0; j < gridSize; j++) {
+		// Draw Floor
+		// Player
+		 for (Cell cells : gameGrid.getCellsPossessedByPlayer()) {
+		 g2d.drawImage(imageFloorFriendly,
+		 (int) (cells.getX() * sizeX / gridSize - (sizeX / gridSize /2)),
+		 (int) (cells.getY() * sizeY / gridSize-(sizeX / gridSize /2)) +
+		 screenMenuYOffset,
+		 (int) ((cells.getX() * sizeX / gridSize) + (sizeX / gridSize) +
+		 (sizeX / gridSize /2)),
+		 (int) ((cells.getY() * sizeY / gridSize) + screenMenuYOffset + (sizeY
+		 / gridSize) + (sizeX / gridSize /2)), 0, 0,
+		 imageFloorFriendly.getWidth(),
+		 imageFloorFriendly.getHeight(), null);
+		 }
 
-				// Draw Floor
-				switch (gameGrid.getCell(i, j).getOwner()) {
-				case Attributes.PLAYER:
-					g2d.drawImage(imageFloorFriendly,
-							(int) (i * sizeX / gridSize),
-							(int) (j * sizeY / gridSize) + screenMenuYOffset,
-							(int) (i * sizeX / gridSize)
-									+ (int) (sizeX / gridSize), (int) (j
-									* sizeY / gridSize)
-									+ screenMenuYOffset
-									+ (int) (sizeY / gridSize), 0, 0,
-							imageFloorFriendly.getWidth(),
-							imageFloorFriendly.getHeight(), null);
-					break;
-				case Attributes.NEUTRAL:
-					g2d.drawImage(imageFloorNeutral,
-							(int) (i * sizeX / gridSize),
-							(int) (j * sizeY / gridSize) + screenMenuYOffset,
-							(int) (i * sizeX / gridSize)
-									+ (int) (sizeX / gridSize), (int) (j
-									* sizeY / gridSize)
-									+ screenMenuYOffset
-									+ (int) (sizeY / gridSize), 0, 0,
-							imageFloorNeutral.getWidth(),
-							imageFloorNeutral.getHeight(), null);
-					break;
-				case Attributes.AI:
-					g2d.drawImage(imageFloorEnemy,
-							(int) (i * sizeX / gridSize),
-							(int) (j * sizeY / gridSize) + screenMenuYOffset,
-							(int) (i * sizeX / gridSize)
-									+ (int) (sizeX / gridSize), (int) (j
-									* sizeY / gridSize)
-									+ screenMenuYOffset
-									+ (int) (sizeY / gridSize), 0, 0,
-							imageFloorEnemy.getWidth(),
-							imageFloorEnemy.getHeight(), null);
-					break;
-				}
+		// AI
+		 for (Cell cells : gameGrid.getCellsPossessedByAI()) {
+		 g2d.drawImage(imageFloorEnemy,
+		 (int) (cells.getX() * sizeX / gridSize - (sizeX / gridSize /2)),
+		 (int) (cells.getY() * sizeY / gridSize-(sizeX / gridSize /2)) +
+		 screenMenuYOffset,
+		 (int) ((cells.getX() * sizeX / gridSize) + (sizeX / gridSize) +
+		 (sizeX / gridSize /2)),
+		 (int) ((cells.getY() * sizeY / gridSize) + screenMenuYOffset + (sizeY
+		 / gridSize) + (sizeX / gridSize /2)), 0, 0,
+		 imageFloorEnemy.getWidth(),
+		 imageFloorEnemy.getHeight(), null);
+		 }
 
-			}
-		}
-
+		 
 		// Draw Fog
 		synchronized (particlesFog) {
 			Iterator it = particlesFog.iterator();
 			ParticleFog fogParticle;
-
 			int fieldSize = (int) (sizeY / gridSize);
 			while (it.hasNext()) {
 				fogParticle = (ParticleFog) it.next();
-				g2d.setComposite(AlphaComposite.getInstance(
-						AlphaComposite.SRC_OVER, fogParticle.getOpacity()));
-
+				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fogParticle.getOpacity()));
+				
 				switch (fogParticle.colortype) {
-				case 0:
+				case Attributes.PLAYER:
 					g2d.drawImage(imageFogFriendly,
 							(int) (fogParticle.x - fieldSize),
 							(int) (fogParticle.y - fieldSize),
@@ -299,16 +249,7 @@ public class UIRenderer implements Runnable {
 							imageFogFriendly.getWidth(),
 							imageFogFriendly.getHeight(), null);
 					break;
-				case 1:
-					g2d.drawImage(imageFogNeutral,
-							(int) (fogParticle.x - fieldSize),
-							(int) (fogParticle.y - fieldSize),
-							(int) (fogParticle.x + fieldSize),
-							(int) (fogParticle.y + fieldSize), 0, 0,
-							imageFogNeutral.getWidth(),
-							imageFogNeutral.getHeight(), null);
-					break;
-				case 2:
+				case Attributes.AI:
 					g2d.drawImage(imageFogEnemy,
 							(int) (fogParticle.x - fieldSize),
 							(int) (fogParticle.y - fieldSize),
@@ -324,7 +265,6 @@ public class UIRenderer implements Runnable {
 		}
 
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
-
 		double angle = 0;
 		// TODO Auto-generated method stub
 		for (int i = 0; i < gridSize; i++) {
@@ -403,16 +343,10 @@ public class UIRenderer implements Runnable {
 			}
 		}
 
-		// for (int i = 0; i < 10000; i++) {
-		// g.drawOval((int)(Math.random()*userInterface.getSize().getWidth()),
-		// (int)(Math.random()*userInterface.getSize().getHeight())+screenMenuYOffset,
-		// 1, 1);
-		// }
 
 		g2d.setFont(font);
 		g2d.setColor(colorRed);
-		g2d.drawString(fps + " FPS" + " --- Particles: " + particlesFog.size(),
-				5, 18);
+		g2d.drawString(fps + " FPS" + " --- Particles: " + particlesFog.size(),	5, 18);
 
 	}
 
