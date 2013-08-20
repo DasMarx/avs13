@@ -46,33 +46,18 @@ public class GameGrid {
      */
     public void initialize() {
         r = new Random();
-        EnumDirection direction = null;
         gameGrid = new Cell[30][30];
         for (int i = 0; i < gameGrid.length; i++) {
             for (int j = 0; j < gameGrid.length; j++) {
                 if ((i == 0) && (j == 0)) {
-                    gameGrid[i][j] = new Cell(i, j, EnumOwner.PLAYER, EnumDirection.UP);
+                    gameGrid[i][j] = new Cell(i, j, Attributes.PLAYER, Attributes.UP);
                     cellsPossessedByPlayer.add(getCell(i, j));
                 }
                 if ((i == 29) && (j == 29)) {
-                    gameGrid[i][j] = new Cell(i, j, EnumOwner.AI, EnumDirection.DOWN);
+                    gameGrid[i][j] = new Cell(i, j, Attributes.AI, Attributes.DOWN);
                     cellsPossessedByAI.add(getCell(i, j));
                 }
-                switch (r.nextInt(4)) {
-                case 0:
-                    direction = EnumDirection.UP;
-                    break;
-                case 1:
-                    direction = EnumDirection.RIGHT;
-                    break;
-                case 2:
-                    direction = EnumDirection.DOWN;
-                    break;
-                case 3:
-                    direction = EnumDirection.LEFT;
-                    break;
-                }
-                gameGrid[i][j] = new Cell(i, j, EnumOwner.NEUTRAL, direction);
+                gameGrid[i][j] = new Cell(i, j, Attributes.NEUTRAL, r.nextInt(4));
             }
         }
 

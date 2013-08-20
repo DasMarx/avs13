@@ -7,28 +7,28 @@ public class Cell {
 
     private int y;
 
-    private EnumOwner owner;
+    private int owner;
 
-    private EnumDirection direction;
+    private int direction;
 
     /**
      * @return the direction
      */
-    public EnumDirection getDirection() {
+    public int getDirection() {
         return direction;
     }
 
     /**
      * @return the owner
      */
-    public EnumOwner getOwner() {
+    public int getOwner() {
         return owner;
     }
 
     /**
      * @param owner the owner to set
      */
-    public void setOwner(EnumOwner owner) {
+    public void setOwner(int owner) {
         this.owner = owner;
     }
 
@@ -54,7 +54,7 @@ public class Cell {
      * @param owner of the cell
      * @param direction of the cell
      */
-    public Cell(int x, int y, EnumOwner owner, EnumDirection direction) {
+    public Cell(int x, int y, int owner, int direction) {
         this.x = x;
         this.y = y;
         this.owner = owner;
@@ -67,28 +67,15 @@ public class Cell {
     public Cell() {
         x = 0;
         y = 0;
-        owner = EnumOwner.NEUTRAL;
-        direction = EnumDirection.UP;
+        owner = Attributes.NEUTRAL;
+        direction = Attributes.UP;
     }
 
     /**
      * turns the cell
      */
     public void turn() {
-        switch (direction) {
-        case UP:
-            direction = EnumDirection.RIGHT;
-            break;
-        case RIGHT:
-            direction = EnumDirection.DOWN;
-            break;
-        case DOWN:
-            direction = EnumDirection.LEFT;
-            break;
-        case LEFT:
-            direction = EnumDirection.UP;
-            break;
-        }
+        direction = (direction +1) % 4;
     }
 
 }

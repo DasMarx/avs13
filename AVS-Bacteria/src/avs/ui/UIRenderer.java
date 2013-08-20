@@ -17,11 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-
+import avs.game.Attributes;
 import avs.game.CellChanges;
 import avs.game.EnumOwner;
 import avs.game.GameGrid;
@@ -153,7 +152,7 @@ public class UIRenderer implements Runnable {
 			//TODO:Remove
 			int x = (int)(Math.random()*gridSize);
 			int y = (int)(Math.random()*gridSize);
-			gameGrid.getCell(x, y).setOwner(x>(14+Math.random()*3)?EnumOwner.PLAYER:EnumOwner.AI);
+			gameGrid.getCell(x, y).setOwner(x>(14+Math.random()*3)?Attributes.PLAYER:Attributes.AI);
 			for (int k=0;k<(1000-particlesFog.size());k++){
 
 			 x = (int)(Math.random()*(gridSize-2)+1);
@@ -161,19 +160,19 @@ public class UIRenderer implements Runnable {
 		
 				
 			switch (gameGrid.getCell(x, y).getOwner()) {
-			case PLAYER:
-				if(gameGrid.getCell(x+1, y).getOwner() != EnumOwner.PLAYER || gameGrid.getCell(x-1, y).getOwner() != EnumOwner.PLAYER || gameGrid.getCell(x, y+1).getOwner() != EnumOwner.PLAYER || gameGrid.getCell(x, y-1).getOwner() != EnumOwner.PLAYER) {
+			case Attributes.PLAYER:
+				if(gameGrid.getCell(x+1, y).getOwner() != Attributes.PLAYER || gameGrid.getCell(x-1, y).getOwner() != Attributes.PLAYER || gameGrid.getCell(x, y+1).getOwner() != Attributes.PLAYER || gameGrid.getCell(x, y-1).getOwner() != Attributes.PLAYER) {
 					particlesFog.add(new ParticleFog((x * (sizeX / gridSize) + (sizeX / gridSize / 2)), (y * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), 0));
 				}
 				break;
-			case NEUTRAL:
-				if(gameGrid.getCell(x+1, y).getOwner() != EnumOwner.NEUTRAL || gameGrid.getCell(x-1, y).getOwner() != EnumOwner.NEUTRAL || gameGrid.getCell(x, y+1).getOwner() != EnumOwner.NEUTRAL || gameGrid.getCell(x, y-1).getOwner() != EnumOwner.NEUTRAL) {
+			case Attributes.NEUTRAL:
+				if(gameGrid.getCell(x+1, y).getOwner() != Attributes.NEUTRAL || gameGrid.getCell(x-1, y).getOwner() != Attributes.NEUTRAL || gameGrid.getCell(x, y+1).getOwner() != Attributes.NEUTRAL || gameGrid.getCell(x, y-1).getOwner() != Attributes.NEUTRAL) {
 					particlesFog.add(new ParticleFog((x * (sizeX / gridSize) + (sizeX / gridSize / 2)), (y * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), 1));
 				}
 				break;
 
-			case AI:
-				if(gameGrid.getCell(x+1, y).getOwner() != EnumOwner.AI || gameGrid.getCell(x-1, y).getOwner() != EnumOwner.AI || gameGrid.getCell(x, y+1).getOwner() != EnumOwner.AI || gameGrid.getCell(x, y-1).getOwner() != EnumOwner.AI) {
+			case Attributes.AI:
+				if(gameGrid.getCell(x+1, y).getOwner() != Attributes.AI || gameGrid.getCell(x-1, y).getOwner() != Attributes.AI || gameGrid.getCell(x, y+1).getOwner() != Attributes.AI || gameGrid.getCell(x, y-1).getOwner() != Attributes.AI) {
 					particlesFog.add(new ParticleFog((x * (sizeX / gridSize) + (sizeX / gridSize / 2)), (y * sizeY / gridSize) + screenMenuYOffset + (sizeY / gridSize / 2), 2));
 				}
 				break;
@@ -220,7 +219,7 @@ public class UIRenderer implements Runnable {
 				
 				//Draw Floor
 				switch (gameGrid.getCell(i, j).getOwner()) {
-				case PLAYER:
+				case Attributes.PLAYER:
 					g2d.drawImage(imageFloorFriendly,
 							(int) (i * sizeX / gridSize),
 							(int) (j * sizeY / gridSize) + screenMenuYOffset,
@@ -232,7 +231,7 @@ public class UIRenderer implements Runnable {
 									imageFloorFriendly.getWidth(),
 									imageFloorFriendly.getHeight(), null);
 					break;
-				case NEUTRAL:
+				case Attributes.NEUTRAL:
 					g2d.drawImage(imageFloorNeutral,
 							(int) (i * sizeX / gridSize),
 							(int) (j * sizeY / gridSize) + screenMenuYOffset,
@@ -244,7 +243,7 @@ public class UIRenderer implements Runnable {
 									imageFloorNeutral.getWidth(),
 									imageFloorNeutral.getHeight(), null);
 					break;
-				case AI:
+				case Attributes.AI:
 					g2d.drawImage(imageFloorEnemy,
 							(int) (i * sizeX / gridSize),
 							(int) (j * sizeY / gridSize) + screenMenuYOffset,
@@ -313,14 +312,14 @@ public class UIRenderer implements Runnable {
 			for (int j = 0; j < gridSize; j++) {		
 				//Draw Arrow
 				switch (gameGrid.getCell(i, j).getDirection()) {
-				case UP:
+				case Attributes.UP:
 					angle=0;
 					break;
-				case RIGHT:
+				case Attributes.RIGHT:
 					angle = 90;
-				case DOWN:
+				case Attributes.DOWN:
 					angle = 180;
-				case LEFT:
+				case Attributes.LEFT:
 					angle = 270;
 				}
 				
@@ -338,7 +337,7 @@ public class UIRenderer implements Runnable {
 
 				
 				switch (gameGrid.getCell(i, j).getOwner()) {
-				case PLAYER:
+				case Attributes.PLAYER:
 					g2d.drawImage(imageArrowFriendly,
 							(int) (i * sizeX / gridSize),
 							(int) (j * sizeY / gridSize) + screenMenuYOffset,
@@ -350,7 +349,7 @@ public class UIRenderer implements Runnable {
 							imageArrowFriendly.getWidth(),
 							imageArrowFriendly.getHeight(), null);
 					break;
-				case NEUTRAL:
+				case Attributes.NEUTRAL:
 					g2d.drawImage(imageArrowNeutral,
 							(int) (i * sizeX / gridSize),
 							(int) (j * sizeY / gridSize) + screenMenuYOffset,
@@ -362,7 +361,7 @@ public class UIRenderer implements Runnable {
 							imageArrowNeutral.getWidth(),
 							imageArrowNeutral.getHeight(), null);
 					break;
-				case AI:
+				case Attributes.AI:
 					g2d.drawImage(imageArrowEnemy,
 							(int) (i * sizeX / gridSize),
 							(int) (j * sizeY / gridSize) + screenMenuYOffset,

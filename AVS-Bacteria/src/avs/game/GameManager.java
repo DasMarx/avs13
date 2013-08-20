@@ -94,19 +94,19 @@ public class GameManager {
         }
 
         Cell nextNeighbour = gameGrid.getCell(x, y - 1);
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == EnumDirection.DOWN) || target.getDirection() == EnumDirection.UP)) {
+        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
             processChanges(target, nextNeighbour, 0, target.getOwner(), changes);
         }
         nextNeighbour = gameGrid.getCell(x + 1, y);
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == EnumDirection.LEFT) || target.getDirection() == EnumDirection.RIGHT)) {
+        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
             processChanges(target, nextNeighbour, 0, target.getOwner(), changes);
         }
         nextNeighbour = gameGrid.getCell(x, y + 1);
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == EnumDirection.UP) || target.getDirection() == EnumDirection.DOWN)) {
+        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
             processChanges(target, nextNeighbour, 0, target.getOwner(), changes);
         }
         nextNeighbour = gameGrid.getCell(x - 1, y);
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == EnumDirection.RIGHT) || target.getDirection() == EnumDirection.LEFT)) {
+        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
             processChanges(target, nextNeighbour, 0, target.getOwner(), changes);
         }
         return changes;
@@ -118,22 +118,22 @@ public class GameManager {
      * @param rs counter for the recursive step
      * @param owner of the cells
      */
-    private void processChanges(Cell origin, Cell target, int rs, EnumOwner owner, LinkedList<CellChanges> changes) {
+    private void processChanges(Cell origin, Cell target, int rs, int owner, LinkedList<CellChanges> changes) {
 
         Cell nextNeighbour = gameGrid.getCell(target.getX(), target.getY() - 1);
-        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == EnumDirection.DOWN) || target.getDirection() == EnumDirection.UP)) {
+        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
             processChanges(target, nextNeighbour, rs + 1, owner, changes);
         }
         nextNeighbour = gameGrid.getCell(target.getX() + 1, target.getY());
-        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == EnumDirection.LEFT) || target.getDirection() == EnumDirection.RIGHT)) {
+        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
             processChanges(target, nextNeighbour, rs + 1, owner, changes);
         }
         nextNeighbour = gameGrid.getCell(target.getX(), target.getY() + 1);
-        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == EnumDirection.UP) || target.getDirection() == EnumDirection.DOWN)) {
+        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
             processChanges(target, nextNeighbour, rs + 1, owner, changes);
         }
         nextNeighbour = gameGrid.getCell(target.getX() - 1, target.getY());
-        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == EnumDirection.RIGHT) || target.getDirection() == EnumDirection.LEFT)) {
+        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
             processChanges(target, nextNeighbour, rs + 1, owner, changes);
         }
 
@@ -145,10 +145,10 @@ public class GameManager {
      * @param target cell to be edited
      * @param owner to be set
      */
-    private void changeOwner(Cell target, EnumOwner owner) {
+    private void changeOwner(Cell target, int owner) {
         gameGrid.removeCell(target);
         gameGrid.getCell(target.getX(), target.getY()).setOwner(owner);
-        if (owner == EnumOwner.PLAYER)
+        if (owner == Attributes.PLAYER)
             gameGrid.addCellPlayer(target);
         else
             gameGrid.addCellAI(target);
@@ -160,8 +160,8 @@ public class GameManager {
      * @param owner
      * @return true if turn is allowed, false if turn is forbidden
      */
-    private boolean checkTurn(int x, int y, EnumOwner owner) {
-        Cell c1 = new Cell(x, y, owner, EnumDirection.UP);
+    private boolean checkTurn(int x, int y, int owner) {
+        Cell c1 = new Cell(x, y, owner, Attributes.UP);
         Cell c2 = gameGrid.getCell(x, y);
         return c1.getOwner() == c2.getOwner();
     }
@@ -172,8 +172,8 @@ public class GameManager {
      * @param owner
      * @return true = valid move, false invalid move
      */
-    public boolean chooseCell(int x, int y, EnumOwner owner) {
-        if ((isPlayersTurn() && (owner == EnumOwner.PLAYER)) || (!isPlayersTurn() && (owner == EnumOwner.AI))) {
+    public boolean chooseCell(int x, int y, int owner) {
+        if ((isPlayersTurn() && (owner == Attributes.PLAYER)) || (!isPlayersTurn() && (owner == Attributes.AI))) {
             if (checkTurn(x, y, owner)) {
                 LinkedList<CellChanges> changes = processChanges(x, y);
                 allChanges.add(changes);
