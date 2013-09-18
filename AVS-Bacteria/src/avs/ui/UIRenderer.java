@@ -60,6 +60,8 @@ public class UIRenderer implements Runnable {
 	private BufferedImage imageFloorFriendly = null;
 	private BufferedImage imageFloorEnemy = null;
 
+	private BufferedImage imageBackground = null;
+	
 	private LinkedList<ParticleFog> particlesFog;
 
 	private GameGrid gameGrid = null;
@@ -80,6 +82,8 @@ public class UIRenderer implements Runnable {
 			imageFloorFriendly = ImageIO.read(new File("img/floor_friendly.png"));
 			imageFloorEnemy = ImageIO.read(new File("img/floor_enemy.png"));
 
+			imageBackground = ImageIO.read(new File("img/background.jpg"));
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -198,7 +202,14 @@ public class UIRenderer implements Runnable {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
 		fpscounter++;
-		g.clearRect(0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight());
+		g2d.clearRect(0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight());
+		
+		
+		;
+		
+		g2d.drawImage(imageBackground, 0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight(), (int)((imageBackground.getWidth()/2)-(userInterface.getSize().getWidth()/2)),(int)((imageBackground.getHeight()/2)-(userInterface.getSize().getHeight()/2)),(int)((imageBackground.getWidth()/2)+(userInterface.getSize().getWidth()/2)),(int)((imageBackground.getHeight()/2)+(userInterface.getSize().getHeight()/2)), null);
+		
+		
 
 		g2d.setColor(colorBlack);
 
