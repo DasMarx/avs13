@@ -28,6 +28,9 @@ private GameGrid gameGrid;
         super();
         renderer = new UIRenderer(this);
         new Thread(renderer).start();
+        
+        addMouseMotionListener(this);
+        
     }
 
 	public void initialize(GameManager gameManager) {
@@ -64,6 +67,7 @@ private GameGrid gameGrid;
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		//TODO:
 		System.exit(0);
 		// TODO Auto-generated method stub
 		

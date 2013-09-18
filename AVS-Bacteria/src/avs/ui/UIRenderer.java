@@ -8,24 +8,18 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import avs.game.Attributes;
 import avs.game.Cell;
 import avs.game.CellChanges;
-import avs.game.EnumOwner;
 import avs.game.GameGrid;
 import avs.game.GameManager;
 
@@ -57,10 +51,8 @@ public class UIRenderer implements Runnable {
 	private BufferedImage imageArrowEnemy = null;
 	private BufferedImage imageArrowNeutral = null;
 	private BufferedImage imageFogFriendly = null;
-	private BufferedImage imageFogNeutral = null;
 	private BufferedImage imageFogEnemy = null;
 	private BufferedImage imageFloorFriendly = null;
-	private BufferedImage imageFloorNeutral = null;
 	private BufferedImage imageFloorEnemy = null;
 
 	private LinkedList<ParticleFog> particlesFog;
