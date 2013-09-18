@@ -15,8 +15,8 @@ public class Data {
     int rating, x, y, turn;
     
     public Data(GameGrid grid, int rating, int x, int y, int turn){
-        grid = this.grid;
-        rating = this.rating;
+        this.grid = grid.getCopy();
+        this.rating = rating;
         x = this.x;
         y = this.y;
     }

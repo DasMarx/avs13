@@ -15,9 +15,9 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 	public Workload(){
     }
     public Workload(GameGrid grid, int x, int y){
-	    grid = this.grid;
-	    x = this.x;
-	    y = this.y;
+	    this.grid = grid.getCopy();
+	    this.x = x;
+	    this.y = y;
 	}
     @Override
     public WorkLoadReturn call() throws Exception {
