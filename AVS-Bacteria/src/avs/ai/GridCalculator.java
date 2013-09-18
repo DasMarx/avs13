@@ -97,7 +97,7 @@ public class GridCalculator {
             gameGrid.addCellAI(target);
     }
     
-    private LinkedList<Cell> getBorderCells(){
+    public LinkedList<Cell> getBorderCells(){
     	LinkedList<Cell> border = new LinkedList<Cell>();
     	LinkedList<Cell> cells = gameGrid.getCellsPossessedByAI();
     	Cell c;
