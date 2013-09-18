@@ -21,8 +21,8 @@ public ParticleFog(double x, double y, int colortype) {
 	this.x = x;
 	this.y = y;
 	this.colortype=colortype;
-	directionX = Math.random()*0.4-.2;
-	directionY = Math.random()*0.4-.2;
+	directionX = Math.random()*0.01-.005;
+	directionY = Math.random()*0.01-.005;
 	lifespan = (int)(Math.random()*200)+200;
 	opacity=0;
 }

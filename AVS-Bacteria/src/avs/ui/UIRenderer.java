@@ -45,7 +45,7 @@ public class UIRenderer implements Runnable {
 	long fpscounter = 0;
 	long lastFPSTime = 0;
 
-	private static int gridTiles = 5;
+	private static int gridTiles = 30;
 
 
 	private Rectangle gameFieldRectangle;
@@ -160,10 +160,10 @@ public class UIRenderer implements Runnable {
 				Cell cell;
 
 				cell = gameGrid.getCellsPossessedByPlayer().get((int) Math.random() * gameGrid.getCellsPossessedByPlayer().size());
-				particlesFog.add(new ParticleFog((cell.getX() * (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), (cell.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles / 2), Attributes.PLAYER));
+				particlesFog.add(new ParticleFog(cell.getX(), cell.getY(), Attributes.PLAYER));
 
 				cell = gameGrid.getCellsPossessedByAI().get((int) Math.random() * gameGrid.getCellsPossessedByAI().size());
-				particlesFog.add(new ParticleFog((cell.getX() * (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), (cell.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles / 2), Attributes.AI));
+				particlesFog.add(new ParticleFog(cell.getX(), cell.getY(), Attributes.AI));
 
 			}
 
@@ -182,13 +182,13 @@ public class UIRenderer implements Runnable {
 
 	public void draw(Graphics g) {
 		
-		double a = Math.sin(timeRunning / 300.0) * 100;
-		double b = Math.sin(timeRunning / 500.0) * 100;
-		double c = Math.sin(timeRunning / 700.0) * 100;
-		double d = Math.sin(timeRunning / 900.0) * 100;
+		double a = Math.sin(timeRunning / 300.0) * 10;
+		double b = Math.sin(timeRunning / 500.0) * 10;
+		double c = Math.sin(timeRunning / 700.0) * 150;
+		double d = Math.sin(timeRunning / 900.0) * 150;
 		
 		
-		gameFieldRectangle = new Rectangle((int)a+100, (int)b+100, (int)(c+350), (int)(d+350));
+		gameFieldRectangle = new Rectangle((int)a+100, (int)b+100, (int)(c+450), (int)(d+450));
 		
 		
 	
@@ -205,29 +205,35 @@ public class UIRenderer implements Runnable {
 		// Draw Floor
 		// Player
 		for (Cell cells : gameGrid.getCellsPossessedByPlayer()) {
-			g2d.drawImage(imageFloorFriendly, (int) (cells.getX() * gameFieldRectangle.width / gridTiles - (gameFieldRectangle.width / gridTiles / 2)), (int) (cells.getY() * gameFieldRectangle.height / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.y, (int) ((cells.getX() * gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), (int) ((cells.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), 0, 0, imageFloorFriendly.getWidth(), imageFloorFriendly.getHeight(), null);
+			g2d.drawImage(imageFloorFriendly, (int) (cells.getX() * gameFieldRectangle.width / gridTiles - (gameFieldRectangle.width / gridTiles / 2))+gameFieldRectangle.x, (int) (cells.getY() * gameFieldRectangle.height / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.y, (int) ((cells.getX() * gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2))+gameFieldRectangle.x, (int) ((cells.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), 0, 0, imageFloorFriendly.getWidth(), imageFloorFriendly.getHeight(), null);
 		}
 
 		// AI
 		for (Cell cells : gameGrid.getCellsPossessedByAI()) {
-			g2d.drawImage(imageFloorEnemy, (int) (cells.getX() * gameFieldRectangle.width / gridTiles - (gameFieldRectangle.width / gridTiles / 2)), (int) (cells.getY() * gameFieldRectangle.height / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.y, (int) ((cells.getX() * gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), (int) ((cells.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), 0, 0, imageFloorEnemy.getWidth(), imageFloorEnemy.getHeight(), null);
+			g2d.drawImage(imageFloorEnemy, (int) (cells.getX() * gameFieldRectangle.width / gridTiles - (gameFieldRectangle.width / gridTiles / 2))+gameFieldRectangle.x, (int) (cells.getY() * gameFieldRectangle.height / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.y, (int) ((cells.getX() * gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2))+gameFieldRectangle.x, (int) ((cells.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), 0, 0, imageFloorEnemy.getWidth(), imageFloorEnemy.getHeight(), null);
 		}
 
 		// Draw Fog
 		synchronized (particlesFog) {
 			Iterator<ParticleFog> it = particlesFog.iterator();
 			ParticleFog fogParticle;
-			int fieldSize = (int) (gameFieldRectangle.height / gridTiles);
+			int singlefieldSizeX = (int) (gameFieldRectangle.width / gridTiles);
+			int singlefieldSizeY = (int) (gameFieldRectangle.height / gridTiles);
+			
+	
 			while (it.hasNext()) {
 				fogParticle = it.next();
 				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fogParticle.getOpacity()));
 
+				
+
+				
 				switch (fogParticle.colortype) {
 				case Attributes.PLAYER:
-					g2d.drawImage(imageFogFriendly, (int) (fogParticle.x - fieldSize), (int) (fogParticle.y - fieldSize), (int) (fogParticle.x + fieldSize), (int) (fogParticle.y + fieldSize), 0, 0, imageFogFriendly.getWidth(), imageFogFriendly.getHeight(), null);
+					g2d.drawImage(imageFogFriendly,(int) ((fogParticle.x*singlefieldSizeX) +gameFieldRectangle.x),(int) ((fogParticle.y*singlefieldSizeY)+gameFieldRectangle.y),singlefieldSizeX,singlefieldSizeY,null);
 					break;
 				case Attributes.AI:
-					g2d.drawImage(imageFogEnemy, (int) (fogParticle.x - fieldSize), (int) (fogParticle.y - fieldSize), (int) (fogParticle.x + fieldSize), (int) (fogParticle.y + fieldSize), 0, 0, imageFogEnemy.getWidth(), imageFogEnemy.getHeight(), null);
+					g2d.drawImage(imageFogEnemy, (int) (fogParticle.x), (int) (fogParticle.y - singlefieldSizeX), (int) (fogParticle.x + singlefieldSizeX), (int) (fogParticle.y + singlefieldSizeX), 0, 0, imageFogEnemy.getWidth(), imageFogEnemy.getHeight(), null);
 					break;
 				default:
 					break;
