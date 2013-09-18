@@ -17,7 +17,18 @@ public class Data {
     public Data(GameGrid grid, int rating, int x, int y, int turn){
         this.grid = grid.getCopy();
         this.rating = rating;
-        x = this.x;
-        y = this.y;
+        this.turn = turn;
+        this.x = x;
+        this.y = y;
     }
+    
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 31 + x;
+        hash = hash * 13 + y;
+        hash = hash * 113 + turn;
+        return hash;
+    }
+    
 }
