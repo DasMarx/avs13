@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+
 import java.util.LinkedList;
 
 import javax.swing.JPanel;
@@ -20,7 +21,8 @@ import avs.game.GameManager;
  *
  */
 public class UserInterface extends JPanel implements MouseMotionListener{
-private UIRenderer renderer;
+
+	private UIRenderer renderer;
 private GameManager gameManager;
 private GameGrid gameGrid;
 

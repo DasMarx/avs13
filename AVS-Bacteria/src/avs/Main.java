@@ -2,7 +2,6 @@
 package avs;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import avs.ai.AICore;
 import avs.game.GameManager;
 import avs.ui.UserInterface;

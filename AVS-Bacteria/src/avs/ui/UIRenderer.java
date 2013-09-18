@@ -14,9 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import javax.imageio.ImageIO;
-
 import avs.game.Attributes;
 import avs.game.Cell;
 import avs.game.CellChanges;
@@ -164,10 +162,10 @@ public class UIRenderer implements Runnable {
 	
 			
 			
-			Iterator it = particlesFog.iterator();
+			Iterator<ParticleFog> it = particlesFog.iterator();
 			ParticleFog fogParticle;
 			while (it.hasNext()) {
-				fogParticle = (ParticleFog) it.next();
+				fogParticle = it.next();
 				fogParticle.calculate();
 				if (fogParticle.getOpacity() == 0) {
 					it.remove();
@@ -224,11 +222,11 @@ public class UIRenderer implements Runnable {
 		 
 		// Draw Fog
 		synchronized (particlesFog) {
-			Iterator it = particlesFog.iterator();
+			Iterator<ParticleFog> it = particlesFog.iterator();
 			ParticleFog fogParticle;
 			int fieldSize = (int) (sizeY / gridSize);
 			while (it.hasNext()) {
-				fogParticle = (ParticleFog) it.next();
+				fogParticle = it.next();
 				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fogParticle.getOpacity()));
 				
 				switch (fogParticle.colortype) {
