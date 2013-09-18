@@ -45,7 +45,7 @@ public class AICore {
         LinkedList<Cell> possessedCells = grid.getCellsPossessedByAI();
         //calculate first turn and create first Result from it
         //create Tree from first Result
-        //Tree<Result> tree = new Tree<Result>();
+        Tree<Result> resultTree = new Tree<Result>(new Result(grid, 0, -1, -1, 0));
         while (running) {
 
             // executorService creation
@@ -54,6 +54,7 @@ public class AICore {
             // create workload for all workers
             while (!possessedCells.isEmpty()) {
                 Workload myTmpWorkload = new Workload(grid, possessedCells.getFirst().getX(), possessedCells.getFirst().getY());
+             // distribute work
                 Future<WorkLoadReturn> future = executorService.submit(myTmpWorkload);
 
                 futureQueue.add(future);
@@ -66,6 +67,7 @@ public class AICore {
                 Future<WorkLoadReturn> future = it.next();
                 try {
                     WorkLoadReturn myReturn = future.get();
+                    
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -74,8 +76,8 @@ public class AICore {
                     e.printStackTrace();
                 }
             }
-
-            // Distribute work
+            
+            
             // collect and merge result trees
             // get best result
             // execute turn

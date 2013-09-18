@@ -11,5 +11,12 @@ import avs.game.GameGrid;
  **/
 public class Result {
     GameGrid grid;
-    int rating, x, y;
+    int rating, x, y, turn;
+    
+    public Result(GameGrid grid, int rating, int x, int y, int turn){
+        grid = this.grid;
+        rating = this.rating;
+        x = this.x;
+        y = this.y;
+    }
 }
