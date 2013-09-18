@@ -37,15 +37,15 @@ public class AICore {
 //        TODO    
     }
     public void setControl(boolean Turn){
-//        TODO: true - KI ist dran
-//                false - KI ist nicht dran
+//        TODO: true  - KI ist dran
+//              false - KI ist nicht dran
     }
 
     public void run() {
         LinkedList<Cell> possessedCells = grid.getCellsPossessedByAI();
         //calculate first turn and create first Result from it
         //create Tree from first Result
-        Tree<Result> resultTree = new Tree<Result>(new Result(grid, 0, -1, -1, 0));
+        Tree<Data> resultTree = new Tree<Data>(new Data(grid, 0, -1, -1, 0));
         while (running) {
 
             // executorService creation

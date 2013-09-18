@@ -10,6 +10,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     private static final long serialVersionUID = -1157763274200244389L;
     public GameGrid grid;
 	public int x, y;
+	//TODO: Include Parent-Hash
 	
 	public Workload(){
     }

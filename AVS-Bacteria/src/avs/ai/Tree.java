@@ -18,7 +18,7 @@ public class Tree<T> {
 
         private T data;
 
-        private Node<T> parent;
+        //private Node<T> parent;
 
         private List<Node<T>> children;
     }
