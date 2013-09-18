@@ -96,4 +96,21 @@ public class GridCalculator {
         else
             gameGrid.addCellAI(target);
     }
+    
+    public LinkedList<Cell> getBorderCells(){
+    	LinkedList<Cell> border = new LinkedList<Cell>();
+    	LinkedList<Cell> cells = gameGrid.getCellsPossessedByAI();
+    	Cell c;
+    	
+    	for(int i = 0; i < cells.size(); i++){
+    		c = cells.get(i);
+    		if ((gameGrid.getCell(c.getX(), c.getY()-1) != null) && (gameGrid.getCell(c.getX(), c.getY()-1).getOwner() != Attributes.AI)) border.add(c); 
+    		else if ((gameGrid.getCell(c.getX()+1, c.getY()) != null) && (gameGrid.getCell(c.getX()+1, c.getY()).getOwner() != Attributes.AI)) border.add(c); 
+    		else if ((gameGrid.getCell(c.getX(), c.getY()+1) != null) && (gameGrid.getCell(c.getX(), c.getY()+1).getOwner() != Attributes.AI)) border.add(c); 
+    		else if ((gameGrid.getCell(c.getX()-1, c.getY()) != null) && (gameGrid.getCell(c.getX()-1, c.getY()).getOwner() != Attributes.AI)) border.add(c); 
+    		
+    	}
+    	
+    	return border;
+    }
 }

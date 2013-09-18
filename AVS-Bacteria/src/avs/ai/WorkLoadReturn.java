@@ -7,7 +7,8 @@ public class WorkLoadReturn implements Serializable{
     /**
      * 
      */
-    Tree<Result> resultTree;
+    Tree<Data> resultTree;
+    //TODO: Include Parent-Hash 
     private static final long serialVersionUID = -2581477518340282629L;
 
 }
