@@ -184,8 +184,11 @@ public class UIRenderer implements Runnable {
 		
 		double a = Math.sin(timeRunning / 300.0) * 100;
 		double b = Math.sin(timeRunning / 500.0) * 100;
+		double c = Math.sin(timeRunning / 700.0) * 100;
+		double d = Math.sin(timeRunning / 900.0) * 100;
 		
-		gameFieldRectangle = new Rectangle((int)a+100, (int)b+100, 500, 500);
+		
+		gameFieldRectangle = new Rectangle((int)a+100, (int)b+100, (int)(c+350), (int)(d+350));
 		
 		
 	
