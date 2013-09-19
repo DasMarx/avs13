@@ -47,10 +47,7 @@ public class UIRenderer implements Runnable {
 
 	private static int gridTiles = 30;
 
-
 	private Rectangle gameFieldRectangle;
-	
-	
 
 	private BufferedImage imageArrowFriendly = null;
 	private BufferedImage imageArrowEnemy = null;
@@ -61,7 +58,10 @@ public class UIRenderer implements Runnable {
 	private BufferedImage imageFloorEnemy = null;
 
 	private BufferedImage imageBackground = null;
-	
+	private BufferedImage imageBoard = null;
+
+	private BufferedImage imageEnergyBall = null;
+
 	private LinkedList<ParticleFog> particlesFog;
 
 	private GameGrid gameGrid = null;
@@ -83,7 +83,11 @@ public class UIRenderer implements Runnable {
 			imageFloorEnemy = ImageIO.read(new File("img/floor_enemy.png"));
 
 			imageBackground = ImageIO.read(new File("img/background.jpg"));
-			
+			imageBoard = ImageIO.read(new File("img/board_greenlight.png"));
+
+			imageEnergyBall = ImageIO.read(new File("img/energyball.png"));
+
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -95,9 +99,9 @@ public class UIRenderer implements Runnable {
 
 	public void initialize(GameManager gameManager) {
 		this.gameManager = gameManager;
-		
+
 		gameFieldRectangle = new Rectangle(100, 100, 400, 400);
-		
+
 	}
 
 	@Override
@@ -150,7 +154,6 @@ public class UIRenderer implements Runnable {
 
 		// TODO Auto-generated method stub
 
-
 		// Calculate Fog
 		synchronized (particlesFog) {
 			// TODO:Remove
@@ -185,43 +188,43 @@ public class UIRenderer implements Runnable {
 	}
 
 	public void draw(Graphics g) {
-		
-		double a = Math.sin(timeRunning / 300.0) * 10;
-		double b = Math.sin(timeRunning / 500.0) * 10;
-		double c = Math.sin(timeRunning / 700.0) * 150;
-		double d = Math.sin(timeRunning / 900.0) * 150;
-		
-		
-		gameFieldRectangle = new Rectangle((int)a+100, (int)b+100, (int)(c+450), (int)(d+450));
-		
-		
-	
-		
+
+		double a = Math.sin(timeRunning / 900.0) * 20;
+		double b = Math.sin(timeRunning / 700.0) * 20;
+		double c = Math.sin(timeRunning / 500.0) * 20;
+		double d = Math.sin(timeRunning / 300.0) * 20;
+
+		gameFieldRectangle = new Rectangle((int) a + 200, (int) b + 200, (int) (c + 350), (int) (d + 350));
+
 		Graphics2D g2d = (Graphics2D) g;
 		// set the opacity
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
 		fpscounter++;
-		g2d.clearRect(0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight());
-		
-		
-		;
-		
-		g2d.drawImage(imageBackground, 0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight(), (int)((imageBackground.getWidth()/2)-(userInterface.getSize().getWidth()/2)),(int)((imageBackground.getHeight()/2)-(userInterface.getSize().getHeight()/2)),(int)((imageBackground.getWidth()/2)+(userInterface.getSize().getWidth()/2)),(int)((imageBackground.getHeight()/2)+(userInterface.getSize().getHeight()/2)), null);
-		
-		
+		// g2d.clearRect(0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight());
+
+		// Draw Background
+		g2d.drawImage(imageBackground, 0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight(), (int) ((imageBackground.getWidth() / 2) - (userInterface.getSize().getWidth() / 2)), (int) ((imageBackground.getHeight() / 2) - (userInterface.getSize().getHeight() / 2)), (int) ((imageBackground.getWidth() / 2) + (userInterface.getSize().getWidth() / 2)), (int) ((imageBackground.getHeight() / 2) + (userInterface.getSize().getHeight() / 2)), null);
+
+		// TODO: Draw animated stars for background
+
+		// Draw gameBoard
+
+		// (imageBoard.getWidth()/2)
+
+		g2d.drawImage(imageBoard, (int)(gameFieldRectangle.x-gameFieldRectangle.width/2), gameFieldRectangle.y-gameFieldRectangle.height/2,  gameFieldRectangle.x+gameFieldRectangle.width + gameFieldRectangle.width/2, gameFieldRectangle.y+gameFieldRectangle.height+gameFieldRectangle.height/2, 0,0,imageBoard.getWidth(),imageBoard.getHeight(),null);
 
 		g2d.setColor(colorBlack);
 
 		// Draw Floor
 		// Player
 		for (Cell cells : gameGrid.getCellsPossessedByPlayer()) {
-			g2d.drawImage(imageFloorFriendly, (int) (cells.getX() * gameFieldRectangle.width / gridTiles - (gameFieldRectangle.width / gridTiles / 2))+gameFieldRectangle.x, (int) (cells.getY() * gameFieldRectangle.height / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.y, (int) ((cells.getX() * gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2))+gameFieldRectangle.x, (int) ((cells.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), 0, 0, imageFloorFriendly.getWidth(), imageFloorFriendly.getHeight(), null);
+			g2d.drawImage(imageFloorFriendly, (int) (cells.getX() * gameFieldRectangle.width / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.x, (int) (cells.getY() * gameFieldRectangle.height / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.y, (int) ((cells.getX() * gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.x, (int) ((cells.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), 0, 0, imageFloorFriendly.getWidth(), imageFloorFriendly.getHeight(), null);
 		}
 
 		// AI
 		for (Cell cells : gameGrid.getCellsPossessedByAI()) {
-			g2d.drawImage(imageFloorEnemy, (int) (cells.getX() * gameFieldRectangle.width / gridTiles - (gameFieldRectangle.width / gridTiles / 2))+gameFieldRectangle.x, (int) (cells.getY() * gameFieldRectangle.height / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.y, (int) ((cells.getX() * gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2))+gameFieldRectangle.x, (int) ((cells.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), 0, 0, imageFloorEnemy.getWidth(), imageFloorEnemy.getHeight(), null);
+			g2d.drawImage(imageFloorEnemy, (int) (cells.getX() * gameFieldRectangle.width / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.x, (int) (cells.getY() * gameFieldRectangle.height / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.y, (int) ((cells.getX() * gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.x, (int) ((cells.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), 0, 0, imageFloorEnemy.getWidth(), imageFloorEnemy.getHeight(), null);
 		}
 
 		// Draw Fog
@@ -230,18 +233,14 @@ public class UIRenderer implements Runnable {
 			ParticleFog fogParticle;
 			int singlefieldSizeX = (int) (gameFieldRectangle.width / gridTiles);
 			int singlefieldSizeY = (int) (gameFieldRectangle.height / gridTiles);
-			
-	
+
 			while (it.hasNext()) {
 				fogParticle = it.next();
 				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fogParticle.getOpacity()));
 
-				
-
-				
 				switch (fogParticle.colortype) {
 				case Attributes.PLAYER:
-					g2d.drawImage(imageFogFriendly,(int) ((fogParticle.x*singlefieldSizeX) +gameFieldRectangle.x),(int) ((fogParticle.y*singlefieldSizeY)+gameFieldRectangle.y),singlefieldSizeX,singlefieldSizeY,null);
+					g2d.drawImage(imageFogFriendly, (int) ((fogParticle.x * singlefieldSizeX) + gameFieldRectangle.x), (int) ((fogParticle.y * singlefieldSizeY) + gameFieldRectangle.y), singlefieldSizeX, singlefieldSizeY, null);
 					break;
 				case Attributes.AI:
 					g2d.drawImage(imageFogEnemy, (int) (fogParticle.x), (int) (fogParticle.y - singlefieldSizeX), (int) (fogParticle.x + singlefieldSizeX), (int) (fogParticle.y + singlefieldSizeX), 0, 0, imageFogEnemy.getWidth(), imageFogEnemy.getHeight(), null);
@@ -252,8 +251,43 @@ public class UIRenderer implements Runnable {
 			}
 		}
 
+		// Draw Energyflow
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		double angle = 0;
+		for (int i = 0; i < gridTiles; i++) {
+			for (int j = 0; j < gridTiles; j++) {
+				switch (gameGrid.getCell(i, j).getDirection()) {
+				case Attributes.UP:
+					angle = 0;
+					break;
+				case Attributes.RIGHT:
+					angle = 90;
+					break;
+				case Attributes.DOWN:
+					angle = 180;
+					break;
+				case Attributes.LEFT:
+					angle = 270;
+					break;
+				}
+
+				
+				g2d.rotate(Math.toRadians(angle), (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x + (gameFieldRectangle.width / gridTiles / 2)), (int) (j * gameFieldRectangle.height / gridTiles + gameFieldRectangle.y) + (gameFieldRectangle.height / gridTiles / 2));
+	
+				double adding;
+				
+				adding = (timeRunning / 50) % (gameFieldRectangle.width / gridTiles);
+				g2d.drawImage(imageEnergyBall, (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x) + (gameFieldRectangle.width / gridTiles/3), (int) (j * gameFieldRectangle.height / gridTiles - adding) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles/3), (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x- (gameFieldRectangle.width / gridTiles/3), (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles - adding - (gameFieldRectangle.height / gridTiles/3)), 0, 0, imageEnergyBall.getWidth(),imageEnergyBall.getHeight(), null);
+				adding = (timeRunning / 50 + (gameFieldRectangle.width / gridTiles/2)) % (gameFieldRectangle.width / gridTiles);
+				g2d.drawImage(imageEnergyBall, (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x) + (gameFieldRectangle.width / gridTiles/3), (int) (j * gameFieldRectangle.height / gridTiles - adding) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles/3), (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x- (gameFieldRectangle.width / gridTiles/3), (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles - adding - (gameFieldRectangle.height / gridTiles/3)), 0, 0, imageEnergyBall.getWidth(),imageEnergyBall.getHeight(), null);
+				
+				g2d.rotate(-Math.toRadians(angle), (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x + (gameFieldRectangle.width / gridTiles / 2)), (int) (j * gameFieldRectangle.height / gridTiles + gameFieldRectangle.y) + (gameFieldRectangle.height / gridTiles / 2));
+			}
+		}
+
+		// Draw Field
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+		angle = 0;
 		// TODO Auto-generated method stub
 		for (int i = 0; i < gridTiles; i++) {
 			for (int j = 0; j < gridTiles; j++) {
@@ -280,24 +314,28 @@ public class UIRenderer implements Runnable {
 				// (int) (gameFieldRectangle.width / gridSize ),
 				// (int) (gameFieldRectangle.height / gridSize ));
 
-				g2d.rotate(Math.toRadians(angle), (int) (i * gameFieldRectangle.width / gridTiles +gameFieldRectangle.x+ (gameFieldRectangle.width / gridTiles / 2)), (int) (j * gameFieldRectangle.height / gridTiles + gameFieldRectangle.y) + (gameFieldRectangle.height / gridTiles / 2));
+				g2d.rotate(Math.toRadians(angle), (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x + (gameFieldRectangle.width / gridTiles / 2)), (int) (j * gameFieldRectangle.height / gridTiles + gameFieldRectangle.y) + (gameFieldRectangle.height / gridTiles / 2));
 
 				switch (gameGrid.getCell(i, j).getOwner()) {
 				case Attributes.PLAYER:
-					g2d.drawImage(imageArrowFriendly, (int) (i * gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y, (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles)+gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles), 0, 0, imageArrowFriendly.getWidth(), imageArrowFriendly.getHeight(), null);
+					g2d.drawImage(imageArrowFriendly, (int) (i * gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y, (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles), 0, 0, imageArrowFriendly.getWidth(), imageArrowFriendly.getHeight(), null);
 					break;
 				case Attributes.NEUTRAL:
-					g2d.drawImage(imageArrowNeutral, (int) (i * gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y, (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles)+gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles), 0, 0, imageArrowNeutral.getWidth(), imageArrowNeutral.getHeight(), null);
+					g2d.drawImage(imageArrowNeutral, (int) (i * gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y, (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles), 0, 0, imageArrowNeutral.getWidth(), imageArrowNeutral.getHeight(), null);
 					break;
 				case Attributes.AI:
-					g2d.drawImage(imageArrowEnemy, (int) (i * gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y, (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles)+gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles), 0, 0, imageArrowEnemy.getWidth(), imageArrowEnemy.getHeight(), null);
+					g2d.drawImage(imageArrowEnemy, (int) (i * gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y, (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles), 0, 0, imageArrowEnemy.getWidth(), imageArrowEnemy.getHeight(), null);
 					break;
 				}
 
-				g2d.rotate(-Math.toRadians(angle), (int) (i * gameFieldRectangle.width / gridTiles+gameFieldRectangle.x + (gameFieldRectangle.width / gridTiles / 2)), (int) (j * gameFieldRectangle.height / gridTiles + gameFieldRectangle.y) + (gameFieldRectangle.height / gridTiles / 2));
+				g2d.rotate(-Math.toRadians(angle), (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x + (gameFieldRectangle.width / gridTiles / 2)), (int) (j * gameFieldRectangle.height / gridTiles + gameFieldRectangle.y) + (gameFieldRectangle.height / gridTiles / 2));
+
 			}
 		}
 
+//		g2d.setColor(colorRed);
+//		g2d.drawRect(gameFieldRectangle.x, gameFieldRectangle.y, gameFieldRectangle.width, gameFieldRectangle.height);
+		
 		g2d.setFont(font);
 		g2d.setColor(colorRed);
 		g2d.drawString(fps + " FPS" + " --- Particles: " + particlesFog.size(), 5, 18);
