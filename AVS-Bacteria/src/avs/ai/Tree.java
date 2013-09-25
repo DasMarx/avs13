@@ -1,8 +1,7 @@
 
 package avs.ai;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 public class Tree<T> {
 
@@ -11,10 +10,10 @@ public class Tree<T> {
     public Tree(T rootData) {
         root = new Node<T>();
         root.setData(rootData);
-        root.children = new ArrayList<Node<T>>();
+        root.setChildren(new HashSet<Node<T>>());
     }
 
-    public static class Node<T> {
+    public class Node<T> {
 
         private T data;
         
@@ -28,8 +27,28 @@ public class Tree<T> {
         
         //private Node<T> parent;
 
-        private List<Node<T>> children;
+        public HashSet<Node<T>> getChildren() {
+            return children;
+        }
+
+        public void setChildren(HashSet<Node<T>> children) {
+            this.children = children;
+        }
+
+        public void addChild(Node<T> child) {
+            children.add(child);
+        }
         
+        public void removeChild(Node<T> child) {
+            children.remove(child);
+        }
+        
+        private HashSet<Node<T>> children;
+        
+        @Override
+        public int hashCode() {
+            return data.hashCode();
+        }
 
         
     }
