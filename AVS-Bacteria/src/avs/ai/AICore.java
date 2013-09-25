@@ -42,29 +42,24 @@ public class AICore {
     }
 
     public void run() {
-        
-        //calculate first turn and create first Result from it
-        //create Tree from first Result
-        Tree<Data> resultTree = new Tree<Data>(new Data(grid, 0, -1, -1, 0));
-        Data currentData = resultTree.getRoot().getData();
+        Tree<Data> resultTree = new Tree<Data>(new Data(grid, 0, -1, -1, 0)); //create Tree from first Result
+        Data currentData = resultTree.getRoot().getData(); //set the root node as first datasource
         while (running) {
             
-            LinkedList<Cell> possessedCells = grid.getCellsPossessedByAI();
+            LinkedList<Cell> possessedCells = currentData.grid.getCellsPossessedByAI(); //get all possessed cells from the current datasource
             // executorService creation
             IExecutorService executorService = myWorker.getInstance().getExecutorService("default");
 
-            // create workload for all workers
             while (!possessedCells.isEmpty()) {
-                Workload myTmpWorkload = new Workload(currentData, possessedCells.getFirst().getX(), possessedCells.getFirst().getY());
-             // distribute work
+                Workload myTmpWorkload = new Workload(currentData, possessedCells.getFirst().getX(), possessedCells.getFirst().getY()); // create workload for all workers
+                
+                //distribute work
                 Future<WorkLoadReturn> future = executorService.submit(myTmpWorkload);
-
                 futureQueue.add(future);
                 possessedCells.removeFirst();
             }
 
-            Iterator<Future<WorkLoadReturn>> it = futureQueue.iterator();
-
+            Iterator<Future<WorkLoadReturn>> it = futureQueue.iterator(); //get finished workloads
             while (it.hasNext()) {
                 Future<WorkLoadReturn> future = it.next();
                 try {
