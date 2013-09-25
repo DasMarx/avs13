@@ -179,7 +179,7 @@ public class UIRenderer implements Runnable {
 		double update = 200.0;
 		
 		
-		gameFieldRectangleDestination= new Rectangle(0, 0, (int) (0 + size), (int) (0 + size));
+		gameFieldRectangleDestination= new Rectangle(100, 100, (int) (0 + size-200), (int) (0 + size-200));
 		
 
 		gameFieldRectangleCurrent.setRect(
