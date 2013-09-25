@@ -17,28 +17,50 @@ public class Tree<T> {
 
         private T data;
         
+        /**
+         * This method will return the current Data
+         * @return the given Data
+         */
         public T getData() {
             return data;
         }
 
+        /**
+         * This method will set the current Data
+         * @param data
+         */
         public void setData(T data) {
             this.data = data;
         }
-        
-        //private Node<T> parent;
 
+        /**
+         * This method will return all current Children
+         * @return all children
+         */
         public HashSet<Node<T>> getChildren() {
             return children;
         }
 
+        /**
+         * This method will set all Children
+         * @param children
+         */
         public void setChildren(HashSet<Node<T>> children) {
             this.children = children;
         }
 
+        /**
+         * This method will add one child
+         * @param child
+         */
         public void addChild(Node<T> child) {
             children.add(child);
         }
         
+        /**
+         * This method will remove one specific child
+         * @param child
+         */
         public void removeChild(Node<T> child) {
             children.remove(child);
         }
