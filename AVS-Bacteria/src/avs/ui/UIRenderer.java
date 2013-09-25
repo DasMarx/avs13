@@ -5,13 +5,16 @@ package avs.ui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -49,8 +52,6 @@ public class UIRenderer implements Runnable {
 
 	private static int gridTiles = 30;
 
-	private Rectangle gameFieldRectangle;
-
 	private BufferedImage imageArrowFriendly = null;
 	private BufferedImage imageArrowEnemy = null;
 	private BufferedImage imageArrowNeutral = null;
@@ -69,9 +70,14 @@ public class UIRenderer implements Runnable {
 	private GameGrid gameGrid = null;
 	private GameManager gameManager;
 	private boolean initialized;
+	private Frame frame;
 
-	public UIRenderer(UserInterface userInterface) {
+	private Rectangle2D gameFieldRectangleCurrent;
+	private Rectangle2D gameFieldRectangleDestination;
+
+	public UIRenderer(UserInterface userInterface, Frame frame) {
 		this.userInterface = userInterface;
+		this.frame = frame;
 
 		// Init Images
 		try {
@@ -100,7 +106,9 @@ public class UIRenderer implements Runnable {
 	public void initialize(GameManager gameManager) {
 		this.gameManager = gameManager;
 
-		gameFieldRectangle = new Rectangle(100, 100, 400, 400);
+		gameFieldRectangleCurrent = new Rectangle();
+		gameFieldRectangleCurrent.setRect(300, 300, 100, 100);
+		gameFieldRectangleDestination = new Rectangle(100, 100, 400, 400);
 
 	}
 
@@ -157,16 +165,36 @@ public class UIRenderer implements Runnable {
 
 	public void draw(Graphics g) {
 
-		double a = Math.sin(timeRunning / 900.0) * 0;
-		double b = Math.sin(timeRunning / 700.0) * 0;
-		double c = Math.sin(timeRunning / 500.0) * 0;
-		double d = Math.sin(timeRunning / 300.0) * 0;
+		// double a = Math.sin(timeRunning / 900.0) * 0;
+		// double b = Math.sin(timeRunning / 700.0) * 0;
+		// double c = Math.sin(timeRunning / 500.0) * 0;
+		// double d = Math.sin(timeRunning / 300.0) * 0;
 
-		gameFieldRectangle = new Rectangle((int) (a + 100), (int) b + 100, (int) (c + 850), (int) (d + 850));
+		int size = frame.getSize().width;
+		if (size > frame.getSize().height - 20) {
+			size = frame.getSize().height - 20;
+		}
+		size -= 10;
+
+		double update = 200.0;
+		
+		
+		gameFieldRectangleDestination= new Rectangle(0, 0, (int) (0 + size), (int) (0 + size));
+		
+
+		gameFieldRectangleCurrent.setRect(
+				gameFieldRectangleCurrent.getX()+((gameFieldRectangleDestination.getX()-gameFieldRectangleCurrent.getX())/update),
+				gameFieldRectangleCurrent.getY()+((gameFieldRectangleDestination.getY()-gameFieldRectangleCurrent.getY())/update),
+				gameFieldRectangleCurrent.getWidth()+((gameFieldRectangleDestination.getWidth()-gameFieldRectangleCurrent.getWidth())/update),
+				gameFieldRectangleCurrent.getHeight()+((gameFieldRectangleDestination.getHeight()-gameFieldRectangleCurrent.getHeight())/update));
+
+		//		gameFieldRectangleCurrent.setRect(gameFieldRectangleDestination.getX() + (gameFieldRectangleDestination.getX() - gameFieldRectangleCurrent.getX()) / update, gameFieldRectangleDestination.getY() + (gameFieldRectangleDestination.getY() - gameFieldRectangleCurrent.getY()) / update, gameFieldRectangleDestination.getWidth() + (gameFieldRectangleDestination.getWidth() - gameFieldRectangleCurrent.getWidth()) / update, gameFieldRectangleDestination.getHeight() + (gameFieldRectangleDestination.getHeight() - gameFieldRectangleCurrent.getHeight()) / update);
+
+		// gameFieldRectangleCurrent = new Rectangle((int) (a), (int) b , (int) (c + size), (int) (d + size));
 
 		Graphics2D g2d = (Graphics2D) g;
 		// set the opacity
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
 		fpscounter++;
 		// g2d.clearRect(0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight());
@@ -180,19 +208,19 @@ public class UIRenderer implements Runnable {
 
 		// (imageBoard.getWidth()/2)
 
-		g2d.drawImage(imageBoard, (int) (gameFieldRectangle.x - gameFieldRectangle.width / 2), gameFieldRectangle.y - gameFieldRectangle.height / 2, gameFieldRectangle.x + gameFieldRectangle.width + gameFieldRectangle.width / 2, gameFieldRectangle.y + gameFieldRectangle.height + gameFieldRectangle.height / 2, 0, 0, imageBoard.getWidth(), imageBoard.getHeight(), null);
+		g2d.drawImage(imageBoard, (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2), (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2), (int)(gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2), (int)(gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2), 0, 0, imageBoard.getWidth(), imageBoard.getHeight(), null);
 
 		g2d.setColor(colorBlack);
 
 		// Draw Floor
 		// Player
 		for (Cell cells : gameGrid.getCellsPossessedByPlayer()) {
-			g2d.drawImage(imageFloorFriendly, (int) (cells.getX() * gameFieldRectangle.width / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.x, (int) (cells.getY() * gameFieldRectangle.height / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.y, (int) ((cells.getX() * gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.x, (int) ((cells.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), 0, 0, imageFloorFriendly.getWidth(), imageFloorFriendly.getHeight(), null);
+			g2d.drawImage(imageFloorFriendly, (int) (cells.getX() * gameFieldRectangleCurrent.getWidth() / gridTiles - (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getX()), (int) (cells.getY() * gameFieldRectangleCurrent.getHeight() / gridTiles - (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getY()), (int) ((cells.getX() * gameFieldRectangleCurrent.getWidth() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getX()), (int) ((cells.getY() * gameFieldRectangleCurrent.getHeight() / gridTiles) + gameFieldRectangleCurrent.getY() + (gameFieldRectangleCurrent.getHeight() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2)), 0, 0, imageFloorFriendly.getWidth(), imageFloorFriendly.getHeight(), null);
 		}
 
 		// AI
 		for (Cell cells : gameGrid.getCellsPossessedByAI()) {
-			g2d.drawImage(imageFloorEnemy, (int) (cells.getX() * gameFieldRectangle.width / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.x, (int) (cells.getY() * gameFieldRectangle.height / gridTiles - (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.y, (int) ((cells.getX() * gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)) + gameFieldRectangle.x, (int) ((cells.getY() * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles) + (gameFieldRectangle.width / gridTiles / 2)), 0, 0, imageFloorEnemy.getWidth(), imageFloorEnemy.getHeight(), null);
+			g2d.drawImage(imageFloorEnemy, (int) (cells.getX() * gameFieldRectangleCurrent.getWidth() / gridTiles - (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getX()), (int) (cells.getY() * gameFieldRectangleCurrent.getHeight() / gridTiles - (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getY()), (int) ((cells.getX() * gameFieldRectangleCurrent.getWidth() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getX()), (int) ((cells.getY() * gameFieldRectangleCurrent.getHeight() / gridTiles) + gameFieldRectangleCurrent.getY() + (gameFieldRectangleCurrent.getHeight() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2)), 0, 0, imageFloorEnemy.getWidth(), imageFloorEnemy.getHeight(), null);
 		}
 
 		// Draw Energyflow
@@ -215,25 +243,25 @@ public class UIRenderer implements Runnable {
 					break;
 				}
 
-				g2d.rotate(Math.toRadians(angle), (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x + (gameFieldRectangle.width / gridTiles / 2)), (int) (j * gameFieldRectangle.height / gridTiles + gameFieldRectangle.y) + (gameFieldRectangle.height / gridTiles / 2));
+				g2d.rotate(Math.toRadians(angle), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX() + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()) + (gameFieldRectangleCurrent.getHeight() / gridTiles / 2));
 
 				double adding;
 
-				adding = (timeRunning / 50 + i * j + i) % (gameFieldRectangle.width / gridTiles);
+				adding = (timeRunning / 50 + i * j + i) % (gameFieldRectangleCurrent.getWidth() / gridTiles);
 
 				switch (gameGrid.getCell(i, j).getOwner()) {
 				case Attributes.PLAYER:
-					g2d.drawImage(imageEnergyBallFriendly, (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x) + (gameFieldRectangle.width / gridTiles / 3), (int) (j * gameFieldRectangle.height / gridTiles - adding) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles / 3), (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x - (gameFieldRectangle.width / gridTiles / 3), (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles - adding - (gameFieldRectangle.height / gridTiles / 3)), 0, 0, imageEnergyBallNeutral.getWidth(), imageEnergyBallNeutral.getHeight(), null);
+					g2d.drawImage(imageEnergyBallFriendly, (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX() + (gameFieldRectangleCurrent.getWidth() / gridTiles / 3)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles - adding + gameFieldRectangleCurrent.getY() + (gameFieldRectangleCurrent.getHeight() / gridTiles / 3)), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + (int) (gameFieldRectangleCurrent.getWidth() / gridTiles) + gameFieldRectangleCurrent.getX() - (gameFieldRectangleCurrent.getWidth() / gridTiles / 3)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY() + (int) (gameFieldRectangleCurrent.getHeight() / gridTiles - adding - (gameFieldRectangleCurrent.getHeight() / gridTiles / 3))), 0, 0, imageEnergyBallFriendly.getWidth(), imageEnergyBallFriendly.getHeight(), null);
 					break;
 				case Attributes.NEUTRAL:
-					g2d.drawImage(imageEnergyBallNeutral, (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x) + (gameFieldRectangle.width / gridTiles / 3), (int) (j * gameFieldRectangle.height / gridTiles - adding) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles / 3), (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x - (gameFieldRectangle.width / gridTiles / 3), (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles - adding - (gameFieldRectangle.height / gridTiles / 3)), 0, 0, imageEnergyBallNeutral.getWidth(), imageEnergyBallNeutral.getHeight(), null);
+					g2d.drawImage(imageEnergyBallNeutral, (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX() + (gameFieldRectangleCurrent.getWidth() / gridTiles / 3)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles - adding + gameFieldRectangleCurrent.getY() + (gameFieldRectangleCurrent.getHeight() / gridTiles / 3)), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + (int) (gameFieldRectangleCurrent.getWidth() / gridTiles) + gameFieldRectangleCurrent.getX() - (gameFieldRectangleCurrent.getWidth() / gridTiles / 3)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY() + (int) (gameFieldRectangleCurrent.getHeight() / gridTiles - adding - (gameFieldRectangleCurrent.getHeight() / gridTiles / 3))), 0, 0, imageEnergyBallNeutral.getWidth(), imageEnergyBallNeutral.getHeight(), null);
 					break;
 				case Attributes.AI:
-					g2d.drawImage(imageEnergyBallEnemy, (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x) + (gameFieldRectangle.width / gridTiles / 3), (int) (j * gameFieldRectangle.height / gridTiles - adding) + gameFieldRectangle.y + (gameFieldRectangle.height / gridTiles / 3), (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x - (gameFieldRectangle.width / gridTiles / 3), (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles - adding - (gameFieldRectangle.height / gridTiles / 3)), 0, 0, imageEnergyBallNeutral.getWidth(), imageEnergyBallNeutral.getHeight(), null);
+					g2d.drawImage(imageEnergyBallEnemy, (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX() + (gameFieldRectangleCurrent.getWidth() / gridTiles / 3)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles - adding + gameFieldRectangleCurrent.getY() + (gameFieldRectangleCurrent.getHeight() / gridTiles / 3)), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + (int) (gameFieldRectangleCurrent.getWidth() / gridTiles) + gameFieldRectangleCurrent.getX() - (gameFieldRectangleCurrent.getWidth() / gridTiles / 3)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY() + (int) (gameFieldRectangleCurrent.getHeight() / gridTiles - adding - (gameFieldRectangleCurrent.getHeight() / gridTiles / 3))), 0, 0, imageEnergyBallEnemy.getWidth(), imageEnergyBallEnemy.getHeight(), null);
 					break;
 				}
 
-				g2d.rotate(-Math.toRadians(angle), (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x + (gameFieldRectangle.width / gridTiles / 2)), (int) (j * gameFieldRectangle.height / gridTiles + gameFieldRectangle.y) + (gameFieldRectangle.height / gridTiles / 2));
+				g2d.rotate(-Math.toRadians(angle), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX() + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()) + (gameFieldRectangleCurrent.getHeight() / gridTiles / 2));
 			}
 		}
 
@@ -266,27 +294,27 @@ public class UIRenderer implements Runnable {
 				// (int) (gameFieldRectangle.width / gridSize ),
 				// (int) (gameFieldRectangle.height / gridSize ));
 
-				g2d.rotate(Math.toRadians(angle), (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x + (gameFieldRectangle.width / gridTiles / 2)), (int) (j * gameFieldRectangle.height / gridTiles + gameFieldRectangle.y) + (gameFieldRectangle.height / gridTiles / 2));
+				g2d.rotate(Math.toRadians(angle), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX() + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()) + (gameFieldRectangleCurrent.getHeight() / gridTiles / 2));
 
 				switch (gameGrid.getCell(i, j).getOwner()) {
 				case Attributes.PLAYER:
-					g2d.drawImage(imageArrowFriendly, (int) (i * gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y, (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles), 0, 0, imageArrowFriendly.getWidth(), imageArrowFriendly.getHeight(), null);
+					g2d.drawImage(imageArrowFriendly, (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX()), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + (int) (gameFieldRectangleCurrent.getWidth() / gridTiles) + gameFieldRectangleCurrent.getX()), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY() + (int) (gameFieldRectangleCurrent.getHeight() / gridTiles)), 0, 0, imageArrowFriendly.getWidth(), imageArrowFriendly.getHeight(), null);
 					break;
 				case Attributes.NEUTRAL:
-					g2d.drawImage(imageArrowNeutral, (int) (i * gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y, (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles), 0, 0, imageArrowNeutral.getWidth(), imageArrowNeutral.getHeight(), null);
+					g2d.drawImage(imageArrowNeutral, (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX()), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + (int) (gameFieldRectangleCurrent.getWidth() / gridTiles) + gameFieldRectangleCurrent.getX()), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY() + (int) (gameFieldRectangleCurrent.getHeight() / gridTiles)), 0, 0, imageArrowNeutral.getWidth(), imageArrowNeutral.getHeight(), null);
 					break;
 				case Attributes.AI:
-					g2d.drawImage(imageArrowEnemy, (int) (i * gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y, (int) (i * gameFieldRectangle.width / gridTiles) + (int) (gameFieldRectangle.width / gridTiles) + gameFieldRectangle.x, (int) (j * gameFieldRectangle.height / gridTiles) + gameFieldRectangle.y + (int) (gameFieldRectangle.height / gridTiles), 0, 0, imageArrowEnemy.getWidth(), imageArrowEnemy.getHeight(), null);
+					g2d.drawImage(imageArrowEnemy, (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX()), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + (int) (gameFieldRectangleCurrent.getWidth() / gridTiles) + gameFieldRectangleCurrent.getX()), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY() + (int) (gameFieldRectangleCurrent.getHeight() / gridTiles)), 0, 0, imageArrowEnemy.getWidth(), imageArrowEnemy.getHeight(), null);
 					break;
 				}
 
-				g2d.rotate(-Math.toRadians(angle), (int) (i * gameFieldRectangle.width / gridTiles + gameFieldRectangle.x + (gameFieldRectangle.width / gridTiles / 2)), (int) (j * gameFieldRectangle.height / gridTiles + gameFieldRectangle.y) + (gameFieldRectangle.height / gridTiles / 2));
+				g2d.rotate(-Math.toRadians(angle), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX() + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()) + (gameFieldRectangleCurrent.getHeight() / gridTiles / 2));
 
 			}
 		}
 
-		 g2d.setColor(colorRed);
-		 g2d.drawRect(gameFieldRectangle.x, gameFieldRectangle.y, gameFieldRectangle.width, gameFieldRectangle.height);
+		g2d.setColor(colorRed);
+		g2d.drawRect((int)gameFieldRectangleCurrent.getX(), (int)gameFieldRectangleCurrent.getY(), (int)gameFieldRectangleCurrent.getWidth(), (int)gameFieldRectangleCurrent.getHeight());
 
 		g2d.setFont(font);
 		g2d.setColor(colorRed);

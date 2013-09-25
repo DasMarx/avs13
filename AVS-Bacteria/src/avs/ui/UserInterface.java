@@ -3,11 +3,11 @@
  */
 package avs.ui;
 
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-
 import java.util.LinkedList;
 
 import javax.swing.JPanel;
@@ -21,14 +21,15 @@ import avs.game.GameManager;
  * 
  */
 public class UserInterface extends JPanel implements MouseMotionListener {
-
+	private Frame frame;
 	private UIRenderer renderer;
 	private GameManager gameManager;
 	private GameGrid gameGrid;
 
-	public UserInterface() {
+	public UserInterface(Frame frame) {
 		super();
-		renderer = new UIRenderer(this);
+		this.frame= frame; 
+		renderer = new UIRenderer(this, frame);
 		new Thread(renderer).start();
 
 		addMouseMotionListener(this);
