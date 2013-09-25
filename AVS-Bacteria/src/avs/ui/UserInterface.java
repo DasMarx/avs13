@@ -69,7 +69,7 @@ public class UserInterface extends JPanel implements MouseMotionListener {
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		// TODO:
-		System.exit(0);
+//		System.exit(0);
 		// TODO Auto-generated method stub
 
 	}
