@@ -52,8 +52,20 @@ public class Tree<T> {
 
         
     }
+    /**
+     * 
+     * @return The current root node will be returned
+     */
     public Node<T> getRoot(){
         return root;
+    }
+    
+    /**
+     * This method will set the current root node
+     * @param node
+     */
+    public void setRoot(Node<T> node) {
+        this.root = node;
     }
 
 }

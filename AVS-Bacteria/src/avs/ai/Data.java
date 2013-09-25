@@ -13,6 +13,16 @@ public class Data {
     GameGrid grid;
     int rating, x, y, turn, hash;
     
+    
+    /**
+     * 
+     * Initializes a new {@link Data}.
+     * @param grid The Grid
+     * @param rating The Rating
+     * @param x
+     * @param y
+     * @param turn
+     */
     public Data(GameGrid grid, int rating, int x, int y, int turn){
         this.grid = grid.getCopy();
         this.rating = rating;
