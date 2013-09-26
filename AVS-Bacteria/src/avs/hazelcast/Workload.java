@@ -17,8 +17,6 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 	public Workload(){
     }
     public Workload(Data data, int x, int y){
-	    
-        
         this.grid = data.getGrid().getCopy();
 	    this.x = x;
 	    this.y = y;

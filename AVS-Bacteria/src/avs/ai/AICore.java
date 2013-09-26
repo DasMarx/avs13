@@ -29,7 +29,7 @@ public class AICore {
     }
 
     public void setGameGrid(GameGrid grid) {
-        grid = this.grid;
+        this.grid = grid;
     }
     
     public void updateGrid(LinkedList<CellChanges> cellChanges){
