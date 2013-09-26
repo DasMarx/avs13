@@ -16,15 +16,15 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 	
 	public Workload(){
     }
-    public Workload(Data data, int x, int y){
-        this.grid = data.getGrid().getCopy();
+    public Workload(GameGrid grid, int x, int y){
+        this.grid = grid;
 	    this.x = x;
 	    this.y = y;
-	    this.parentHash = data.hashCode();
+//	    this.parentHash = data.hashCode();
 	}
     @Override
     public WorkLoadReturn call() throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        grid.processChanges(x, y);
+        return new WorkLoadReturn(x,y,grid.getCellsPossessedByAiCount(),grid.getCellsPossessedByPlayerCount());
     }
 }

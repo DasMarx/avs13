@@ -4,6 +4,7 @@
 
 package avs.game;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -17,7 +18,7 @@ public class GameGrid {
     private LinkedList<Cell> cellsPossessedByPlayer = new LinkedList<Cell>();
 
     private LinkedList<Cell> cellsPossessedByAI = new LinkedList<Cell>();
-    
+
     private static final int gridSize = 30;
 
     Random r;
@@ -36,7 +37,12 @@ public class GameGrid {
         synchronized (cellsPossessedByPlayer) {
             return new LinkedList<Cell>(cellsPossessedByPlayer);
         }
-        
+    }
+
+    public int getCellsPossessedByPlayerCount() {
+        synchronized (cellsPossessedByPlayer) {
+            return cellsPossessedByPlayer.size();
+        }
     }
 
     /**
@@ -45,6 +51,12 @@ public class GameGrid {
     public LinkedList<Cell> getCellsPossessedByAI() {
         synchronized (cellsPossessedByAI) {
             return new LinkedList<Cell>(cellsPossessedByAI);
+        }
+    }
+
+    public int getCellsPossessedByAiCount() {
+        synchronized (cellsPossessedByAI) {
+            return cellsPossessedByAI.size();
         }
     }
 
@@ -61,7 +73,7 @@ public class GameGrid {
                     gameGrid[i][j] = new Cell(i, j, Attributes.PLAYER, Attributes.UP);
                     cellsPossessedByPlayer.add(getCell(i, j));
                 }
-                if ((i == gridSize-1) && (j == gridSize-1)) {
+                if ((i == gridSize - 1) && (j == gridSize - 1)) {
                     gameGrid[i][j] = new Cell(i, j, Attributes.AI, Attributes.DOWN);
                     cellsPossessedByAI.add(getCell(i, j));
                 }
@@ -83,7 +95,7 @@ public class GameGrid {
      * @return the cell
      */
     public Cell getCell(int x, int y) {
-        if (x < 0 || y < 0 || x > gridSize-1 || y > gridSize-1)
+        if (x < 0 || y < 0 || x > gridSize - 1 || y > gridSize - 1)
             return null;
         return gameGrid[x][y];
     }
@@ -117,6 +129,67 @@ public class GameGrid {
             cellsPossessedByPlayer.remove(c);
             cellsPossessedByAI.add(c);
         }
+    }
+
+    /**
+     * @param x coordinate of the cell to be turned
+     * @param y coordinate of the cell to be turned
+     * @return list of changes, mutating
+     */
+    public LinkedList<CellChanges> processChanges(int x, int y) {
+        LinkedList<CellChanges> changes = new LinkedList<CellChanges>();
+        Cell target = null;
+        synchronized (this) {
+            target = getCell(x, y);
+            target.turn();
+        }
+        HashSet<Cell> processedCells = new HashSet<Cell>();
+        processChanges(processedCells, target, target.getOwner(), changes);
+        return changes;
+    }
+
+    /**
+     * @param origin cell edited before
+     * @param target cell to be edited
+     * @param rs counter for the recursive step
+     * @param owner of the cells
+     */
+    private void processChanges(HashSet<Cell> processedCells, Cell target, int owner, LinkedList<CellChanges> changes) {
+
+        if (processedCells.add(target)) {
+            Cell nextNeighbour = getCell(target.getX(), target.getY() - 1);
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
+                processChanges(processedCells, nextNeighbour, owner, changes);
+            }
+            nextNeighbour = getCell(target.getX() + 1, target.getY());
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
+                processChanges(processedCells, nextNeighbour, owner, changes);
+            }
+            nextNeighbour = getCell(target.getX(), target.getY() + 1);
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
+                processChanges(processedCells, nextNeighbour, owner, changes);
+            }
+            nextNeighbour = getCell(target.getX() - 1, target.getY());
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
+                processChanges(processedCells, nextNeighbour, owner, changes);
+            }
+
+            changeOwner(target, owner);
+            changes.add(new CellChanges(target));
+        }
+
+    }
+
+    /**
+     * @param target cell to be edited
+     * @param owner to be set
+     */
+    private void changeOwner(Cell target, int owner) {
+        getCell(target.getX(), target.getY()).setOwner(owner);
+        if (owner == Attributes.PLAYER)
+            addCellPlayer(target);
+        else
+            addCellAI(target);
     }
 
 }

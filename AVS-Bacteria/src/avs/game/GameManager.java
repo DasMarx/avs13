@@ -81,84 +81,7 @@ public class GameManager {
     // return neighbours;
     // }
 
-    /**
-     * @param x coordinate of the cell to be turned
-     * @param y coordinate of the cell to be turned
-     * @return list of changes, mutating
-     */
-    public LinkedList<CellChanges> processChanges(int x, int y) {
-        LinkedList<CellChanges> changes = new LinkedList<CellChanges>();
-        Cell target = null;
-        synchronized (gameGrid) {
-            target = gameGrid.getCell(x, y);
-            target.turn();
-        }
-        
-//        Cell nextNeighbour = gameGrid.getCell(x, y - 1);
-        HashSet<Cell> processedCells = new HashSet<Cell>();
-        processChanges(processedCells, target, target.getOwner(), changes);
-//        processedCells.add(target);
-//        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
-//            processChanges(processedCells, nextNeighbour, target.getOwner(), changes);
-//        }
-//        nextNeighbour = gameGrid.getCell(x + 1, y);
-//        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
-//            processChanges(processedCells, nextNeighbour, target.getOwner(), changes);
-//        }
-//        nextNeighbour = gameGrid.getCell(x, y + 1);
-//        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
-//            processChanges(processedCells, nextNeighbour, target.getOwner(), changes);
-//        }
-//        nextNeighbour = gameGrid.getCell(x - 1, y);
-//        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
-//            processChanges(processedCells, nextNeighbour, target.getOwner(), changes);
-//        }
-        return changes;
-    }
 
-    /**
-     * @param origin cell edited before
-     * @param target cell to be edited
-     * @param rs counter for the recursive step
-     * @param owner of the cells
-     */
-    private void processChanges(HashSet<Cell> processedCells, Cell target, int owner, LinkedList<CellChanges> changes) {
-
-        if(processedCells.add(target)){
-            Cell nextNeighbour = gameGrid.getCell(target.getX(), target.getY() - 1);
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
-                processChanges(processedCells, nextNeighbour, owner, changes);
-            }
-            nextNeighbour = gameGrid.getCell(target.getX() + 1, target.getY());
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
-                processChanges(processedCells, nextNeighbour, owner, changes);
-            }
-            nextNeighbour = gameGrid.getCell(target.getX(), target.getY() + 1);
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
-                processChanges(processedCells, nextNeighbour, owner, changes);
-            }
-            nextNeighbour = gameGrid.getCell(target.getX() - 1, target.getY());
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
-                processChanges(processedCells, nextNeighbour, owner, changes);
-            }
-
-            changeOwner(target, owner);
-            changes.add(new CellChanges(target));
-        }
-        
-    }
-
-    /**
-     * @param target cell to be edited
-     * @param owner to be set
-     */
-    private void changeOwner(Cell target, int owner) {
-        gameGrid.getCell(target.getX(), target.getY()).setOwner(owner);
-        if (owner == Attributes.PLAYER)
-            gameGrid.addCellPlayer(target);
-        else
-            gameGrid.addCellAI(target);
-    }
 
     /**
      * @param x
@@ -166,7 +89,7 @@ public class GameManager {
      * @param owner
      * @return true if turn is allowed, false if turn is forbidden
      */
-    private boolean checkTurn(int x, int y, int owner) {
+    private boolean checkTurnAllowed(int x, int y, int owner) {
         return gameGrid.getCell(x, y).getOwner() == owner;
     }
 
@@ -177,13 +100,13 @@ public class GameManager {
      * @return true = valid move, false invalid move
      */
     public boolean chooseCell(int x, int y, int owner) {
-            if (checkTurn(x, y, owner)) {
-                LinkedList<CellChanges> changes = processChanges(x, y);
+            if (checkTurnAllowed(x, y, owner)) {
+                LinkedList<CellChanges> changes = gameGrid.processChanges(x, y);
 //                allChanges.add(changes);
 //                userInterface.updateGrid(changes);
 //                aiCore.updateGrid(changes);
                 turn.incrementAndGet();
-
+                System.out.println(owner + " choose " + x + " " + y);
                 return true;
             }
         return false;
