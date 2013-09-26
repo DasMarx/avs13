@@ -5,16 +5,17 @@ public class CellChanges {
 
     private Cell cell;
 
-    private int step;
+    private int owner;
 
     /**
      * Initializes a new {@link CellChanges}.
      * 
      * @param cell that was changed
-     * @param step in which the cell was changed
+     * @param owner in which the cell was changed
      */
-    public CellChanges(Cell cell) {
+    public CellChanges(Cell cell,int owner) {
         this.cell = cell;
+        this.owner = owner;
 //        this.step = step;
     }
 
@@ -26,9 +27,9 @@ public class CellChanges {
     }
 
     /**
-     * @return the step
+     * @return the owner
      */
-//    public int getStep() {
-//        return step;
-//    }
+    public int getOwner() {
+        return owner;
+    }
 }

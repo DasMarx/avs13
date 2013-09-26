@@ -38,7 +38,7 @@ public class GameManager {
         gameGrid.initialize();
         this.userInterface.initialize(this);
         this.aiCore.initialize(this);
-        this.userInterface.setGameGrid(gameGrid);
+        this.userInterface.setGameGrid(gameGrid.getCopy());
         this.aiCore.setGameGrid(gameGrid);
         this.aiCore.run();
     }
@@ -103,10 +103,10 @@ public class GameManager {
             if (checkTurnAllowed(x, y, owner)) {
                 LinkedList<CellChanges> changes = gameGrid.processChanges(x, y);
 //                allChanges.add(changes);
-//                userInterface.updateGrid(changes);
+                userInterface.updateGrid(changes);
 //                aiCore.updateGrid(changes);
                 turn.incrementAndGet();
-                System.out.println(owner + " choose " + x + " " + y);
+//                System.out.println(owner + " choose " + x + " " + y);
                 return true;
             }
         return false;
@@ -124,7 +124,7 @@ public class GameManager {
      */
     public GameGrid getGrid() {
         synchronized (gameGrid) {
-            GameGrid g = gameGrid;
+            GameGrid g = gameGrid.getCopy();
             return g;
         }
     }

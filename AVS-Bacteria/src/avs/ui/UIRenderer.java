@@ -44,6 +44,8 @@ public class UIRenderer implements Runnable {
 	long fpscounter = 0;
 	long lastFPSTime = 0;
 	
+	private LinkedList<CellChanges> changes = new LinkedList<CellChanges>();
+	
 	
 	public MouseEvent mouseLastEvent = null;
 	public boolean mouseButtonR = false;
@@ -239,6 +241,16 @@ public class UIRenderer implements Runnable {
 
 	public void draw(Graphics g) {
 
+	    //TODO update is wrong here, will likely move it
+	    if (!changes.isEmpty()){
+	        CellChanges currentchange = changes.removeFirst();
+	        if (null != currentchange) {
+	            gameGrid.updateCell(currentchange.getCell());
+	        }
+	    }
+	    
+	    
+	    
 		// double a = Math.sin(timeRunning / 900.0) * 0;
 		// double b = Math.sin(timeRunning / 700.0) * 0;
 		// double c = Math.sin(timeRunning / 500.0) * 0;
@@ -403,9 +415,9 @@ public class UIRenderer implements Runnable {
 		initialized = true;
 	};
 
-//	public void updateGrid(LinkedList<CellChanges> changes) {
-//		// TODO:
-//	}
+	public void updateGrid(LinkedList<CellChanges> changes) {
+		this.changes.addAll(changes);
+	}
 
 	public void setControl(boolean controlflag) {
 		// TODO:

@@ -105,7 +105,12 @@ public class GameGrid {
      */
     public GameGrid getCopy() {
         GameGrid g = new GameGrid();
-        g.gameGrid = gameGrid.clone();
+        g.gameGrid = new Cell[gridSize][gridSize];
+        for (int i = 0; i < gameGrid.length; i++) {
+            for (int j = 0; j < gameGrid.length; j++) {
+                g.gameGrid[i][j] = new Cell(i, j, gameGrid[i][j].getOwner(),gameGrid[i][j].getDirection());
+            }
+        }
         g.cellsPossessedByAI = getCellsPossessedByAI();
         g.cellsPossessedByPlayer = getCellsPossessedByPlayer();
         return g;
@@ -175,7 +180,7 @@ public class GameGrid {
             }
 
             changeOwner(target, owner);
-            changes.add(new CellChanges(target));
+            changes.add(new CellChanges(target,owner));
         }
 
     }
@@ -190,6 +195,10 @@ public class GameGrid {
             addCellPlayer(target);
         else
             addCellAI(target);
+    }
+    
+    public void updateCell(Cell target) {
+        gameGrid[target.getX()][target.getY()] = target;
     }
 
 }
