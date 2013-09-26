@@ -13,9 +13,9 @@ public class CellChanges {
      * @param cell that was changed
      * @param step in which the cell was changed
      */
-    public CellChanges(Cell cell, int step) {
+    public CellChanges(Cell cell) {
         this.cell = cell;
-        this.step = step;
+//        this.step = step;
     }
 
     /**
@@ -28,7 +28,7 @@ public class CellChanges {
     /**
      * @return the step
      */
-    public int getStep() {
-        return step;
-    }
+//    public int getStep() {
+//        return step;
+//    }
 }

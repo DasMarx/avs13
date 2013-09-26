@@ -33,14 +33,19 @@ public class GameGrid {
      * @return list of cells possessed by player
      */
     public LinkedList<Cell> getCellsPossessedByPlayer() {
-        return cellsPossessedByPlayer;
+        synchronized (cellsPossessedByPlayer) {
+            return new LinkedList<Cell>(cellsPossessedByPlayer);
+        }
+        
     }
 
     /**
      * @return list of cells possessed by ai
      */
     public LinkedList<Cell> getCellsPossessedByAI() {
-        return cellsPossessedByAI;
+        synchronized (cellsPossessedByAI) {
+            return new LinkedList<Cell>(cellsPossessedByAI);
+        }
     }
 
     /**
@@ -89,8 +94,8 @@ public class GameGrid {
     public GameGrid getCopy() {
         GameGrid g = new GameGrid();
         g.gameGrid = gameGrid.clone();
-        g.cellsPossessedByAI = new LinkedList<Cell>(cellsPossessedByAI);
-        g.cellsPossessedByPlayer = new LinkedList<Cell>(cellsPossessedByPlayer);
+        g.cellsPossessedByAI = getCellsPossessedByAI();
+        g.cellsPossessedByPlayer = getCellsPossessedByPlayer();
         return g;
     }
 
@@ -98,16 +103,20 @@ public class GameGrid {
      * @param c cell to be added
      */
     public void addCellPlayer(Cell c) {
-        cellsPossessedByAI.remove(c);
-        cellsPossessedByPlayer.add(c);
+        synchronized (cellsPossessedByAI) {
+            cellsPossessedByAI.remove(c);
+            cellsPossessedByPlayer.add(c);
+        }
     }
 
     /**
      * @param c cell to be added
      */
     public void addCellAI(Cell c) {
-        cellsPossessedByPlayer.remove(c);
-        cellsPossessedByAI.add(c);
+        synchronized (cellsPossessedByPlayer) {
+            cellsPossessedByPlayer.remove(c);
+            cellsPossessedByAI.add(c);
+        }
     }
 
 }

@@ -2,6 +2,7 @@
 package avs.ai;
 
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.concurrent.Future;
 import avs.game.Attributes;
 import avs.game.Cell;
@@ -82,7 +83,7 @@ public class AICore {
                 
                 LinkedList<Cell> ownedCells = grid.getCellsPossessedByAI();
                 int size = ownedCells.size();
-                int chosenCell = (int) (Math.random() * (size - 1) + 1);
+                int chosenCell = new Random().nextInt(size);
                 int nextTurnX = ownedCells.get(chosenCell).getX();
                 int nextTurnY = ownedCells.get(chosenCell).getY();
                 gm.chooseCell(nextTurnX, nextTurnY, Attributes.AI);

@@ -1,6 +1,7 @@
 
 package avs.game;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 import avs.ai.AICore;
@@ -8,9 +9,10 @@ import avs.ui.UserInterface;
 
 /**
  * @author HZU
+ * @param <E>
  */
 
-public class GameManager {
+public class GameManager<E> {
 
     private final UserInterface userInterface;
 
@@ -92,23 +94,26 @@ public class GameManager {
             target = gameGrid.getCell(x, y);
             target.turn();
         }
-
-        Cell nextNeighbour = gameGrid.getCell(x, y - 1);
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
-            processChanges(target, nextNeighbour, 0, target.getOwner(), changes);
-        }
-        nextNeighbour = gameGrid.getCell(x + 1, y);
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
-            processChanges(target, nextNeighbour, 0, target.getOwner(), changes);
-        }
-        nextNeighbour = gameGrid.getCell(x, y + 1);
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
-            processChanges(target, nextNeighbour, 0, target.getOwner(), changes);
-        }
-        nextNeighbour = gameGrid.getCell(x - 1, y);
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
-            processChanges(target, nextNeighbour, 0, target.getOwner(), changes);
-        }
+        
+//        Cell nextNeighbour = gameGrid.getCell(x, y - 1);
+        HashSet<Cell> processedCells = new HashSet<Cell>();
+        processChanges(processedCells, target, target.getOwner(), changes);
+//        processedCells.add(target);
+//        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
+//            processChanges(processedCells, nextNeighbour, target.getOwner(), changes);
+//        }
+//        nextNeighbour = gameGrid.getCell(x + 1, y);
+//        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
+//            processChanges(processedCells, nextNeighbour, target.getOwner(), changes);
+//        }
+//        nextNeighbour = gameGrid.getCell(x, y + 1);
+//        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
+//            processChanges(processedCells, nextNeighbour, target.getOwner(), changes);
+//        }
+//        nextNeighbour = gameGrid.getCell(x - 1, y);
+//        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
+//            processChanges(processedCells, nextNeighbour, target.getOwner(), changes);
+//        }
         return changes;
     }
 
@@ -118,27 +123,30 @@ public class GameManager {
      * @param rs counter for the recursive step
      * @param owner of the cells
      */
-    private void processChanges(Cell origin, Cell target, int rs, int owner, LinkedList<CellChanges> changes) {
+    private void processChanges(HashSet<Cell> processedCells, Cell target, int owner, LinkedList<CellChanges> changes) {
 
-        Cell nextNeighbour = gameGrid.getCell(target.getX(), target.getY() - 1);
-        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
-            processChanges(target, nextNeighbour, rs + 1, owner, changes);
-        }
-        nextNeighbour = gameGrid.getCell(target.getX() + 1, target.getY());
-        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
-            processChanges(target, nextNeighbour, rs + 1, owner, changes);
-        }
-        nextNeighbour = gameGrid.getCell(target.getX(), target.getY() + 1);
-        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
-            processChanges(target, nextNeighbour, rs + 1, owner, changes);
-        }
-        nextNeighbour = gameGrid.getCell(target.getX() - 1, target.getY());
-        if (nextNeighbour != origin && nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
-            processChanges(target, nextNeighbour, rs + 1, owner, changes);
-        }
+        if(processedCells.add(target)){
+            Cell nextNeighbour = gameGrid.getCell(target.getX(), target.getY() - 1);
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
+                processChanges(processedCells, nextNeighbour, owner, changes);
+            }
+            nextNeighbour = gameGrid.getCell(target.getX() + 1, target.getY());
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
+                processChanges(processedCells, nextNeighbour, owner, changes);
+            }
+            nextNeighbour = gameGrid.getCell(target.getX(), target.getY() + 1);
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
+                processChanges(processedCells, nextNeighbour, owner, changes);
+            }
+            nextNeighbour = gameGrid.getCell(target.getX() - 1, target.getY());
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
+                processChanges(processedCells, nextNeighbour, owner, changes);
+            }
 
-        changeOwner(target, owner);
-        changes.add(new CellChanges(target, rs));
+            changeOwner(target, owner);
+            changes.add(new CellChanges(target));
+        }
+        
     }
 
     /**
