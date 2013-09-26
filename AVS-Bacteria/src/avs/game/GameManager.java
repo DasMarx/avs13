@@ -2,6 +2,8 @@
 package avs.game;
 
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicInteger;
+import com.sun.swing.internal.plaf.synth.resources.synth;
 import avs.ai.AICore;
 import avs.ui.UserInterface;
 
@@ -20,7 +22,7 @@ public class GameManager {
     private GameGrid gameGrid = new GameGrid();
 
     // Zeigt an, der wievielte Zug momentan läuft
-    private int turn = 0;
+    private  AtomicInteger turn = new AtomicInteger();
 
     private boolean PlayersTurn = true;
 
@@ -147,7 +149,6 @@ public class GameManager {
      * @param owner to be set
      */
     private void changeOwner(Cell target, int owner) {
-        gameGrid.removeCell(target);
         gameGrid.getCell(target.getX(), target.getY()).setOwner(owner);
         if (owner == Attributes.PLAYER)
             gameGrid.addCellPlayer(target);
@@ -177,15 +178,7 @@ public class GameManager {
                 allChanges.add(changes);
                 userInterface.updateGrid(changes);
                 aiCore.updateGrid(changes);
-                if (isPlayersTurn()) {
-                    userInterface.setControl(false);
-                    aiCore.setControl(true);
-                    turn++;
-                } else {
-                    userInterface.setControl(true);
-                    aiCore.setControl(false);
-                    turn++;
-                }
+                turn.incrementAndGet();
 
                 return true;
             }
@@ -196,10 +189,7 @@ public class GameManager {
      * @return true = player turn, false = ai turn
      */
     public boolean isPlayersTurn() {
-        boolean playersTurn = false;
-        if ((turn % 2) == 0)
-            playersTurn = true;
-        return playersTurn;
+        return (turn.get() % 2) == 0;
     }
 
     /**

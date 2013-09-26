@@ -98,6 +98,7 @@ public class GameGrid {
      * @param c cell to be added
      */
     public void addCellPlayer(Cell c) {
+        cellsPossessedByAI.remove(c);
         cellsPossessedByPlayer.add(c);
     }
 
@@ -105,15 +106,8 @@ public class GameGrid {
      * @param c cell to be added
      */
     public void addCellAI(Cell c) {
-        cellsPossessedByAI.add(c);
-    }
-
-    /**
-     * @param c cell to be removed
-     */
-    public void removeCell(Cell c) {
-        cellsPossessedByAI.remove(c);
         cellsPossessedByPlayer.remove(c);
+        cellsPossessedByAI.add(c);
     }
 
 }
