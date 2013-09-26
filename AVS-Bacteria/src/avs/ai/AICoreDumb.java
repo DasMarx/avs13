@@ -11,6 +11,7 @@ import avs.game.CellChanges;
 import avs.game.GameGrid;
 import avs.game.GameManager;
 import avs.hazelcast.HazelcastWorker;
+import avs.hazelcast.WorkLoadReturn;
 import com.hazelcast.core.IExecutorService;
 import java.util.Random;
 

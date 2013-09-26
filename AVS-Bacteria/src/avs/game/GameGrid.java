@@ -88,18 +88,6 @@ public class GameGrid {
      */
     public GameGrid getCopy() {
         GameGrid g = new GameGrid();
-//        for (int i = 0; i < gameGrid.length; i++) {
-//            for (int j = 0; j < gameGrid.length; j++) {
-//                g.gameGrid[i][j] = gameGrid[i][j];
-//            }
-//        }
-//        for (int i = 0; i < cellsPossessedByAI.size(); i++) {
-//            g.cellsPossessedByAI.add(cellsPossessedByAI.get(i));
-//        }
-//        for (int i = 0; i < cellsPossessedByPlayer.size(); i++) {
-//            g.cellsPossessedByPlayer.add(cellsPossessedByPlayer.get(i));
-//        }
-        
         g.gameGrid = gameGrid.clone();
         g.cellsPossessedByAI = new LinkedList<Cell>(cellsPossessedByAI);
         g.cellsPossessedByPlayer = new LinkedList<Cell>(cellsPossessedByPlayer);

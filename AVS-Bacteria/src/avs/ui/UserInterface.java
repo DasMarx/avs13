@@ -53,7 +53,6 @@ public class UserInterface extends JPanel implements MouseMotionListener, MouseL
 	}
 
 	public void setControl(boolean controlflag) {
-		// TODO Auto-generated method stub
 		renderer.setControl(controlflag);
 	}
 

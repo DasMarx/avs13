@@ -38,8 +38,9 @@ public class GameManager {
         gameGrid.initialize();
         this.userInterface.initialize(this);
         this.aiCore.initialize(this);
-        this.userInterface.setGameGrid(gameGrid.getCopy());
-        this.aiCore.setGameGrid(gameGrid.getCopy());
+        this.userInterface.setGameGrid(gameGrid);
+        this.aiCore.setGameGrid(gameGrid);
+        this.aiCore.run();
     }
 
     public void run() {

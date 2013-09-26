@@ -10,6 +10,8 @@ import avs.game.CellChanges;
 import avs.game.GameGrid;
 import avs.game.GameManager;
 import avs.hazelcast.HazelcastWorker;
+import avs.hazelcast.WorkLoadReturn;
+import avs.hazelcast.Workload;
 import com.hazelcast.core.IExecutorService;
 
 public class AICore {
@@ -46,7 +48,7 @@ public class AICore {
         Data currentData = resultTree.getRoot().getData(); //set the root node as first datasource
         while (running) {
             
-            LinkedList<Cell> possessedCells = currentData.grid.getCellsPossessedByAI(); //get all possessed cells from the current datasource
+            LinkedList<Cell> possessedCells = currentData.getGrid().getCellsPossessedByAI(); //get all possessed cells from the current datasource
             // executorService creation
             IExecutorService executorService = myWorker.getInstance().getExecutorService("default");
 

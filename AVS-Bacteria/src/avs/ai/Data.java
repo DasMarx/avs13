@@ -10,8 +10,8 @@ import avs.game.GameGrid;
  * 
  **/
 public class Data {
-    GameGrid grid;
-    int rating, x, y, turn, hash;
+    private GameGrid grid;
+    int rating, x, y, turn;
     
     
     /**
@@ -24,12 +24,11 @@ public class Data {
      * @param turn
      */
     public Data(GameGrid grid, int rating, int x, int y, int turn){
-        this.grid = grid.getCopy();
+        this.setGrid(grid.getCopy());
         this.rating = rating;
         this.turn = turn;
         this.x = x;
         this.y = y;
-        this.hash = hashCode();
     }
     
     @Override
@@ -39,6 +38,14 @@ public class Data {
         hash = hash * 13 + y;
         hash = hash * 113 + turn;
         return hash;
+    }
+
+    public GameGrid getGrid() {
+        return grid;
+    }
+
+    public void setGrid(GameGrid grid) {
+        this.grid = grid;
     }
     
 }

@@ -1,6 +1,7 @@
-package avs.ai;
+package avs.hazelcast;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
+import avs.ai.Data;
 import avs.game.GameGrid;
 
 public class Workload implements Callable<WorkLoadReturn>, Serializable {
@@ -18,10 +19,10 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     public Workload(Data data, int x, int y){
 	    
         
-        this.grid = data.grid.getCopy();
+        this.grid = data.getGrid().getCopy();
 	    this.x = x;
 	    this.y = y;
-	    this.parentHash = data.hash;
+	    this.parentHash = data.hashCode();
 	}
     @Override
     public WorkLoadReturn call() throws Exception {
