@@ -207,7 +207,7 @@ public class GameGrid implements Serializable {
     
     public void updateCell(Cell target) {
         gameGrid[target.getX()][target.getY()] = target;
-//        changeOwner(target, target.getOwner());
+        changeOwner(target, target.getOwner());
     }
 
 }

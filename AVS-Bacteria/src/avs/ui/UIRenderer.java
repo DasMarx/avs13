@@ -243,10 +243,17 @@ public class UIRenderer implements Runnable {
 
 	    //TODO update is wrong here, will likely move it
 	    if (!changes.isEmpty()){
-	        CellChanges currentchange = changes.removeFirst();
-	        if (null != currentchange) {
-	            gameGrid.updateCell(currentchange.getCell());
+	        int i = (int) (changes.size() / (fps + 1));
+	        for (int j = 0; j < i;j++) {
+	            if (changes.isEmpty()) {
+	                break;
+	            }
+	            CellChanges currentchange = changes.removeFirst();
+	            if (null != currentchange) {
+	                gameGrid.updateCell(currentchange.getCell());
+	            }
 	        }
+	        
 	    }
 	    
 	    

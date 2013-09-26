@@ -74,7 +74,7 @@ public class AICore {
                     Future<WorkLoadReturn> future = executorService.submit(myTmpWorkload);
                     futureQueue.add(future);
                 }
-                
+                System.out.println("=== new Round ====");
                 WorkLoadReturn bestReturnedLoad = null;
                 for (Future<WorkLoadReturn> f:futureQueue) {
                     try {
