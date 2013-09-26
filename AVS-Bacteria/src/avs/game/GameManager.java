@@ -25,7 +25,7 @@ public class GameManager<E> {
     // Zeigt an, der wievielte Zug momentan läuft
     private  AtomicInteger turn = new AtomicInteger();
 
-    private LinkedList<LinkedList<CellChanges>> allChanges = new LinkedList<LinkedList<CellChanges>>();
+//    private LinkedList<LinkedList<CellChanges>> allChanges = new LinkedList<LinkedList<CellChanges>>();
 
     /**
      * Initializes a new {@link GameManager}.
@@ -180,9 +180,9 @@ public class GameManager<E> {
     public boolean chooseCell(int x, int y, int owner) {
             if (checkTurn(x, y, owner)) {
                 LinkedList<CellChanges> changes = processChanges(x, y);
-                allChanges.add(changes);
-                userInterface.updateGrid(changes);
-                aiCore.updateGrid(changes);
+//                allChanges.add(changes);
+//                userInterface.updateGrid(changes);
+//                aiCore.updateGrid(changes);
                 turn.incrementAndGet();
 
                 return true;
@@ -207,22 +207,22 @@ public class GameManager<E> {
         }
     }
 
-    /**
-     * @return last change
-     */
-    public LinkedList<CellChanges> getChanges() {
-        synchronized (allChanges) {
-            return allChanges.getLast();
-        }
-    }
-    
-    /**
-     * @param the turn whos changes are requested
-     * @return the changes of the specified turn
-     */
-    public LinkedList<CellChanges> getChanges(int turn){
-        synchronized (allChanges){
-            return allChanges.get(turn);
-        }
-    }
+//    /**
+//     * @return last change
+//     */
+//    public LinkedList<CellChanges> getChanges() {
+//        synchronized (allChanges) {
+//            return allChanges.getLast();
+//        }
+//    }
+//    
+//    /**
+//     * @param the turn whos changes are requested
+//     * @return the changes of the specified turn
+//     */
+//    public LinkedList<CellChanges> getChanges(int turn){
+//        synchronized (allChanges){
+//            return allChanges.get(turn);
+//        }
+//    }
 }

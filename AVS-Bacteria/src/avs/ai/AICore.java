@@ -33,15 +33,17 @@ public class AICore {
         this.grid = grid;
     }
     
-    public void updateGrid(LinkedList<CellChanges> cellChanges){
-    	for(CellChanges changedCell: cellChanges){
-    		int o = changedCell.getCell().getOwner();
-    		if(o == Attributes.AI)
-    			grid.addCellAI(changedCell.getCell());
-    		if(o == Attributes.PLAYER)
-    			grid.addCellPlayer(changedCell.getCell());
-    	}
-    }
+//    public void updateGrid(LinkedList<CellChanges> cellChanges){
+        // We don't need this method as we are working on the same Grid
+        
+//    	for(CellChanges changedCell: cellChanges){
+//    		int o = changedCell.getCell().getOwner();
+//    		if(o == Attributes.AI)
+//    			grid.addCellAI(changedCell.getCell());
+//    		if(o == Attributes.PLAYER)
+//    			grid.addCellPlayer(changedCell.getCell());
+//    	}
+//    }
     
     public void setControl(boolean turn){
     	//TODO: The AIs turn begins, when this method gets called

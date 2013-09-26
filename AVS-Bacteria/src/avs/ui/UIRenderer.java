@@ -403,9 +403,9 @@ public class UIRenderer implements Runnable {
 		initialized = true;
 	};
 
-	public void updateGrid(LinkedList<CellChanges> changes) {
-		// TODO:
-	}
+//	public void updateGrid(LinkedList<CellChanges> changes) {
+//		// TODO:
+//	}
 
 	public void setControl(boolean controlflag) {
 		// TODO:

@@ -54,10 +54,10 @@ public class UserInterface extends JPanel implements MouseMotionListener, MouseL
 		renderer.setControl(controlflag);
 	}
 
-	public void updateGrid(LinkedList<CellChanges> changes) {
-		// TODO Auto-generated method stub
-		renderer.updateGrid(changes);
-	}
+//	public void updateGrid(LinkedList<CellChanges> changes) {
+//		// TODO Auto-generated method stub
+//		renderer.updateGrid(changes);
+//	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
