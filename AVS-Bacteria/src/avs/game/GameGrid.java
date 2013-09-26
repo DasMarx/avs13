@@ -4,6 +4,7 @@
 
 package avs.game;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
@@ -11,7 +12,12 @@ import java.util.Random;
 /**
  * @author HZU
  */
-public class GameGrid {
+public class GameGrid implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -399936942981838923L;
 
     private Cell[][] gameGrid;
 
@@ -105,12 +111,12 @@ public class GameGrid {
      */
     public GameGrid getCopy() {
         GameGrid g = new GameGrid();
-        g.gameGrid = new Cell[gridSize][gridSize];
         for (int i = 0; i < gameGrid.length; i++) {
             for (int j = 0; j < gameGrid.length; j++) {
                 g.gameGrid[i][j] = new Cell(i, j, gameGrid[i][j].getOwner(),gameGrid[i][j].getDirection());
             }
         }
+//        g.gameGrid = gameGrid.clone();
         g.cellsPossessedByAI = getCellsPossessedByAI();
         g.cellsPossessedByPlayer = getCellsPossessedByPlayer();
         return g;
@@ -162,6 +168,9 @@ public class GameGrid {
     private void processChanges(HashSet<Cell> processedCells, Cell target, int owner, LinkedList<CellChanges> changes) {
 
         if (processedCells.add(target)) {
+            changeOwner(target, owner);
+            changes.add(new CellChanges(target,owner));
+            
             Cell nextNeighbour = getCell(target.getX(), target.getY() - 1);
             if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
                 processChanges(processedCells, nextNeighbour, owner, changes);
@@ -179,8 +188,7 @@ public class GameGrid {
                 processChanges(processedCells, nextNeighbour, owner, changes);
             }
 
-            changeOwner(target, owner);
-            changes.add(new CellChanges(target,owner));
+            
         }
 
     }
@@ -199,6 +207,7 @@ public class GameGrid {
     
     public void updateCell(Cell target) {
         gameGrid[target.getX()][target.getY()] = target;
+//        changeOwner(target, target.getOwner());
     }
 
 }

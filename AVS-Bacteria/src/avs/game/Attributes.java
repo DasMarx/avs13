@@ -1,7 +1,14 @@
 
 package avs.game;
 
-public class Attributes {
+import java.io.Serializable;
+
+public class Attributes implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5962095539900609258L;
 
     public static final int UP = 0;
 

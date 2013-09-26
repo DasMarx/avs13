@@ -1,7 +1,16 @@
 
 package avs.game;
 
-public class Cell {
+import java.io.Serializable;
+import java.util.concurrent.Callable;
+import avs.hazelcast.WorkLoadReturn;
+
+public class Cell implements Serializable{
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6516429494910066037L;
 
     private int x;
 

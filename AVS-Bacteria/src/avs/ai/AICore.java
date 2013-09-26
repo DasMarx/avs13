@@ -66,7 +66,7 @@ public class AICore {
 //                LinkedList<Cell> possessedCells = currentData.getGrid().getCellsPossessedByAI(); //get all possessed cells from the current datasource
                 // executorService creation
                 
-
+                futureQueue = new LinkedList<Future<WorkLoadReturn>>();
                 for (Cell c : grid.getCellsPossessedByAI()){
                     Workload myTmpWorkload = new Workload(grid.getCopy(), c.getX(), c.getY()); // create workload for all workers
                     
@@ -93,6 +93,7 @@ public class AICore {
                       e.printStackTrace();
                   }
                 }
+                
                 if (bestReturnedLoad == null) {
                     LinkedList<Cell> ownedCells = grid.getCellsPossessedByAI();
                     int size = ownedCells.size();

@@ -1,7 +1,14 @@
 
 package avs.game;
 
-public class CellChanges {
+import java.io.Serializable;
+
+public class CellChanges implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4398381295539290132L;
 
     private Cell cell;
 
