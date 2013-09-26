@@ -2,14 +2,11 @@
 package avs.ai;
 
 import java.util.LinkedList;
-import java.util.concurrent.Future;
 import avs.game.Attributes;
 import avs.game.Cell;
 import avs.game.CellChanges;
 import avs.game.GameGrid;
 import avs.game.GameManager;
-import avs.hazelcast.HazelcastWorker;
-import avs.hazelcast.WorkLoadReturn;
 
 public class AICoreDumb {
 
@@ -17,11 +14,7 @@ public class AICoreDumb {
 
     private boolean running = true;
 
-    private LinkedList<Future<WorkLoadReturn>> futureQueue;
-
     private GameGrid grid;
-
-    private HazelcastWorker myWorker;
     
     private int nextTurnX;
 
@@ -29,7 +22,6 @@ public class AICoreDumb {
     
     public void initialize(GameManager gm) {
         this.gm = gm;
-        myWorker = new HazelcastWorker();
     }
 
     public void setGameGrid(GameGrid grid) {
@@ -48,11 +40,11 @@ public class AICoreDumb {
         
     }
     public void setControl(boolean turn){
-    	System.out.print("Bin ich dran: ");
+    	System.out.print("Is it my turn: ");
     	if(gm.isPlayersTurn() == true)
-    		System.out.println("Nö");
+    		System.out.println("Nope");
     	else
-    		System.out.println("Jo");            
+    		System.out.println("Yep");            
     	
     	LinkedList<Cell> ownedCells = grid.getCellsPossessedByAI();
         int size = ownedCells.size();
@@ -62,14 +54,14 @@ public class AICoreDumb {
         
         if(turn) gm.chooseCell(nextTurnX, nextTurnY, Attributes.AI);
         System.out.println("Chose Cell: " + nextTurnX + " " + nextTurnY);
-        System.out.print("Fertig!");
+        System.out.print("Done!");
     }
 
     public void run() {
         while(running){
             LinkedList<Cell> ownedCells = grid.getCellsPossessedByAI();
             int size = ownedCells.size();
-            int chosenCell = (int) (Math.random() * (size - 1) + 1);
+            int chosenCell = (int) (Math.random() * (size));
             nextTurnX = ownedCells.get(chosenCell).getX();
             nextTurnY = ownedCells.get(chosenCell).getY();
         }

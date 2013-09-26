@@ -33,8 +33,13 @@ public class AICore {
     }
     
     public void updateGrid(LinkedList<CellChanges> cellChanges){
-//        TODO    
-    }
+    	for(CellChanges changedCell: cellChanges){
+    		int o = changedCell.getCell().getOwner();
+    		if(o == Attributes.AI)
+    			grid.addCellAI(changedCell.getCell());
+    		if(o == Attributes.PLAYER)
+    			grid.addCellPlayer(changedCell.getCell());    			
+    	}
 
     public void run() {
 //        Tree<Data> resultTree = new Tree<Data>(new Data(grid, 0, -1, -1, 0)); //create Tree from first Result
