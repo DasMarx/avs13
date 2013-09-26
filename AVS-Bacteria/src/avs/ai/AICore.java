@@ -38,8 +38,9 @@ public class AICore {
     		if(o == Attributes.AI)
     			grid.addCellAI(changedCell.getCell());
     		if(o == Attributes.PLAYER)
-    			grid.addCellPlayer(changedCell.getCell());    			
+    			grid.addCellPlayer(changedCell.getCell());
     	}
+    }
 
     public void run() {
 //        Tree<Data> resultTree = new Tree<Data>(new Data(grid, 0, -1, -1, 0)); //create Tree from first Result
