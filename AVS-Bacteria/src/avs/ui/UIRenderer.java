@@ -4,16 +4,19 @@
 package avs.ui;
 
 import java.awt.AlphaComposite;
+import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -49,12 +52,19 @@ public class UIRenderer implements Runnable {
 	long fps = 0;
 	long fpscounter = 0;
 	long lastFPSTime = 0;
+	
+	
+	public MouseEvent mouseLastEvent = null;
+	public boolean mouseButtonR = false;
+	private Point currentHoveredField =  new Point(-1, -1);
 
 	private static int gridTiles = 30;
 
 	private BufferedImage imageArrowFriendly = null;
 	private BufferedImage imageArrowEnemy = null;
 	private BufferedImage imageArrowNeutral = null;
+	private BufferedImage imageArrowChoosen = null;
+	
 	private BufferedImage imageFogFriendly = null;
 	private BufferedImage imageFogEnemy = null;
 	private BufferedImage imageFloorFriendly = null;
@@ -62,6 +72,7 @@ public class UIRenderer implements Runnable {
 
 	private BufferedImage imageBackground = null;
 	private BufferedImage imageBoard = null;
+	private BufferedImage imageBoardGrid = null;
 
 	private BufferedImage imageEnergyBallFriendly = null;
 	private BufferedImage imageEnergyBallNeutral = null;
@@ -70,20 +81,19 @@ public class UIRenderer implements Runnable {
 	private GameGrid gameGrid = null;
 	private GameManager gameManager;
 	private boolean initialized;
-	private Frame frame;
 
-	private Rectangle2D gameFieldRectangleCurrent;
-	private Rectangle2D gameFieldRectangleDestination;
+	private Rectangle2D.Double gameFieldRectangleCurrent;
+	private Rectangle2D.Double gameFieldRectangleDestination;
 
-	public UIRenderer(UserInterface userInterface, Frame frame) {
+	public UIRenderer(UserInterface userInterface) {
 		this.userInterface = userInterface;
-		this.frame = frame;
 
 		// Init Images
 		try {
 			imageArrowFriendly = ImageIO.read(new File("img/arrow_friendly.png"));
 			imageArrowEnemy = ImageIO.read(new File("img/arrow_enemy.png"));
 			imageArrowNeutral = ImageIO.read(new File("img/arrow_neutral.png"));
+			imageArrowChoosen = ImageIO.read(new File("img/arrow_choosen.png"));
 			imageFogFriendly = ImageIO.read(new File("img/fog_friendly.png"));
 			imageFogEnemy = ImageIO.read(new File("img/fog_enemy.png"));
 
@@ -92,6 +102,7 @@ public class UIRenderer implements Runnable {
 
 			imageBackground = ImageIO.read(new File("img/background.jpg"));
 			imageBoard = ImageIO.read(new File("img/board_greenlight.png"));
+			imageBoardGrid = ImageIO.read(new File("img/grid.png"));
 
 			imageEnergyBallFriendly = ImageIO.read(new File("img/energyball_friendly.png"));
 			imageEnergyBallNeutral = ImageIO.read(new File("img/energyball_neutral.png"));
@@ -106,9 +117,10 @@ public class UIRenderer implements Runnable {
 	public void initialize(GameManager gameManager) {
 		this.gameManager = gameManager;
 
-		gameFieldRectangleCurrent = new Rectangle();
-		gameFieldRectangleCurrent.setRect(300, 300, 100, 100);
-		gameFieldRectangleDestination = new Rectangle(100, 100, 400, 400);
+		gameFieldRectangleCurrent = new Rectangle2D.Double();
+		
+		gameFieldRectangleCurrent.setRect(userInterface.getWidth()/2, userInterface.getHeight()/2, 0, 0);
+		gameFieldRectangleDestination = new Rectangle2D.Double();
 
 	}
 
@@ -161,6 +173,73 @@ public class UIRenderer implements Runnable {
 		}
 
 		// TODO Auto-generated method stub
+		
+		
+		int size = userInterface.getWidth();
+		if (size > userInterface.getHeight()) {
+			size = userInterface.getHeight();
+		}
+		
+	
+		
+		double update = 10.0;
+		
+		
+		gameFieldRectangleDestination.setRect(0, 0, size,size);
+		
+		//Mousecheck
+		if (mouseButtonR) {
+			gameFieldRectangleDestination.setRect(size/4, size/4, size-size/2,size-size/2);
+		}
+		
+		
+		
+		
+		
+		double setX=((gameFieldRectangleDestination.getX()-gameFieldRectangleCurrent.getX()));
+		if (Math.abs(setX) < 2) {setX = 0;}
+		if (Math.abs(setX) > 50) {setX = 50*Math.signum(setX);}
+		
+		double setY=((gameFieldRectangleDestination.getY()-gameFieldRectangleCurrent.getY()));
+		if (Math.abs(setY) < 2) {setY = 0;}
+		if (Math.abs(setY) > 50) {setY = 50*Math.signum(setY);}
+		
+		double setWidth=((gameFieldRectangleDestination.getWidth()-gameFieldRectangleCurrent.getWidth()));
+		if (Math.abs(setWidth) < 2) {setWidth = 0;}
+		if (Math.abs(setWidth) > 100) {setWidth = 100*Math.signum(setWidth);}
+		
+		
+		double setHeight=((gameFieldRectangleDestination.getHeight()-gameFieldRectangleCurrent.getHeight()));
+		if (Math.abs(setHeight) < 2) {setHeight = 0;}
+		if (Math.abs(setHeight) > 100) {setHeight = 100*Math.signum(setHeight);}
+		
+		
+		gameFieldRectangleCurrent.setRect(
+				gameFieldRectangleCurrent.getX()+setX/update,
+				gameFieldRectangleCurrent.getY()+setY/update,
+				gameFieldRectangleCurrent.getWidth()+setWidth/update,
+				gameFieldRectangleCurrent.getHeight()+setHeight/update
+				);
+
+		
+		
+		
+		//Aktuell gehoverten Pfeil überblenden
+		if (mouseLastEvent != null) {
+
+			if (gameFieldRectangleCurrent.contains(mouseLastEvent.getX(),mouseLastEvent.getY())) {
+				
+
+				currentHoveredField.setLocation(Math.floor(gridTiles*(mouseLastEvent.getX()-gameFieldRectangleCurrent.x)/gameFieldRectangleCurrent.width), Math.floor(gridTiles*(mouseLastEvent.getY()-gameFieldRectangleCurrent.y)/gameFieldRectangleCurrent.height));
+			} else {
+				currentHoveredField.setLocation(-1, -1);
+			}
+			
+			
+		}
+		
+		
+		
 	}
 
 	public void draw(Graphics g) {
@@ -170,23 +249,8 @@ public class UIRenderer implements Runnable {
 		// double c = Math.sin(timeRunning / 500.0) * 0;
 		// double d = Math.sin(timeRunning / 300.0) * 0;
 
-		int size = frame.getSize().width;
-		if (size > frame.getSize().height - 20) {
-			size = frame.getSize().height - 20;
-		}
-		size -= 10;
 
-		double update = 200.0;
-		
-		
-		gameFieldRectangleDestination= new Rectangle(100, 100, (int) (0 + size-200), (int) (0 + size-200));
-		
 
-		gameFieldRectangleCurrent.setRect(
-				gameFieldRectangleCurrent.getX()+((gameFieldRectangleDestination.getX()-gameFieldRectangleCurrent.getX())/update),
-				gameFieldRectangleCurrent.getY()+((gameFieldRectangleDestination.getY()-gameFieldRectangleCurrent.getY())/update),
-				gameFieldRectangleCurrent.getWidth()+((gameFieldRectangleDestination.getWidth()-gameFieldRectangleCurrent.getWidth())/update),
-				gameFieldRectangleCurrent.getHeight()+((gameFieldRectangleDestination.getHeight()-gameFieldRectangleCurrent.getHeight())/update));
 
 		//		gameFieldRectangleCurrent.setRect(gameFieldRectangleDestination.getX() + (gameFieldRectangleDestination.getX() - gameFieldRectangleCurrent.getX()) / update, gameFieldRectangleDestination.getY() + (gameFieldRectangleDestination.getY() - gameFieldRectangleCurrent.getY()) / update, gameFieldRectangleDestination.getWidth() + (gameFieldRectangleDestination.getWidth() - gameFieldRectangleCurrent.getWidth()) / update, gameFieldRectangleDestination.getHeight() + (gameFieldRectangleDestination.getHeight() - gameFieldRectangleCurrent.getHeight()) / update);
 
@@ -266,6 +330,9 @@ public class UIRenderer implements Runnable {
 		}
 
 		// Draw Field
+		g2d.drawImage(imageBoardGrid, (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2), (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2), (int)(gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2), (int)(gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2), 0, 0, imageBoard.getWidth(), imageBoard.getHeight(), null);
+
+		
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		angle = 0;
 		// TODO Auto-generated method stub
@@ -308,6 +375,15 @@ public class UIRenderer implements Runnable {
 					break;
 				}
 
+				
+				//Aktuell gehoverten Pfeil überblenden
+				if (currentHoveredField.x == i && currentHoveredField.y == j) {
+					
+					g2d.drawImage(imageArrowChoosen, (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX()), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + (int) (gameFieldRectangleCurrent.getWidth() / gridTiles) + gameFieldRectangleCurrent.getX()), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY() + (int) (gameFieldRectangleCurrent.getHeight() / gridTiles)), 0, 0, imageArrowEnemy.getWidth(), imageArrowEnemy.getHeight(), null);
+
+				}
+				
+				
 				g2d.rotate(-Math.toRadians(angle), (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX() + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2)), (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()) + (gameFieldRectangleCurrent.getHeight() / gridTiles / 2));
 
 			}
@@ -319,6 +395,11 @@ public class UIRenderer implements Runnable {
 		g2d.setFont(font);
 		g2d.setColor(colorRed);
 		g2d.drawString(fps + " FPS", 5, 18);
+		if (mouseLastEvent != null) {g2d.drawString(mouseLastEvent.getX() + "---" + mouseLastEvent.getY(), 5, 40);}
+		g2d.drawString(currentHoveredField.x + "---" + currentHoveredField.y, 5, 62);
+		g2d.drawString(String.valueOf(gameManager.isPlayersTurn()), 5, 84);
+		if (mouseLastEvent != null) {g2d.drawString(String.valueOf(mouseLastEvent.getButton()), 5, 96);}
+
 
 	}
 
@@ -334,6 +415,16 @@ public class UIRenderer implements Runnable {
 
 	public void setControl(boolean controlflag) {
 		// TODO:
+	}
+
+
+	public Point getClickedMouseField(MouseEvent e) {
+		if (gameFieldRectangleCurrent.contains(mouseLastEvent.getX(),mouseLastEvent.getY())) {
+			return new Point((int)(Math.floor(gridTiles*(mouseLastEvent.getX()-gameFieldRectangleCurrent.x)/gameFieldRectangleCurrent.width)), (int) Math.floor(gridTiles*(mouseLastEvent.getY()-gameFieldRectangleCurrent.y)/gameFieldRectangleCurrent.height));
+		} else {
+			return new Point(-1, -1);
+		}
+		
 	}
 
 }

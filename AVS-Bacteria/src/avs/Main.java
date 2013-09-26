@@ -21,12 +21,12 @@ public class Main {
         frame.setTitle("AVS - Bacteria");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        UserInterface userInterface = new UserInterface(frame);
+        UserInterface userInterface = new UserInterface();
         AICore aiCore = new AICore();
 
         frame.add(userInterface);
         frame.setSize(800, 820);
-        frame.setLocation(100, 100);
+        frame.setLocation(1, 1);
         frame.setVisible(true);
 
         GameManager gameManager = new GameManager(userInterface, aiCore);

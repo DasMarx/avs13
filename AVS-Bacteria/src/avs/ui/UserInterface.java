@@ -5,6 +5,7 @@ package avs.ui;
 
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -12,6 +13,7 @@ import java.util.LinkedList;
 
 import javax.swing.JPanel;
 
+import avs.game.Attributes;
 import avs.game.CellChanges;
 import avs.game.GameGrid;
 import avs.game.GameManager;
@@ -20,19 +22,18 @@ import avs.game.GameManager;
  * @author HZU
  * 
  */
-public class UserInterface extends JPanel implements MouseMotionListener {
-	private Frame frame;
+public class UserInterface extends JPanel implements MouseMotionListener, MouseListener {
 	private UIRenderer renderer;
 	private GameManager gameManager;
 	private GameGrid gameGrid;
 
-	public UserInterface(Frame frame) {
+	public UserInterface() {
 		super();
-		this.frame= frame; 
-		renderer = new UIRenderer(this, frame);
+		renderer = new UIRenderer(this);
 		new Thread(renderer).start();
 
 		addMouseMotionListener(this);
+		addMouseListener(this);
 
 	}
 
@@ -63,16 +64,48 @@ public class UserInterface extends JPanel implements MouseMotionListener {
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-
+		renderer.mouseLastEvent = e;
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO:
-//		System.exit(0);
-		// TODO Auto-generated method stub
+		System.out.println("move");
+		renderer.mouseLastEvent = e;
+	}
 
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		Point p = renderer.getClickedMouseField(e);
+		if (p.x != -1 && p.y != -1 && gameManager.isPlayersTurn()) {
+			gameManager.chooseCell(p.x, p.y, Attributes.PLAYER);
+		}
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON3) {
+			renderer.mouseButtonR = true;
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON3) {
+			renderer.mouseButtonR = false;
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
