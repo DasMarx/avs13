@@ -3,16 +3,13 @@
  */
 package avs.ui;
 
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.LinkedList;
-
 import javax.swing.JPanel;
-
 import avs.game.Attributes;
 import avs.game.CellChanges;
 import avs.game.GameGrid;
@@ -23,10 +20,12 @@ import avs.game.GameManager;
  * 
  */
 public class UserInterface extends JPanel implements MouseMotionListener, MouseListener {
-	private UIRenderer renderer;
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -2569343227591412718L;
+    private UIRenderer renderer;
 	private GameManager gameManager;
-	private GameGrid gameGrid;
-
 	public UserInterface() {
 		super();
 		renderer = new UIRenderer(this);
@@ -43,7 +42,6 @@ public class UserInterface extends JPanel implements MouseMotionListener, MouseL
 	}
 
 	public void setGameGrid(GameGrid gameGrid) {
-		this.gameGrid = gameGrid;
 		renderer.setGameGrid(gameGrid);
 	}
 

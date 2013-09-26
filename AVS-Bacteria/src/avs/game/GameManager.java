@@ -3,7 +3,6 @@ package avs.game;
 
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
-import com.sun.swing.internal.plaf.synth.resources.synth;
 import avs.ai.AICore;
 import avs.ui.UserInterface;
 
@@ -23,8 +22,6 @@ public class GameManager {
 
     // Zeigt an, der wievielte Zug momentan läuft
     private  AtomicInteger turn = new AtomicInteger();
-
-    private boolean PlayersTurn = true;
 
     private LinkedList<LinkedList<CellChanges>> allChanges = new LinkedList<LinkedList<CellChanges>>();
 

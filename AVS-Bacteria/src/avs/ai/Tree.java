@@ -13,6 +13,7 @@ public class Tree<T> {
         root.setChildren(new HashSet<Node<T>>());
     }
 
+    @SuppressWarnings("hiding")
     public class Node<T> {
 
         private T data;

@@ -1,10 +1,7 @@
 
 package avs.ai;
 
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import avs.game.Attributes;
 import avs.game.Cell;
@@ -13,8 +10,6 @@ import avs.game.GameGrid;
 import avs.game.GameManager;
 import avs.hazelcast.HazelcastWorker;
 import avs.hazelcast.WorkLoadReturn;
-import avs.hazelcast.Workload;
-import com.hazelcast.core.IExecutorService;
 
 public class AICore {
 

@@ -4,28 +4,19 @@
 package avs.ui;
 
 import java.awt.AlphaComposite;
-import java.awt.Button;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedList;
-
 import javax.imageio.ImageIO;
-
 import avs.game.Attributes;
 import avs.game.Cell;
 import avs.game.CellChanges;
@@ -65,8 +56,8 @@ public class UIRenderer implements Runnable {
 	private BufferedImage imageArrowNeutral = null;
 	private BufferedImage imageArrowChoosen = null;
 	
-	private BufferedImage imageFogFriendly = null;
-	private BufferedImage imageFogEnemy = null;
+//	private BufferedImage imageFogFriendly = null;
+//	private BufferedImage imageFogEnemy = null;
 	private BufferedImage imageFloorFriendly = null;
 	private BufferedImage imageFloorEnemy = null;
 
@@ -96,8 +87,8 @@ public class UIRenderer implements Runnable {
 			imageArrowEnemy = ImageIO.read(new File("img/arrow_enemy.png"));
 			imageArrowNeutral = ImageIO.read(new File("img/arrow_neutral.png"));
 			imageArrowChoosen = ImageIO.read(new File("img/arrow_choosen.png"));
-			imageFogFriendly = ImageIO.read(new File("img/fog_friendly.png"));
-			imageFogEnemy = ImageIO.read(new File("img/fog_enemy.png"));
+//			imageFogFriendly = ImageIO.read(new File("img/fog_friendly.png"));
+//			imageFogEnemy = ImageIO.read(new File("img/fog_enemy.png"));
 
 			imageFloorFriendly = ImageIO.read(new File("img/floor_friendly.png"));
 			imageFloorEnemy = ImageIO.read(new File("img/floor_enemy.png"));
