@@ -9,10 +9,9 @@ import avs.ui.UserInterface;
 
 /**
  * @author HZU
- * @param <E>
  */
 
-public class GameManager<E> {
+public class GameManager {
 
     private final UserInterface userInterface;
 
