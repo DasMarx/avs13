@@ -41,6 +41,11 @@ public class AICore {
     			grid.addCellPlayer(changedCell.getCell());
     	}
     }
+    
+    public void setControl(boolean turn){
+    	//TODO: The AIs turn begins, when this method gets called
+    	
+    }
 
     public void run() {
 //        Tree<Data> resultTree = new Tree<Data>(new Data(grid, 0, -1, -1, 0)); //create Tree from first Result

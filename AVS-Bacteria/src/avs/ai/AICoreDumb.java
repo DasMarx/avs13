@@ -39,6 +39,7 @@ public class AICoreDumb {
     		
         
     }
+    
     public void setControl(boolean turn){
     	System.out.print("Is it my turn: ");
     	if(gm.isPlayersTurn() == true)
