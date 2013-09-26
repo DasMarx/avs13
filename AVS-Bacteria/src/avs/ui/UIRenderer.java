@@ -73,7 +73,9 @@ public class UIRenderer implements Runnable {
 	private BufferedImage imageBackground = null;
 	private BufferedImage imageBoard = null;
 	private BufferedImage imageBoardGrid = null;
-
+	private BufferedImage imageBoardPlayersTurn = null;
+	private BufferedImage imageBoardEnemyTurn = null;
+	
 	private BufferedImage imageEnergyBallFriendly = null;
 	private BufferedImage imageEnergyBallNeutral = null;
 	private BufferedImage imageEnergyBallEnemy = null;
@@ -103,7 +105,9 @@ public class UIRenderer implements Runnable {
 			imageBackground = ImageIO.read(new File("img/background.jpg"));
 			imageBoard = ImageIO.read(new File("img/board_greenlight.png"));
 			imageBoardGrid = ImageIO.read(new File("img/grid.png"));
-
+			imageBoardPlayersTurn = ImageIO.read(new File("img/green_light.png"));
+			imageBoardEnemyTurn = ImageIO.read(new File("img/red_light.png"));
+			
 			imageEnergyBallFriendly = ImageIO.read(new File("img/energyball_friendly.png"));
 			imageEnergyBallNeutral = ImageIO.read(new File("img/energyball_neutral.png"));
 			imageEnergyBallEnemy = ImageIO.read(new File("img/energyball_enemy.png"));
@@ -185,7 +189,7 @@ public class UIRenderer implements Runnable {
 		double update = 10.0;
 		
 		
-		gameFieldRectangleDestination.setRect(0, 0, size,size);
+		gameFieldRectangleDestination.setRect(size/20, size/20, size-size/10,size-size/10);
 		
 		//Mousecheck
 		if (mouseButtonR) {
@@ -269,11 +273,15 @@ public class UIRenderer implements Runnable {
 		// TODO: Draw animated stars for background
 
 		// Draw gameBoard
-
-		// (imageBoard.getWidth()/2)
-
 		g2d.drawImage(imageBoard, (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2), (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2), (int)(gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2), (int)(gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2), 0, 0, imageBoard.getWidth(), imageBoard.getHeight(), null);
-
+		
+		if (gameManager.isPlayersTurn()) {
+			g2d.drawImage(imageBoardPlayersTurn, (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2), (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2), (int)(gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2), (int)(gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2), 0, 0, imageBoardPlayersTurn.getWidth(), imageBoardPlayersTurn.getHeight(), null);
+		} else {
+			g2d.drawImage(imageBoardEnemyTurn, (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2), (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2), (int)(gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2), (int)(gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2), 0, 0, imageBoardEnemyTurn.getWidth(), imageBoardEnemyTurn.getHeight(), null);
+		}
+	
+		
 		g2d.setColor(colorBlack);
 
 		// Draw Floor
@@ -329,10 +337,8 @@ public class UIRenderer implements Runnable {
 			}
 		}
 
-		// Draw Field
+		// Draw BoardGrid
 		g2d.drawImage(imageBoardGrid, (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2), (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2), (int)(gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2), (int)(gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2), 0, 0, imageBoard.getWidth(), imageBoard.getHeight(), null);
-
-		
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		angle = 0;
 		// TODO Auto-generated method stub
@@ -395,10 +401,7 @@ public class UIRenderer implements Runnable {
 		g2d.setFont(font);
 		g2d.setColor(colorRed);
 		g2d.drawString(fps + " FPS", 5, 18);
-		if (mouseLastEvent != null) {g2d.drawString(mouseLastEvent.getX() + "---" + mouseLastEvent.getY(), 5, 40);}
-		g2d.drawString(currentHoveredField.x + "---" + currentHoveredField.y, 5, 62);
-		g2d.drawString(String.valueOf(gameManager.isPlayersTurn()), 5, 84);
-		if (mouseLastEvent != null) {g2d.drawString(String.valueOf(mouseLastEvent.getButton()), 5, 96);}
+		g2d.drawString("Players turn? " + String.valueOf(gameManager.isPlayersTurn()), 100, 18);
 
 
 	}
