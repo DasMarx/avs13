@@ -161,9 +161,7 @@ public class GameManager {
      * @return true if turn is allowed, false if turn is forbidden
      */
     private boolean checkTurn(int x, int y, int owner) {
-        Cell c1 = new Cell(x, y, owner, Attributes.UP);
-        Cell c2 = gameGrid.getCell(x, y);
-        return c1.getOwner() == c2.getOwner();
+        return gameGrid.getCell(x, y).getOwner() == owner;
     }
 
     /**
@@ -173,7 +171,6 @@ public class GameManager {
      * @return true = valid move, false invalid move
      */
     public boolean chooseCell(int x, int y, int owner) {
-        if ((isPlayersTurn() && (owner == Attributes.PLAYER)) || (!isPlayersTurn() && (owner == Attributes.AI))) {
             if (checkTurn(x, y, owner)) {
                 LinkedList<CellChanges> changes = processChanges(x, y);
                 allChanges.add(changes);
@@ -191,7 +188,6 @@ public class GameManager {
 
                 return true;
             }
-        }
         return false;
     }
 
