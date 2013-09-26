@@ -21,9 +21,9 @@ public class GameGrid implements Serializable {
 
     private Cell[][] gameGrid;
 
-    private LinkedList<Cell> cellsPossessedByPlayer = new LinkedList<Cell>();
+    private HashSet<Cell> cellsPossessedByPlayer = new HashSet<Cell>();
 
-    private LinkedList<Cell> cellsPossessedByAI = new LinkedList<Cell>();
+    private HashSet<Cell> cellsPossessedByAI = new HashSet<Cell>();
 
     private static final int gridSize = 30;
 
@@ -39,9 +39,9 @@ public class GameGrid implements Serializable {
     /**
      * @return list of cells possessed by player
      */
-    public LinkedList<Cell> getCellsPossessedByPlayer() {
+    public HashSet<Cell> getCellsPossessedByPlayer() {
         synchronized (cellsPossessedByPlayer) {
-            return new LinkedList<Cell>(cellsPossessedByPlayer);
+            return new HashSet<Cell>(cellsPossessedByPlayer);
         }
     }
 
@@ -54,9 +54,9 @@ public class GameGrid implements Serializable {
     /**
      * @return list of cells possessed by ai
      */
-    public LinkedList<Cell> getCellsPossessedByAI() {
+    public HashSet<Cell> getCellsPossessedByAI() {
         synchronized (cellsPossessedByAI) {
-            return new LinkedList<Cell>(cellsPossessedByAI);
+            return new HashSet<Cell>(cellsPossessedByAI);
         }
     }
 

@@ -78,10 +78,13 @@ public class AICore {
                 WorkLoadReturn bestReturnedLoad = null;
                 for (Future<WorkLoadReturn> f:futureQueue) {
                     try {
+                        
                       WorkLoadReturn myReturn = f.get();
+                      System.out.println("field " + myReturn.getX() + ":" + myReturn.getY() + " is worth: " + myReturn.getAi());
                       if (null == bestReturnedLoad) {
                           bestReturnedLoad = myReturn;
                       } else if (myReturn.getAi() >= bestReturnedLoad.getAi()) {
+                          
                           bestReturnedLoad = myReturn;
                       }
                       
@@ -95,7 +98,7 @@ public class AICore {
                 }
                 
                 if (bestReturnedLoad == null) {
-                    LinkedList<Cell> ownedCells = grid.getCellsPossessedByAI();
+                    LinkedList<Cell> ownedCells = new LinkedList<Cell>(grid.getCellsPossessedByAI());
                     int size = ownedCells.size();
                     int chosenCell = new Random().nextInt(size);
                     int nextTurnX = ownedCells.get(chosenCell).getX();
