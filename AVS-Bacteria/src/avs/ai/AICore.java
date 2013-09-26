@@ -77,7 +77,7 @@ public class AICore {
                 gm.chooseCell(nextTurnX, nextTurnY, Attributes.AI);
             } else {
                 try {
-                    wait(100);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
