@@ -121,25 +121,25 @@ public class UIRenderer implements Runnable {
 
         // Init Images
         try {
-            imageArrowFriendly = ImageIO.read(new File("img/arrow_friendly.png"));
-            imageArrowEnemy = ImageIO.read(new File("img/arrow_enemy.png"));
-            imageArrowNeutral = ImageIO.read(new File("img/arrow_neutral.png"));
-            imageArrowChoosen = ImageIO.read(new File("img/arrow_choosen.png"));
+            imageArrowFriendly = ImageIO.read(getClass().getResourceAsStream("/arrow_friendly.png"));
+            imageArrowEnemy = ImageIO.read(getClass().getResourceAsStream("/arrow_enemy.png"));
+            imageArrowNeutral = ImageIO.read(getClass().getResourceAsStream("/arrow_neutral.png"));
+            imageArrowChoosen = ImageIO.read(getClass().getResourceAsStream("/arrow_choosen.png"));
             // imageFogFriendly = ImageIO.read(new File("img/fog_friendly.png"));
             // imageFogEnemy = ImageIO.read(new File("img/fog_enemy.png"));
 
-            imageFloorFriendly = ImageIO.read(new File("img/floor_friendly.png"));
-            imageFloorEnemy = ImageIO.read(new File("img/floor_enemy.png"));
+            imageFloorFriendly = ImageIO.read(getClass().getResourceAsStream("/floor_friendly.png"));
+            imageFloorEnemy = ImageIO.read(getClass().getResourceAsStream("/floor_enemy.png"));
 
-            imageBackground = ImageIO.read(new File("img/background.jpg"));
-            imageBoard = ImageIO.read(new File("img/board_greenlight.png"));
-            imageBoardGrid = ImageIO.read(new File("img/grid.png"));
-            imageBoardPlayersTurn = ImageIO.read(new File("img/green_light.png"));
-            imageBoardEnemyTurn = ImageIO.read(new File("img/red_light.png"));
+            imageBackground = ImageIO.read(getClass().getResourceAsStream("/background.jpg"));
+            imageBoard = ImageIO.read(getClass().getResourceAsStream("/board_greenlight.png"));
+            imageBoardGrid = ImageIO.read(getClass().getResourceAsStream("/grid.png"));
+            imageBoardPlayersTurn = ImageIO.read(getClass().getResourceAsStream("/green_light.png"));
+            imageBoardEnemyTurn = ImageIO.read(getClass().getResourceAsStream("/red_light.png"));
 
-            imageEnergyBallFriendly = ImageIO.read(new File("img/energyball_friendly.png"));
-            imageEnergyBallNeutral = ImageIO.read(new File("img/energyball_neutral.png"));
-            imageEnergyBallEnemy = ImageIO.read(new File("img/energyball_enemy.png"));
+            imageEnergyBallFriendly = ImageIO.read(getClass().getResourceAsStream("/energyball_friendly.png"));
+            imageEnergyBallNeutral = ImageIO.read(getClass().getResourceAsStream("/energyball_neutral.png"));
+            imageEnergyBallEnemy = ImageIO.read(getClass().getResourceAsStream("/energyball_enemy.png"));
 
         } catch (IOException e) {
             e.printStackTrace();
