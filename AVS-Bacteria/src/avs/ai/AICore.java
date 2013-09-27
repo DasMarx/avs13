@@ -15,7 +15,7 @@ import avs.hazelcast.HazelcastWorker;
 import avs.hazelcast.WorkLoadReturn;
 import avs.hazelcast.Workload;
 
-public class AICore {
+public class AICore implements Runnable {
 
     private GameManager gm;
 
@@ -68,7 +68,7 @@ public class AICore {
                 
                 futureQueue = new LinkedList<Future<WorkLoadReturn>>();
                 for (Cell c : grid.getCellsPossessedByAI()){
-                    Workload myTmpWorkload = new Workload(grid.getCopy(), c.getX(), c.getY()); // create workload for all workers
+                    Workload myTmpWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(),0); // create workload for all workers
                     
                     //distribute work
                     Future<WorkLoadReturn> future = executorService.submit(myTmpWorkload);
@@ -76,10 +76,12 @@ public class AICore {
                 }
                 System.out.println("=== new Round ====");
                 WorkLoadReturn bestReturnedLoad = null;
+                int counter = 0;
                 for (Future<WorkLoadReturn> f:futureQueue) {
                     try {
                         
                       WorkLoadReturn myReturn = f.get();
+                      counter += myReturn.getCounter();
                       System.out.println("field " + myReturn.getX() + ":" + myReturn.getY() + " is worth: " + myReturn.getAi());
                       if (null == bestReturnedLoad) {
                           bestReturnedLoad = myReturn;
@@ -105,11 +107,13 @@ public class AICore {
                     int nextTurnY = ownedCells.get(chosenCell).getY();
                     gm.chooseCell(nextTurnX, nextTurnY, Attributes.AI);
                 } else {
+                    System.out.println("== took " + counter + " calls ==");
+                    System.out.println("Best choice is: " + bestReturnedLoad.getX() + ":" + bestReturnedLoad.getY());
                     gm.chooseCell(bestReturnedLoad.getX(), bestReturnedLoad.getY(), Attributes.AI);
                 }
             } else {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

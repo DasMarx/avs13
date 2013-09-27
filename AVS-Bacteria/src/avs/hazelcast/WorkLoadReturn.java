@@ -13,13 +13,14 @@ public class WorkLoadReturn implements Serializable {
      
     private static final long serialVersionUID = -2581477518340282629L;
     
-    private int x, y, ai, player;
+    private int x, y, ai, player,counter;
     
-    public WorkLoadReturn(int x, int y, int ai, int player) {
+    public WorkLoadReturn(int x, int y, int ai, int player, int counter) {
         this.setX(x);
         this.setY(y);
         this.setAi(ai);
         this.setPlayer(player);
+        this.setCounter(counter);
     }
 
     public int getX() {
@@ -52,5 +53,13 @@ public class WorkLoadReturn implements Serializable {
 
     public void setPlayer(int player) {
         this.player = player;
+    }
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
     }
 }

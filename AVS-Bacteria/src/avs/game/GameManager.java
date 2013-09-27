@@ -22,9 +22,25 @@ public class GameManager {
     private GameGrid gameGrid = new GameGrid();
 
     // Zeigt an, der wievielte Zug momentan läuft
-    private  AtomicInteger turn = new AtomicInteger();
+    private AtomicInteger turn = new AtomicInteger();
 
-//    private LinkedList<LinkedList<CellChanges>> allChanges = new LinkedList<LinkedList<CellChanges>>();
+    public boolean running = true;
+
+    long lastTime = 0;
+
+    long currentTime = System.currentTimeMillis();
+
+    long timeAccumulator = 0;
+
+    final long timeDelta = 30;
+
+    long timeRunning = 0;
+
+    long sleepTime = 0;
+
+    private boolean locked = false;
+    
+    private LinkedList<CellChanges> allChanges = new LinkedList<CellChanges>();
 
     /**
      * Initializes a new {@link GameManager}.
@@ -40,10 +56,45 @@ public class GameManager {
         this.aiCore.initialize(this);
         this.userInterface.setGameGrid(gameGrid.getCopy());
         this.aiCore.setGameGrid(gameGrid);
-        this.aiCore.run();
+        new Thread(aiCore).start();
     }
 
     public void run() {
+        lastTime = System.currentTimeMillis();
+
+        while (running) {
+            // Akkumulator befüllen
+            currentTime = System.currentTimeMillis();
+
+            if ((currentTime - lastTime) > timeDelta) {
+                timeAccumulator = (currentTime - lastTime);
+                lastTime = currentTime;
+
+            }
+
+            while (timeAccumulator > timeDelta) {
+                timeAccumulator -= timeDelta;
+                timeRunning += timeDelta;
+            }
+            if (!allChanges.isEmpty()) {
+                LinkedList<CellChanges> changes = gameGrid.processChanges(allChanges.removeFirst().getCell());
+                userInterface.updateGrid(changes);
+                locked = false;
+            }
+
+            // TODO do the work
+
+            sleepTime = lastTime - currentTime + timeDelta;
+            if (sleepTime > 0) {
+                try {
+                    // System.out.println(sleepTime);
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
 
     }
 
@@ -81,8 +132,6 @@ public class GameManager {
     // return neighbours;
     // }
 
-
-
     /**
      * @param x
      * @param y
@@ -100,15 +149,15 @@ public class GameManager {
      * @return true = valid move, false invalid move
      */
     public boolean chooseCell(int x, int y, int owner) {
+        if (!locked) {
             if (checkTurnAllowed(x, y, owner)) {
-                LinkedList<CellChanges> changes = gameGrid.processChanges(x, y);
-//                allChanges.add(changes);
-                userInterface.updateGrid(changes);
-//                aiCore.updateGrid(changes);
+                locked = true;
                 turn.incrementAndGet();
-//                System.out.println(owner + " choose " + x + " " + y);
+                allChanges.add(new CellChanges(gameGrid.getCell(x, y), owner));
                 return true;
             }
+        }
+        
         return false;
     }
 
@@ -129,22 +178,22 @@ public class GameManager {
         }
     }
 
-//    /**
-//     * @return last change
-//     */
-//    public LinkedList<CellChanges> getChanges() {
-//        synchronized (allChanges) {
-//            return allChanges.getLast();
-//        }
-//    }
-//    
-//    /**
-//     * @param the turn whos changes are requested
-//     * @return the changes of the specified turn
-//     */
-//    public LinkedList<CellChanges> getChanges(int turn){
-//        synchronized (allChanges){
-//            return allChanges.get(turn);
-//        }
-//    }
+    // /**
+    // * @return last change
+    // */
+    // public LinkedList<CellChanges> getChanges() {
+    // synchronized (allChanges) {
+    // return allChanges.getLast();
+    // }
+    // }
+    //
+    // /**
+    // * @param the turn whos changes are requested
+    // * @return the changes of the specified turn
+    // */
+    // public LinkedList<CellChanges> getChanges(int turn){
+    // synchronized (allChanges){
+    // return allChanges.get(turn);
+    // }
+    // }
 }
