@@ -26,6 +26,14 @@ public class Cell implements Serializable{
     public int getDirection() {
         return direction;
     }
+    
+    /**
+     * 
+     * @param direction
+     */
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
 
     /**
      * @return the owner

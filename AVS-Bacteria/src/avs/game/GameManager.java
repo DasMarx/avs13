@@ -40,7 +40,7 @@ public class GameManager {
 
     private boolean locked = false;
     
-    private LinkedList<CellChanges> allChanges = new LinkedList<CellChanges>();
+    private LinkedList<CellChange> allChanges = new LinkedList<CellChange>();
 
     /**
      * Initializes a new {@link GameManager}.
@@ -77,7 +77,7 @@ public class GameManager {
                 timeRunning += timeDelta;
             }
             if (!allChanges.isEmpty()) {
-                LinkedList<CellChanges> changes = gameGrid.processChanges(allChanges.removeFirst().getCell());
+                LinkedList<CellChange> changes = gameGrid.processChanges(allChanges.removeFirst());
                 userInterface.updateGrid(changes);
                 locked = false;
             }
@@ -153,7 +153,7 @@ public class GameManager {
             if (checkTurnAllowed(x, y, owner)) {
                 locked = true;
                 turn.incrementAndGet();
-                allChanges.add(new CellChanges(gameGrid.getCell(x, y), owner));
+                allChanges.add(new CellChange(gameGrid.getCell(x, y), owner));
                 return true;
             }
         }

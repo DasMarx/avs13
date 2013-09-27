@@ -8,7 +8,7 @@ import java.util.concurrent.Future;
 import com.hazelcast.core.IExecutorService;
 import avs.game.Attributes;
 import avs.game.Cell;
-import avs.game.CellChanges;
+import avs.game.CellChange;
 import avs.game.GameGrid;
 import avs.game.GameManager;
 import avs.hazelcast.HazelcastWorker;

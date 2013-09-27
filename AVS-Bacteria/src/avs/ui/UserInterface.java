@@ -11,7 +11,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.LinkedList;
 import javax.swing.JPanel;
 import avs.game.Attributes;
-import avs.game.CellChanges;
+import avs.game.CellChange;
 import avs.game.GameGrid;
 import avs.game.GameManager;
 
@@ -54,7 +54,7 @@ public class UserInterface extends JPanel implements MouseMotionListener, MouseL
 		renderer.setControl(controlflag);
 	}
 
-	public void updateGrid(LinkedList<CellChanges> changes) {
+	public void updateGrid(LinkedList<CellChange> changes) {
 		// TODO Auto-generated method stub
 		renderer.updateGrid(changes);
 	}
