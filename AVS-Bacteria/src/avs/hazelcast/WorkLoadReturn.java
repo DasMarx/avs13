@@ -1,26 +1,36 @@
 package avs.hazelcast;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import avs.ai.Data;
 import avs.ai.Tree;
 
 
 public class WorkLoadReturn implements Serializable {
-    /**
-     * 
-     */
-    Tree<Data> resultTree;
      
     private static final long serialVersionUID = -2581477518340282629L;
     
-    private int x, y, ai, player,counter;
+    private int x, y,initialX,initialY,deepness,rating;
     
-    public WorkLoadReturn(int x, int y, int ai, int player, int counter) {
-        this.setX(x);
-        this.setY(y);
-        this.setAi(ai);
-        this.setPlayer(player);
-        this.setCounter(counter);
+    private LinkedList<Workload> myWorkloadLinkedList = new LinkedList<Workload>();
+    
+    public WorkLoadReturn(int x, int y, int initialX, int initialY, int deepness, int rating) {
+        setX(x);
+        setY(y);
+        setInitialX(initialX);
+        setInitialY(initialY);
+        setDeepness(deepness);
+        setRating(rating);
+    }
+
+    public WorkLoadReturn(int x, int y, int initialX, int initialY, int deepness, int rating, LinkedList<Workload> myWorkloadLinkedList) {
+        setX(x);
+        setY(y);
+        setInitialX(initialX);
+        setInitialY(initialY);
+        setDeepness(deepness);
+        setRating(rating);
+        setMyWorkloadLinkedList(myWorkloadLinkedList);
     }
 
     public int getX() {
@@ -39,27 +49,44 @@ public class WorkLoadReturn implements Serializable {
         this.y = y;
     }
 
-    public int getAi() {
-        return ai;
+
+    public int getInitialY() {
+        return initialY;
     }
 
-    public void setAi(int ai) {
-        this.ai = ai;
+    public void setInitialY(int initialY) {
+        this.initialY = initialY;
     }
 
-    public int getPlayer() {
-        return player;
+    public int getInitialX() {
+        return initialX;
     }
 
-    public void setPlayer(int player) {
-        this.player = player;
+    public void setInitialX(int initialX) {
+        this.initialX = initialX;
     }
 
-    public int getCounter() {
-        return counter;
+    public int getDeepness() {
+        return deepness;
     }
 
-    public void setCounter(int counter) {
-        this.counter = counter;
+    public void setDeepness(int deepness) {
+        this.deepness = deepness;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public LinkedList<Workload> getMyWorkloadLinkedList() {
+        return myWorkloadLinkedList;
+    }
+
+    public void setMyWorkloadLinkedList(LinkedList<Workload> myWorkloadLinkedList) {
+        this.myWorkloadLinkedList = myWorkloadLinkedList;
     }
 }

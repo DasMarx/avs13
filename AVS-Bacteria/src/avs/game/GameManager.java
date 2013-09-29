@@ -178,6 +178,14 @@ public class GameManager {
         }
     }
 
+    /**
+     * This method will return the current turn
+     * @return
+     */
+    public int getTurn() {
+        return turn.get();
+    }
+
     // /**
     // * @return last change
     // */
