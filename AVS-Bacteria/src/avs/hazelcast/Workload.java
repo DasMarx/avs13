@@ -21,14 +21,10 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 
     private GameGrid grid;
 
-    private int x, y;
+    private int x, y, initialX, initialY;
 
     // TODO: Include Parent-Hash
     private int deepness;
-
-    private int initialX;
-
-    private int initialY;
 
     public Workload() {
     }
@@ -44,27 +40,34 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 
     @Override
     public WorkLoadReturn call() throws Exception {
+        // System.out.println("field " + x + ":" + y + " is worth: " + grid.getCellsPossessedByAiCount() + " at deepness of " + deepness);
+        int counter = 1;
         grid.processChanges(x, y);
-        if (deepness < 3) {
-            LinkedList<Workload> myWorkloadLinkedList = new LinkedList<Workload>();
-            if ((deepness % 2) == 0) {
-//                System.out.println("this should be AI");
-                for (Cell c : grid.getCellsPossessedByAI()) {
-                    Workload myWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(), initialX, initialY, deepness+1);
-                    myWorkloadLinkedList.add(myWorkload);
+        if (deepness < 2) {
+            WorkLoadReturn bestReturnedLoad = null;
+            for (Cell c : grid.getCellsPossessedByAI()) {
+                Workload myTmpWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(), initialX, initialY, deepness + 1);
+                WorkLoadReturn myReturn = myTmpWorkload.call();
+                counter += myReturn.getCounter();
+                if (null == bestReturnedLoad) {
+                    bestReturnedLoad = myReturn;
+                } else if (myReturn.getAi() >= bestReturnedLoad.getAi()) {
+                    bestReturnedLoad = myReturn;
                 }
-            } else {
-//                System.out.println("this should be player");
-                for (Cell c : grid.getCellsPossessedByPlayer()) {
-                    Workload myWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(), initialX, initialY, deepness+1);
-                    myWorkloadLinkedList.add(myWorkload);
-                }
-                
             }
-            return new WorkLoadReturn(x, y, initialX, initialY, deepness, grid.getCellsPossessedByAiCount()-grid.getCellsPossessedByPlayerCount(),myWorkloadLinkedList);
+            if (null != bestReturnedLoad) {
+                return new WorkLoadReturn(x, y, initialX, initialY, bestReturnedLoad.getAi(), bestReturnedLoad.getPlayer(), counter);
+            }
         }
-        
-        return new WorkLoadReturn(x, y,initialX,initialY, deepness,grid.getCellsPossessedByAiCount()-grid.getCellsPossessedByPlayerCount());
+
+        return new WorkLoadReturn(
+            x,
+            y,
+            initialX,
+            initialY,
+            grid.getCellsPossessedByAiCount(),
+            grid.getCellsPossessedByPlayerCount(),
+            counter);
     }
 
 }

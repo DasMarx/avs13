@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import com.hazelcast.core.IExecutorService;
 import avs.game.Attributes;
 import avs.game.Cell;
@@ -37,7 +38,7 @@ public class AICore implements Runnable {
 
     private long TIMEOUT_IN_MS = TIMEOUT_IN_SEC * 1000;
 
-    private boolean consumerProducerStillRunning = false;
+    private boolean ProducerStillRunning = false;
 
     public void initialize(GameManager gm) {
         this.setGm(gm);
@@ -49,18 +50,6 @@ public class AICore implements Runnable {
 
     }
 
-    // public void updateGrid(LinkedList<CellChanges> cellChanges){
-    // We don't need this method as we are working on the same Grid
-
-    // for(CellChanges changedCell: cellChanges){
-    // int o = changedCell.getCell().getOwner();
-    // if(o == Attributes.AI)
-    // grid.addCellAI(changedCell.getCell());
-    // if(o == Attributes.PLAYER)
-    // grid.addCellPlayer(changedCell.getCell());
-    // }
-    // }
-
     public void run() {
         setExecutorService(myWorker.getInstance().getExecutorService("default"));
         while (running) {
@@ -69,36 +58,31 @@ public class AICore implements Runnable {
                 System.out.println("=== new Round ====");
 
                 // Creating shared object
-                BlockingQueue<Future<WorkLoadReturn>> futureQueue = new LinkedBlockingQueue<Future<WorkLoadReturn>>();
-                BlockingQueue<Workload> newWorkQueue = new LinkedBlockingQueue<Workload>();
+                BlockingQueue<Future<WorkLoadReturn>> futureQueue = new LinkedBlockingQueue<Future<WorkLoadReturn>>(120);
+                BlockingQueue<Workload> newWorkQueue = new LinkedBlockingQueue<Workload>(2000);
 
                 // Creating Producer and Consumer Thread
                 Thread prodThread = new Thread(new Producer(futureQueue, newWorkQueue, this));
                 Consumer myConsumer = new Consumer(futureQueue, newWorkQueue, this);
                 Thread consThread = new Thread(myConsumer);
 
-                // allow Consumer and Producer to run
-                consumerProducerStillRunning = true;
-
                 // Starting producer and Consumer thread
                 prodThread.start();
                 consThread.start();
 
-                long endTime = System.currentTimeMillis() + TIMEOUT_IN_MS;
-                System.out.println("started waiting");
-//                while (consumerProducerStillRunning || endTime < System.currentTimeMillis()) {
-                    try {
-                        Thread.sleep(TIMEOUT_IN_MS);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-//                }
-                System.out.println("stopped waiting");
-                consumerProducerStillRunning = false;
-
-                prodThread.interrupt();
-                consThread.interrupt();
+                try {
+                    prodThread.join();
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                try {
+                    consThread.join();
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                System.out.println(futureQueue.size() + " still in futureQueue");
                 WorkLoadReturn myReturn = myConsumer.getInternalReturn();
                 System.out.println(myConsumer.getCounter());
                 if (myReturn == null) {
@@ -113,20 +97,6 @@ public class AICore implements Runnable {
                     gm.chooseCell(myReturn.getInitialX(), myReturn.getInitialY(), Attributes.AI);
                 }
 
-                for (Future<WorkLoadReturn> f : futureQueue) {
-                    try {
-                        f.get();
-                        System.out.println("turning off additional work");
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-                     
-                    
                 // futureQueue = new LinkedList<Future<WorkLoadReturn>>();
                 // for (Cell c : grid.getCellsPossessedByAI()) {
                 // Workload myTmpWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(), 0); // create workload for all workers
@@ -175,7 +145,7 @@ public class AICore implements Runnable {
 
             } else {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -193,7 +163,7 @@ public class AICore implements Runnable {
     }
 
     public boolean consumerProducerStillRunning() {
-        return consumerProducerStillRunning;
+        return ProducerStillRunning;
     }
 
     public GameGrid getGrid() {
@@ -238,23 +208,66 @@ class Producer implements Runnable {
 
     @Override
     public void run() {
+
+        // while (!Thread.currentThread().isInterrupted()) {
+        // if (aiCore.consumerProducerStillRunning()) {
+        //
+        // // create workload for all workers distributed work
+        // // Workload myWorkload = new Workload(aiCore.getGrid().getCopy(), c.getX(), c.getY(), c.getX(), c.getY(), 0);
+        // // Future<WorkLoadReturn> future = aiCore.getExecutorService().submit(myWorkload);
+        // // futureQueue.add(future);
+        // }
+        // try {
         for (Cell c : aiCore.getGrid().getCellsPossessedByAI()) {
-            // create workload for all workers distributed work
-            Workload myWorkload = new Workload(aiCore.getGrid().getCopy(), c.getX(), c.getY(), c.getX(), c.getY(), 0);
-            Future<WorkLoadReturn> future = aiCore.getExecutorService().submit(myWorkload);
-            futureQueue.add(future);
-        }
-        while (!Thread.currentThread().isInterrupted()) {
-            if (aiCore.consumerProducerStillRunning()) {
-                try {
-                    Workload myWorkload = newWorkQueue.take();
-                    Future<WorkLoadReturn> future = aiCore.getExecutorService().submit(myWorkload);
-                    futureQueue.add(future);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+            GameGrid currentGrid = aiCore.getGrid().getCopy();
+            currentGrid.processChanges(c);
+            for (Cell innerC : currentGrid.getCellsPossessedByAI()) {
+                Workload myWorkload = new Workload(currentGrid.getCopy(), innerC.getX(), innerC.getY(), c.getX(), c.getY(), 1);
+                Future<WorkLoadReturn> future = aiCore.getExecutorService().submit(myWorkload);
+                while (null != future) {
+                    if (futureQueue.offer(future)) {
+                        future = null;
+                    } else {
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
 
+                // futureQueue.add(future);
             }
+            // }
+
+            // Workload myWorkload = newWorkQueue.take();
+            // if (deepness < 3) {
+            // LinkedList<Workload> myWorkloadLinkedList = new LinkedList<Workload>();
+            // if ((deepness % 2) == 0) {
+            // // System.out.println("this should be AI");
+            // for (Cell c : grid.getCellsPossessedByAI()) {
+            // Workload myWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(), initialX, initialY, deepness+1);
+            // myWorkloadLinkedList.add(myWorkload);
+            // }
+            // } else {
+            // // System.out.println("this should be player");
+            // for (Cell c : grid.getCellsPossessedByPlayer()) {
+            // Workload myWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(), initialX, initialY, deepness+1);
+            // myWorkloadLinkedList.add(myWorkload);
+            // }
+            //
+            // }
+            // return new WorkLoadReturn(x, y, initialX, initialY, deepness,
+            // grid.getCellsPossessedByAiCount()-grid.getCellsPossessedByPlayerCount(),myWorkloadLinkedList);
+            // }
+            // Future<WorkLoadReturn> future = aiCore.getExecutorService().submit(myWorkload);
+            // futureQueue.add(future);
+            // } catch (InterruptedException e) {
+            // Thread.currentThread().interrupt();
+            // }
+
         }
     }
 
@@ -270,7 +283,7 @@ class Consumer implements Runnable {
     private AICore aiCore;
 
     private WorkLoadReturn internalReturn = null;
-    
+
     private int counter = 0;
 
     public Consumer(BlockingQueue<Future<WorkLoadReturn>> sharedQueue, BlockingQueue<Workload> newWorkQueue, AICore aiCore) {
@@ -281,28 +294,38 @@ class Consumer implements Runnable {
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            if (aiCore.consumerProducerStillRunning()) {
-                try {
-                    Future<WorkLoadReturn> myFuture = futureQueue.take();
+        // while (!Thread.currentThread().isInterrupted()) {
+        // if (aiCore.consumerProducerStillRunning()) {
+        boolean running = true;
+        while (running) {
+            try {
+                Future<WorkLoadReturn> myFuture;
+                myFuture = futureQueue.poll(1, TimeUnit.SECONDS);
+                if (null != myFuture) {
                     WorkLoadReturn myReturn = myFuture.get();
-                    setCounter(getCounter() + 1);
+                    setCounter(getCounter() + myReturn.getCounter() + 1);
                     if (null == getInternalReturn()) {
                         setInternalReturn(myReturn);
                     }
-                    if (myReturn.getRating() > getInternalReturn().getRating()) {
+                    if (myReturn.getAi() > getInternalReturn().getAi()) {
                         setInternalReturn(myReturn);
                     }
-                    newWorkQueue.addAll(myReturn.getMyWorkloadLinkedList());
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                } catch (ExecutionException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                } else {
+                    running = false;
                 }
 
+                // for (Workload w : myReturn.getMyWorkloadLinkedList()) {
+                // newWorkQueue.add(w);
+                // }
+                // newWorkQueue.addAll(myReturn.getMyWorkloadLinkedList());
+            } catch (InterruptedException ex) {
+                running = false;
+            } catch (ExecutionException e) {
+                running = false;
             }
+
         }
+
     }
 
     public WorkLoadReturn getInternalReturn() {

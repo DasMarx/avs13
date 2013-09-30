@@ -160,11 +160,7 @@ public class GameGrid implements Serializable {
      * @return list of changes, mutating
      */
     public LinkedList<CellChange> processChanges(Cell target) {
-        LinkedList<CellChange> changes = new LinkedList<CellChange>();
-        target.turn();
-        HashSet<Cell> processedCells = new HashSet<Cell>();
-        processChanges(processedCells, target, target.getOwner(), changes);
-        return changes;
+        return processChanges(target.getX(), target.getY());
     }
 
     /**
