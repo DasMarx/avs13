@@ -42,8 +42,8 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     public WorkLoadReturn call() throws Exception {
         // System.out.println("field " + x + ":" + y + " is worth: " + grid.getCellsPossessedByAiCount() + " at deepness of " + deepness);
         int counter = 1;
-        grid.processChanges(x, y);
-        if (deepness < 2) {
+        grid.processChanges(x, y,false);
+        if (deepness < 1) {
             WorkLoadReturn bestReturnedLoad = null;
             for (Cell c : grid.getCellsPossessedByAI()) {
                 Workload myTmpWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(), initialX, initialY, deepness + 1);

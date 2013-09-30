@@ -77,12 +77,13 @@ public class GameManager {
                 timeRunning += timeDelta;
             }
             if (!allChanges.isEmpty()) {
-                LinkedList<CellChange> changes = gameGrid.processChanges(allChanges.removeFirst());
+                LinkedList<CellChange> changes = gameGrid.processChanges(allChanges.removeFirst(),true);
                 userInterface.updateGrid(changes);
+                if (gameGrid.getCellsPossessedByAiCount() == 0 || gameGrid.getCellsPossessedByPlayerCount() == 0) {
+                    aiCore.setRunning(false);
+                }
                 locked = false;
             }
-
-            // TODO do the work
 
             sleepTime = lastTime - currentTime + timeDelta;
             if (sleepTime > 0) {
@@ -98,39 +99,6 @@ public class GameManager {
 
     }
 
-    //
-    // /**
-    // * @param c cell to check
-    // * @return list of the neighbours pointing at this cell
-    // */
-    // private LinkedList<Cell> checkNeighbour(Cell c) {
-    // LinkedList<Cell> neighbours = new LinkedList<Cell>();
-    // Cell nextNeighbour = gameGrid.getCell(c.getX(), c.getY() - 1);
-    // if (nextNeighbour != null) {
-    // if (nextNeighbour.getDirection() == EnumDirection.DOWN)
-    // neighbours.add(nextNeighbour);
-    // }
-    // nextNeighbour = null;
-    // nextNeighbour = gameGrid.getCell(c.getX() + 1, c.getY());
-    // if (nextNeighbour != null) {
-    // if (nextNeighbour.getDirection() == EnumDirection.LEFT)
-    // neighbours.add(nextNeighbour);
-    // }
-    // nextNeighbour = null;
-    // nextNeighbour = gameGrid.getCell(c.getX(), c.getY() + 1);
-    // if (nextNeighbour != null) {
-    // if (nextNeighbour.getDirection() == EnumDirection.UP)
-    // neighbours.add(nextNeighbour);
-    // }
-    // nextNeighbour = null;
-    // nextNeighbour = gameGrid.getCell(c.getX() - 1, c.getY());
-    // if (nextNeighbour != null) {
-    // if (nextNeighbour.getDirection() == EnumDirection.RIGHT)
-    // neighbours.add(nextNeighbour);
-    // }
-    //
-    // return neighbours;
-    // }
 
     /**
      * @param x
