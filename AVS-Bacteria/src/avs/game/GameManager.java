@@ -40,7 +40,7 @@ public class GameManager {
 
     private boolean locked = false;
     
-    private LinkedList<Cell> allChanges = new LinkedList<Cell>();
+    private LinkedList<CellChange> allChanges = new LinkedList<CellChange>();
 
     /**
      * Initializes a new {@link GameManager}.
@@ -107,7 +107,7 @@ public class GameManager {
      * @return true if turn is allowed, false if turn is forbidden
      */
     private boolean checkTurnAllowed(int x, int y, int owner) {
-        return gameGrid.getOwnerForCell(x, y) == owner;
+        return gameGrid.getCell(x, y).getOwner() == owner;
     }
 
     /**
@@ -121,7 +121,7 @@ public class GameManager {
             if (checkTurnAllowed(x, y, owner)) {
                 locked = true;
                 turn.incrementAndGet();
-                allChanges.add(gameGrid.getCell(x, y));
+                allChanges.add(new CellChange(gameGrid.getCell(x, y), owner));
                 return true;
             }
         }

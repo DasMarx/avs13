@@ -10,18 +10,31 @@ public class CellChange implements Serializable {
      */
     private static final long serialVersionUID = 4398381295539290132L;
 
-    private int owner, x, y, direction;
+    private int owner,x,y,direction;
 
     /**
      * Initializes a new {@link CellChange}.
      * 
      * @param cell that was changed
      */
-    public CellChange(Cell cell, int owner, int direction) {
+    public CellChange(Cell cell) {
+        this.x = cell.getX();
+        this.y = cell.getY();
+        this.owner = cell.getOwner();
+        this.direction = cell.getDirection();
+    }
+    
+    /**
+     * 
+     * Initializes a new {@link CellChange}.
+     * @param cell
+     * @param owner
+     */
+    public CellChange(Cell cell,int owner) {
         this.x = cell.getX();
         this.y = cell.getY();
         this.owner = owner;
-        this.direction = direction;
+        this.direction = cell.getDirection();
     }
 
     /**
@@ -32,7 +45,7 @@ public class CellChange implements Serializable {
     }
 
     public int getX() {
-        return x;
+       return x;
     }
 
     public int getY() {
