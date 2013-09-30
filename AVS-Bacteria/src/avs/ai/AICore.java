@@ -207,6 +207,7 @@ class Producer implements Runnable {
 
     @Override
     public void run() {
+        int innerCount = 0;
         for (Cell c : aiCore.getGrid().getCellsPossessedByAI()) {
             GameGrid currentGrid = aiCore.getGrid().getCopy();
             currentGrid.processChanges(c, false);
@@ -239,8 +240,10 @@ class Producer implements Runnable {
                 }
                 concurrentExecution.incrementAndGet();
                 aiCore.getExecutorService().submit(task, myCallback);
+                innerCount++;
             }
         }
+        System.out.println("send " + innerCount + " jobs into the queue");
     }
 
 }

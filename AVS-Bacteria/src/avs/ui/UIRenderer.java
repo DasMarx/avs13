@@ -435,7 +435,7 @@ synchronized (this) {
         double angle = 0;
         for (int i = 0; i < gridTiles; i++) {
             for (int j = 0; j < gridTiles; j++) {
-                switch (gameGrid.getCell(i, j).getDirection()) {
+                switch (gameGrid.getDirectionForCell(i, j)) {
                 case Attributes.UP:
                     angle = 0;
                     break;
@@ -459,7 +459,7 @@ synchronized (this) {
 
                 adding = (timeRunning / 50 + i * j + i) % (gameFieldRectangleCurrent.getWidth() / gridTiles);
 
-                switch (gameGrid.getCell(i, j).getOwner()) {
+                switch (gameGrid.getOwnerForCell(i, j)) {
                 case Attributes.PLAYER:
                     g2d.drawImage(
                         imageEnergyBallFriendly,
@@ -526,7 +526,7 @@ synchronized (this) {
         for (int i = 0; i < gridTiles; i++) {
             for (int j = 0; j < gridTiles; j++) {
                 // Draw Arrow
-                switch (gameGrid.getCell(i, j).getDirection()) {
+                switch (gameGrid.getDirectionForCell(i,j)) {
                 case Attributes.UP:
                     angle = 0;
                     break;
@@ -553,7 +553,7 @@ synchronized (this) {
                     (int) (i * gameFieldRectangleCurrent.getWidth() / gridTiles + gameFieldRectangleCurrent.getX() + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2)),
                     (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()) + (gameFieldRectangleCurrent.getHeight() / gridTiles / 2));
 
-                switch (gameGrid.getCell(i, j).getOwner()) {
+                switch (gameGrid.getOwnerForCell(i, j)) {
                 case Attributes.PLAYER:
                     g2d.drawImage(
                         imageArrowFriendly,
