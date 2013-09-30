@@ -58,11 +58,12 @@ public class AICore implements Runnable {
                 System.out.println("=== new Round ====");
 
                 // Creating shared object
-                BlockingQueue<Future<WorkLoadReturn>> futureQueue = new LinkedBlockingQueue<Future<WorkLoadReturn>>(120);
+                BlockingQueue<Future<WorkLoadReturn>> futureQueue = new LinkedBlockingQueue<Future<WorkLoadReturn>>(100);
                 BlockingQueue<Workload> newWorkQueue = new LinkedBlockingQueue<Workload>(2000);
 
                 // Creating Producer and Consumer Thread
                 Thread prodThread = new Thread(new Producer(futureQueue, newWorkQueue, this));
+                
                 Consumer myConsumer = new Consumer(futureQueue, newWorkQueue, this);
                 Thread consThread = new Thread(myConsumer);
 
@@ -229,7 +230,7 @@ class Producer implements Runnable {
                         future = null;
                     } else {
                         try {
-                            Thread.sleep(10);
+                            Thread.sleep(1);
                         } catch (InterruptedException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
