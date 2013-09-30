@@ -46,7 +46,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
         if (deepness < 1) {
             WorkLoadReturn bestReturned = null;
             for (Cell c : grid.getCellsPossessedByAI()) {
-                Workload myTmpWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(), initialX, initialY, deepness + 1);
+                final Workload myTmpWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(), initialX, initialY, deepness + 1);
                 WorkLoadReturn myReturn = myTmpWorkload.call();
                 counter += myReturn.getCounter();
                 if (null == bestReturned) {
