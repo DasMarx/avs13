@@ -65,7 +65,7 @@ public class AICore implements Runnable {
                 Thread prodThread = new Thread(new Producer(futureQueue, this,concurrentExecution));
 
                 ProducerStillRunning = true;
-                int THREAD_COUNT = 4;
+                int THREAD_COUNT = 6;
 
                 Consumer[] consumerArray = new Consumer[THREAD_COUNT];
                 Thread[] consumerThreadArray = new Thread[THREAD_COUNT];
@@ -104,14 +104,14 @@ public class AICore implements Runnable {
                 }
                 long calcPerSec = (calc / calcTime);
 
-                WorkLoadReturn myReturn = null;
+                WorkLoadReturn bestReturned = null;
                 for (int i = 0; i < THREAD_COUNT; i++) {
                     if (null != consumerArray[i].getInternalReturn()) {
-                        if (null == myReturn) {
-                            myReturn = consumerArray[i].getInternalReturn();
+                        if (null == bestReturned) {
+                            bestReturned = consumerArray[i].getInternalReturn();
                         }
-                        if (myReturn.getAi() < consumerArray[i].getInternalReturn().getAi()) {
-                            myReturn = consumerArray[i].getInternalReturn();
+                        if (bestReturned.getAi() < consumerArray[i].getInternalReturn().getAi()) {
+                            bestReturned = consumerArray[i].getInternalReturn();
                         }
                     }
                 }
@@ -122,7 +122,7 @@ public class AICore implements Runnable {
                 System.out.println("");
 
                 System.out.println("done " + calc + " calculations in " + (calcTime) + " ms which is " + calcPerSec + " calc/ms");
-                if (myReturn == null) {
+                if (bestReturned == null) {
                     LinkedList<Cell> ownedCells = new LinkedList<Cell>(grid.getCellsPossessedByAI());
                     int size = ownedCells.size();
                     int chosenCell = new Random().nextInt(size);
@@ -130,8 +130,8 @@ public class AICore implements Runnable {
                     int nextTurnY = ownedCells.get(chosenCell).getY();
                     gm.chooseCell(nextTurnX, nextTurnY, Attributes.AI);
                 } else {
-                    System.out.println("Best choice is: " + myReturn.getInitialX() + ":" + myReturn.getInitialY());
-                    gm.chooseCell(myReturn.getInitialX(), myReturn.getInitialY(), Attributes.AI);
+                    System.out.println("Best choice is: " + bestReturned.getInitialX() + ":" + bestReturned.getInitialY());
+                    gm.chooseCell(bestReturned.getInitialX(), bestReturned.getInitialY(), Attributes.AI);
                 }
 
             } else {
@@ -222,19 +222,6 @@ class Producer implements Runnable {
                             e1.printStackTrace();
                         }
                         concurrentExecution.decrementAndGet();
-                        
-//                        while (null != response) {
-//                            if (futureQueue.offer(response)) {
-//                                response = null;
-//                            } else {
-//                                try {
-//                                    Thread.sleep(1);
-//                                } catch (InterruptedException e) {
-//                                    // TODO Auto-generated catch block
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        }
                     }
 
                     public void onFailure(Throwable t) {
@@ -244,7 +231,6 @@ class Producer implements Runnable {
                 };
                 while (concurrentExecution.get() > 100) {
                     try {
-                        System.out.println("im sleeping");
                         Thread.sleep(1);
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
@@ -293,7 +279,7 @@ class Consumer implements Runnable {
                     if (null == getInternalReturn()) {
                         setInternalReturn(myReturn);
                     }
-                    if (myReturn.getAi() > getInternalReturn().getAi()) {
+                    if (getInternalReturn().getAi() < myReturn.getAi()) {
                         setInternalReturn(myReturn);
                     }
                 } else {

@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author HZU
@@ -24,15 +26,23 @@ public class GameGrid implements Serializable {
 
     private Cell[][] gameGrid;
 
-    private ConcurrentHashMap<Cell,Boolean> cellsPossedByPlayerMap = new ConcurrentHashMap<Cell,Boolean>();
+    private ConcurrentHashMap<Cell, Boolean> cellsPossedByPlayerMap = new ConcurrentHashMap<Cell, Boolean>();
+
     private Set<Cell> cellsPossessedByPlayer = Collections.newSetFromMap(cellsPossedByPlayerMap);
 
-    private ConcurrentHashMap<Cell,Boolean> cellsPossessedByAIMap = new ConcurrentHashMap<Cell,Boolean>();
+    private ConcurrentHashMap<Cell, Boolean> cellsPossessedByAIMap = new ConcurrentHashMap<Cell, Boolean>();
+
     private Set<Cell> cellsPossessedByAI = Collections.newSetFromMap(cellsPossessedByAIMap);
 
     private static final int gridSize = 30;
 
     Random r;
+
+    private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+
+    private final Lock read = readWriteLock.readLock();
+
+    private final Lock write = readWriteLock.writeLock();
 
     /**
      * Initializes a new {@link GameGrid}.
@@ -45,22 +55,42 @@ public class GameGrid implements Serializable {
      * @return list of cells possessed by player
      */
     public HashSet<Cell> getCellsPossessedByPlayer() {
+        read.lock();
+        try {
             return new HashSet<Cell>(cellsPossessedByPlayer);
+        } finally {
+            read.unlock();
+        }
     }
 
     public int getCellsPossessedByPlayerCount() {
+        read.lock();
+        try {
             return cellsPossessedByPlayer.size();
+        } finally {
+            read.unlock();
+        }
     }
 
     /**
      * @return list of cells possessed by ai
      */
     public HashSet<Cell> getCellsPossessedByAI() {
+        read.lock();
+        try {
             return new HashSet<Cell>(cellsPossessedByAI);
+        } finally {
+            read.unlock();
+        }
     }
 
     public int getCellsPossessedByAiCount() {
+        read.lock();
+        try {
             return cellsPossessedByAI.size();
+        } finally {
+            read.unlock();
+        }
     }
 
     /**
@@ -122,16 +152,26 @@ public class GameGrid implements Serializable {
      * @param c cell to be added
      */
     public void addCellPlayer(Cell c) {
+        write.lock();
+        try {
             cellsPossessedByAI.remove(c);
             cellsPossessedByPlayer.add(c);
+        } finally {
+            write.unlock();
+        }
     }
 
     /**
      * @param c cell to be added
      */
     public void addCellAI(Cell c) {
+        write.lock();
+        try {
             cellsPossessedByPlayer.remove(c);
             cellsPossessedByAI.add(c);
+        } finally {
+            write.unlock();
+        }
     }
 
     /**

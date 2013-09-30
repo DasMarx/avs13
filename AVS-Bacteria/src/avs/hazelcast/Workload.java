@@ -44,19 +44,19 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
         int counter = 1;
         grid.processChanges(x, y,false);
         if (deepness < 1) {
-            WorkLoadReturn bestReturnedLoad = null;
+            WorkLoadReturn bestReturned = null;
             for (Cell c : grid.getCellsPossessedByAI()) {
                 Workload myTmpWorkload = new Workload(grid.getCopy(), c.getX(), c.getY(), initialX, initialY, deepness + 1);
                 WorkLoadReturn myReturn = myTmpWorkload.call();
                 counter += myReturn.getCounter();
-                if (null == bestReturnedLoad) {
-                    bestReturnedLoad = myReturn;
-                } else if (myReturn.getAi() >= bestReturnedLoad.getAi()) {
-                    bestReturnedLoad = myReturn;
+                if (null == bestReturned) {
+                    bestReturned = myReturn;
+                } else if (bestReturned.getAi() < myReturn.getAi()) {
+                    bestReturned = myReturn;
                 }
             }
-            if (null != bestReturnedLoad) {
-                return new WorkLoadReturn(x, y, initialX, initialY, bestReturnedLoad.getAi(), bestReturnedLoad.getPlayer(), counter);
+            if (null != bestReturned) {
+                return new WorkLoadReturn(x, y, initialX, initialY, bestReturned.getAi(), bestReturned.getPlayer(), counter);
             }
         }
 
