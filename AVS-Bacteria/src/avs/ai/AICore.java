@@ -5,22 +5,18 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import com.hazelcast.core.ExecutionCallback;
-import com.hazelcast.core.IExecutorService;
 import avs.game.Attributes;
 import avs.game.Cell;
-import avs.game.CellChange;
 import avs.game.GameGrid;
 import avs.game.GameManager;
 import avs.hazelcast.HazelcastWorker;
 import avs.hazelcast.WorkLoadReturn;
 import avs.hazelcast.Workload;
+import com.hazelcast.core.ExecutionCallback;
+import com.hazelcast.core.IExecutorService;
 
 public class AICore implements Runnable {
 
@@ -42,7 +38,7 @@ public class AICore implements Runnable {
 
     public void initialize(GameManager gm) {
         this.setGm(gm);
-        myWorker = new HazelcastWorker();
+        setMyWorker(new HazelcastWorker());
     }
 
     public void setGameGrid(GameGrid grid) {
@@ -51,7 +47,7 @@ public class AICore implements Runnable {
     }
 
     public void run() {
-        setExecutorService(myWorker.getInstance().getExecutorService("default"));
+        setExecutorService(getMyWorker().getInstance().getExecutorService("default"));
         while (isRunning()) {
             if (!getGm().isPlayersTurn()) {
 
@@ -187,6 +183,14 @@ public class AICore implements Runnable {
 
     public void setRunning(boolean running) {
         this.running = running;
+    }
+
+    public HazelcastWorker getMyWorker() {
+        return myWorker;
+    }
+
+    public void setMyWorker(HazelcastWorker myWorker) {
+        this.myWorker = myWorker;
     }
 }
 
