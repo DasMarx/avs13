@@ -32,7 +32,7 @@ public class UIRenderer implements Runnable {
     UserInterface userInterface;
 
     // geplante fps
-    private static final int MAX_FPS = 120;
+    private static final int MAX_FPS = 30;
     // einzelnde Frame Zeit
     private static final int FRAME_PERIOD = 1000 / MAX_FPS;
     
@@ -227,6 +227,9 @@ public class UIRenderer implements Runnable {
     }
 
     private void calculate() {
+    	synchronized (this) {
+			
+		
         timeRunning += FRAME_PERIOD;
         cpscounter++;
         if (!initialized) {
@@ -252,7 +255,7 @@ public class UIRenderer implements Runnable {
             size = userInterface.getHeight();
         }
 
-        double update = 10.0;
+        double update = 20.0;
 
         gameFieldRectangleDestination.setRect(size / 20, size / 20, size - size / 10, size - size / 10);
 
@@ -314,8 +317,11 @@ public class UIRenderer implements Runnable {
         }
 
     }
-
+    }
+    
     public void draw(Graphics g) {
+synchronized (this) {
+	
 
         // double a = Math.sin(timeRunning / 900.0) * 0;
         // double b = Math.sin(timeRunning / 700.0) * 0;
@@ -627,7 +633,7 @@ public class UIRenderer implements Runnable {
         g2d.drawString(cps + " CPS", 5, 40);
         g2d.drawString(ips + " IPS", 5, 60);
         g2d.drawString("Players turn? " + String.valueOf(gameManager.isPlayersTurn()), 100, 20);
-
+}
     }
 
     public void setGameGrid(GameGrid gameGrid) {
