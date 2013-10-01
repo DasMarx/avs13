@@ -2,6 +2,7 @@
 package avs.hazelcast;
 
 import java.io.Serializable;
+import avs.game.Cell;
 
 public class WorkLoadReturn implements Serializable {
 
@@ -10,13 +11,23 @@ public class WorkLoadReturn implements Serializable {
     private int x, y, initialX, initialY, ai, player, counter;
 
     public WorkLoadReturn(int x, int y, int initialX, int initialY, int ai, int player, int counter) {
-        this.setX(x);
-        this.setY(y);
+        setX(x);
+        setY(y);
         setInitialX(initialX);
         setInitialY(initialY);
-        this.setAi(ai);
-        this.setPlayer(player);
-        this.setCounter(counter);
+        setAi(ai);
+        setPlayer(player);
+        setCounter(counter);
+    }
+
+    public WorkLoadReturn(Cell cell, int initialX2, int initialY2, int cellsPossessedByAiCount, int cellsPossessedByPlayerCount, int counter2) {
+        setX(cell.getX());
+        setY(cell.getY());
+        setInitialX(initialX2);
+        setInitialY(initialY2);
+        setPlayer(cellsPossessedByPlayerCount);
+        setAi(cellsPossessedByAiCount);
+        setCounter(counter2);
     }
 
     public int getX() {
