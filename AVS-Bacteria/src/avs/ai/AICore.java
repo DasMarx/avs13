@@ -41,6 +41,7 @@ public class AICore implements Runnable {
     }
 
     public void run() {
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         setExecutorService(getMyWorker().getInstance().getExecutorService("default"));
         while (isRunning()) {
             if (getGm().isAIsTurn()) {

@@ -47,6 +47,8 @@ class Producer implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        Thread.currentThread().setName("AVS:Producer Thread");
         for (Cell c : aiCore.getGrid().getCellsPossessedByAI()) {
             GameGrid currentGrid = aiCore.getGrid().getCopy();
             currentGrid.processChanges(c, false);

@@ -59,6 +59,8 @@ public class GameManager {
     }
 
     public void run() {
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        Thread.currentThread().setName("AVS:GameManager Thread");
         lastTime = System.currentTimeMillis();
 
         while (running) {

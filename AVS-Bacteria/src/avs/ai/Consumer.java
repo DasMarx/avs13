@@ -26,6 +26,8 @@ class Consumer implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        Thread.currentThread().setName("AVS:Consumer Thread");
         // while (!Thread.currentThread().isInterrupted()) {
         // if (aiCore.consumerProducerStillRunning()) {
         boolean running = true;

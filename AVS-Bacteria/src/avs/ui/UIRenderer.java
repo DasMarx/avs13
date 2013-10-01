@@ -158,6 +158,8 @@ public class UIRenderer implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+        Thread.currentThread().setName("AVS:UIRenderer Thread");
         lastTime = System.currentTimeMillis();
         lastFPSTime = lastTime;
         currentTime = System.currentTimeMillis();
