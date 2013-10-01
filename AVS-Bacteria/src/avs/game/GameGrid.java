@@ -190,7 +190,14 @@ public class GameGrid implements Serializable {
         Cell target = getCell(x, y);
         target.turn();
         HashSet<Cell> processedCells = new HashSet<Cell>();
-        processChanges(processedCells, target, target.getOwner(), changes, trackChanges);
+        if (trackChanges) {
+            changes.add(produceCellChange(target));
+            processChanges(processedCells, target, target.getOwner(), changes);
+            
+        } else {
+            processChangesWithoutSavingInformation(processedCells, target, target.getOwner());
+        }
+
         return changes;
     }
 
@@ -216,29 +223,28 @@ public class GameGrid implements Serializable {
      * @param rs counter for the recursive step
      * @param owner of the cells
      */
-    private void processChanges(HashSet<Cell> processedCells, Cell target, int owner, LinkedList<CellChange> changes, boolean trackChanges) {
+    private void processChanges(HashSet<Cell> processedCells, Cell target, int owner, LinkedList<CellChange> changes) {
 
         if (processedCells.add(target)) {
-            changeOwner(target, owner);
-            if (trackChanges) {
+            if (changeOwner(target, owner)) {
                 changes.add(produceCellChange(target));
             }
 
             Cell nextNeighbour = getCell(target.getX(), target.getY() - 1);
             if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
-                processChanges(processedCells, nextNeighbour, owner, changes, trackChanges);
+                processChanges(processedCells, nextNeighbour, owner, changes);
             }
             nextNeighbour = getCell(target.getX() + 1, target.getY());
             if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
-                processChanges(processedCells, nextNeighbour, owner, changes, trackChanges);
+                processChanges(processedCells, nextNeighbour, owner, changes);
             }
             nextNeighbour = getCell(target.getX(), target.getY() + 1);
             if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
-                processChanges(processedCells, nextNeighbour, owner, changes, trackChanges);
+                processChanges(processedCells, nextNeighbour, owner, changes);
             }
             nextNeighbour = getCell(target.getX() - 1, target.getY());
             if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
-                processChanges(processedCells, nextNeighbour, owner, changes, trackChanges);
+                processChanges(processedCells, nextNeighbour, owner, changes);
             }
 
         }
@@ -246,14 +252,50 @@ public class GameGrid implements Serializable {
     }
 
     /**
+     * @param origin cell edited before
+     * @param target cell to be edited
+     * @param rs counter for the recursive step
+     * @param owner of the cells
+     */
+    private void processChangesWithoutSavingInformation(HashSet<Cell> processedCells, Cell target, int owner) {
+
+        if (processedCells.add(target)) {
+            changeOwner(target, owner);
+
+            Cell nextNeighbour = getCell(target.getX(), target.getY() - 1);
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
+                processChangesWithoutSavingInformation(processedCells, nextNeighbour, owner);
+            }
+            nextNeighbour = getCell(target.getX() + 1, target.getY());
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
+                processChangesWithoutSavingInformation(processedCells, nextNeighbour, owner);
+            }
+            nextNeighbour = getCell(target.getX(), target.getY() + 1);
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
+                processChangesWithoutSavingInformation(processedCells, nextNeighbour, owner);
+            }
+            nextNeighbour = getCell(target.getX() - 1, target.getY());
+            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
+                processChangesWithoutSavingInformation(processedCells, nextNeighbour, owner);
+            }
+
+        }
+    }
+
+    /**
      * @param target cell to be edited
      * @param owner to be set
      */
-    private void changeOwner(Cell target, int owner) {
+    private boolean changeOwner(Cell target, int owner) {
+        if (target.getOwner() == owner) {
+            return false;
+        }
         if (owner == Attributes.PLAYER)
             addCellPlayer(target);
         else
             addCellAI(target);
+        
+        return true;
     }
 
     public CellChange produceCellChange(Cell cell) {
