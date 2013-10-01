@@ -133,6 +133,7 @@ public class GameManager {
      * @return true = player turn, false = ai turn
      */
     public boolean isPlayersTurn() {
+        if (locked) return false;
         return (turn.get() % 2) == 0;
     }
 
@@ -152,6 +153,11 @@ public class GameManager {
      */
     public int getTurn() {
         return turn.get();
+    }
+
+    public boolean isAIsTurn() {
+        if (locked) return false;
+        return !isPlayersTurn();
     }
 
     // /**

@@ -49,7 +49,7 @@ public class AICore implements Runnable {
     public void run() {
         setExecutorService(getMyWorker().getInstance().getExecutorService("default"));
         while (isRunning()) {
-            if (!getGm().isPlayersTurn()) {
+            if (getGm().isAIsTurn()) {
 
                 System.out.println("=== new Round ====");
                 long startTime = System.currentTimeMillis();
