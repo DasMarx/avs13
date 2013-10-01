@@ -2,13 +2,7 @@
 package avs.hazelcast;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.Random;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import avs.ai.Data;
-import avs.game.Attributes;
 import avs.game.Cell;
 import avs.game.GameGrid;
 

@@ -2,8 +2,6 @@
 package avs.game;
 
 import java.io.Serializable;
-import java.util.concurrent.Callable;
-import avs.hazelcast.WorkLoadReturn;
 
 public class Cell implements Serializable{
 
