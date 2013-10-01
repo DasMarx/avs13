@@ -111,11 +111,12 @@ public class AICore implements Runnable {
                         }
                     }
                 }
-                System.out.println("");
+                
                 for (int i = 0; i < THREAD_COUNT; i++) {
                     System.out.print(consumerArray[i].getCounter() + " ");
                 }
                 System.out.println("");
+                System.out.println("futureQueue " + futureQueue.size() + " concurrentExecution " + concurrentExecution.get());
 
                 System.out.println("done " + calc + " calculations in " + (calcTime) + " ms which is " + calcPerSec + " calc/ms");
                 if (bestReturned == null) {
@@ -211,28 +212,27 @@ class Producer implements Runnable {
 
     @Override
     public void run() {
+        ExecutionCallback<WorkLoadReturn> myCallback = new ExecutionCallback<WorkLoadReturn>() {
+
+            public void onResponse(WorkLoadReturn response) {
+                try {
+                    futureQueue.put(response);
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                concurrentExecution.decrementAndGet();
+            }
+
+            public void onFailure(Throwable t) {
+                t.printStackTrace();
+            }
+        };
         for (Cell c : aiCore.getGrid().getCellsPossessedByAI()) {
             GameGrid currentGrid = aiCore.getGrid().getCopy();
             currentGrid.processChanges(c, false);
             for (Cell innerC : currentGrid.getCellsPossessedByAI()) {
                 Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), innerC.getX(), innerC.getY(), c.getX(), c.getY(), 0);
-                ExecutionCallback<WorkLoadReturn> myCallback = new ExecutionCallback<WorkLoadReturn>() {
-
-                    public void onResponse(WorkLoadReturn response) {
-                        try {
-                            futureQueue.put(response);
-                        } catch (InterruptedException e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                        }
-                        concurrentExecution.decrementAndGet();
-                    }
-
-                    public void onFailure(Throwable t) {
-                        t.printStackTrace();
-                    }
-
-                };
                 while (concurrentExecution.get() > 100) {
                     try {
                         Thread.sleep(1);
