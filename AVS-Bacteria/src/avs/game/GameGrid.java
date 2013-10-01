@@ -26,13 +26,17 @@ public class GameGrid implements Serializable {
 
     private Cell[][] gameGrid;
 
-    private ConcurrentHashMap<Cell, Boolean> cellsPossedByPlayerMap = new ConcurrentHashMap<Cell, Boolean>();
+    // private ConcurrentHashMap<Cell, Boolean> cellsPossedByPlayerMap = new ConcurrentHashMap<Cell, Boolean>();
+    //
+    // private Set<Cell> cellsPossessedByPlayer = Collections.newSetFromMap(cellsPossedByPlayerMap);
+    //
+    // private ConcurrentHashMap<Cell, Boolean> cellsPossessedByAIMap = new ConcurrentHashMap<Cell, Boolean>();
+    //
+    // private Set<Cell> cellsPossessedByAI = Collections.newSetFromMap(cellsPossessedByAIMap);
 
-    private Set<Cell> cellsPossessedByPlayer = Collections.newSetFromMap(cellsPossedByPlayerMap);
+    private HashSet<Cell> cellsPossessedByPlayer = new HashSet<Cell>();
 
-    private ConcurrentHashMap<Cell, Boolean> cellsPossessedByAIMap = new ConcurrentHashMap<Cell, Boolean>();
-
-    private Set<Cell> cellsPossessedByAI = Collections.newSetFromMap(cellsPossessedByAIMap);
+    private HashSet<Cell> cellsPossessedByAI = new HashSet<Cell>();
 
     private static final int gridSize = 30;
 
@@ -156,6 +160,7 @@ public class GameGrid implements Serializable {
         try {
             cellsPossessedByAI.remove(c);
             cellsPossessedByPlayer.add(c);
+            getCell(c.getX(), c.getY()).setOwner(Attributes.PLAYER);
         } finally {
             write.unlock();
         }
@@ -169,6 +174,7 @@ public class GameGrid implements Serializable {
         try {
             cellsPossessedByPlayer.remove(c);
             cellsPossessedByAI.add(c);
+            getCell(c.getX(), c.getY()).setOwner(Attributes.AI);
         } finally {
             write.unlock();
         }
@@ -244,7 +250,6 @@ public class GameGrid implements Serializable {
      * @param owner to be set
      */
     private void changeOwner(Cell target, int owner) {
-        getCell(target.getX(), target.getY()).setOwner(owner);
         if (owner == Attributes.PLAYER)
             addCellPlayer(target);
         else

@@ -226,7 +226,7 @@ public class UIRenderer implements Runnable {
     }
 
     private void calculate() {
-    	synchronized (this) {
+//    	synchronized (this) {
 			
 		
         timeRunning += FRAME_PERIOD;
@@ -315,11 +315,11 @@ public class UIRenderer implements Runnable {
 
         }
 
-    }
+//    }
     }
     
     public void draw(Graphics g) {
-synchronized (this) {
+//synchronized (this) {
 	
 
         // double a = Math.sin(timeRunning / 900.0) * 0;
@@ -400,7 +400,7 @@ synchronized (this) {
 
         // Draw Floor
         // Player
-        for (Cell cells : gameGrid.getCellsPossessedByPlayer()) {
+        for (final Cell cells : gameGrid.getCellsPossessedByPlayer()) {
             g2d.drawImage(
                 imageFloorFriendly,
                 (int) (cells.getX() * gameFieldRectangleCurrent.getWidth() / gridTiles - (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getX()),
@@ -415,7 +415,7 @@ synchronized (this) {
         }
 
         // AI
-        for (Cell cells : gameGrid.getCellsPossessedByAI()) {
+        for (final Cell cells : gameGrid.getCellsPossessedByAI()) {
             g2d.drawImage(
                 imageFloorEnemy,
                 (int) (cells.getX() * gameFieldRectangleCurrent.getWidth() / gridTiles - (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getX()),
@@ -434,7 +434,8 @@ synchronized (this) {
         double angle = 0;
         for (int i = 0; i < gridTiles; i++) {
             for (int j = 0; j < gridTiles; j++) {
-                switch (gameGrid.getCell(i, j).getDirection()) {
+                final Cell tmpCell = gameGrid.getCell(i, j);
+                switch (tmpCell.getDirection()) {
                 case Attributes.UP:
                     angle = 0;
                     break;
@@ -458,7 +459,7 @@ synchronized (this) {
 
                 adding = (timeRunning / 50 + i * j + i) % (gameFieldRectangleCurrent.getWidth() / gridTiles);
 
-                switch (gameGrid.getCell(i, j).getOwner()) {
+                switch (tmpCell.getOwner()) {
                 case Attributes.PLAYER:
                     g2d.drawImage(
                         imageEnergyBallFriendly,
@@ -632,7 +633,7 @@ synchronized (this) {
         g2d.drawString(cps + " CPS", 5, 40);
         g2d.drawString(ips + " IPS", 5, 60);
         g2d.drawString("Players turn? " + String.valueOf(gameManager.isPlayersTurn()), 100, 20);
-}
+//}
     }
 
     public void setGameGrid(GameGrid gameGrid) {

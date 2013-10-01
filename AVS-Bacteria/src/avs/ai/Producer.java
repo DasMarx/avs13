@@ -19,7 +19,7 @@ class Producer implements Runnable {
 
     private AtomicInteger concurrentExecution;
     
-    private int WORK_COUNTER = 10;
+    private int WORK_COUNTER = 5;
     
     ExecutionCallback<WorkLoadReturn> myCallback = new ExecutionCallback<WorkLoadReturn>() {
 
