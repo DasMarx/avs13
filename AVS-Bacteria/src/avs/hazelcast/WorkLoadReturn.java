@@ -8,25 +8,23 @@ public class WorkLoadReturn implements Serializable {
 
     private static final long serialVersionUID = -2581477518340282629L;
 
-    private int x, y, initialX, initialY, ai, player, counter;
+    private int x, y, initialX, initialY, rating, counter;
 
-    public WorkLoadReturn(int x, int y, int initialX, int initialY, int ai, int player, int counter) {
+    public WorkLoadReturn(int x, int y, int initialX, int initialY, int rating, int counter) {
         setX(x);
         setY(y);
         setInitialX(initialX);
         setInitialY(initialY);
-        setAi(ai);
-        setPlayer(player);
+        setRating(rating);
         setCounter(counter);
     }
 
-    public WorkLoadReturn(Cell cell, int initialX2, int initialY2, int cellsPossessedByAiCount, int cellsPossessedByPlayerCount, int counter2) {
+    public WorkLoadReturn(Cell cell, int initialX2, int initialY2, int rating, int counter2) {
         setX(cell.getX());
         setY(cell.getY());
         setInitialX(initialX2);
         setInitialY(initialY2);
-        setPlayer(cellsPossessedByPlayerCount);
-        setAi(cellsPossessedByAiCount);
+        setRating(rating);
         setCounter(counter2);
     }
 
@@ -62,27 +60,19 @@ public class WorkLoadReturn implements Serializable {
         this.initialX = initialX;
     }
 
-    public int getAi() {
-        return ai;
-    }
-
-    public void setAi(int ai) {
-        this.ai = ai;
-    }
-
-    public int getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(int player) {
-        this.player = player;
-    }
-
     public int getCounter() {
         return counter;
     }
 
     public void setCounter(int counter) {
         this.counter = counter;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 }

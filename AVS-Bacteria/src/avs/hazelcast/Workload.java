@@ -54,16 +54,16 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
                     counter += myReturn.getCounter();
                     if (null == bestReturned) {
                         bestReturned = myReturn;
-                    } else if (bestReturned.getAi() < myReturn.getAi()) {
+                    } else if (bestReturned.getRating() < myReturn.getRating()) {
                         bestReturned = myReturn;
                     }
                 }
                 
             } else {
                 if (null == bestReturned) {
-                    bestReturned = new WorkLoadReturn(workToBeDoneCell, initialX, initialY, outerGrid.getCellsPossessedByAiCount(), outerGrid.getCellsPossessedByPlayerCount(), counter);
-                } else if (bestReturned.getAi() < outerGrid.getCellsPossessedByAiCount()) {
-                    bestReturned = new WorkLoadReturn(workToBeDoneCell, initialX, initialY, outerGrid.getCellsPossessedByAiCount(), outerGrid.getCellsPossessedByPlayerCount(), counter);;
+                    bestReturned = new WorkLoadReturn(workToBeDoneCell, initialX, initialY, outerGrid.getRating(), counter);
+                } else if (bestReturned.getRating() < outerGrid.getRating()) {
+                    bestReturned = new WorkLoadReturn(workToBeDoneCell, initialX, initialY,  outerGrid.getRating(), counter);
                 }
             }
             

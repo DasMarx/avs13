@@ -101,7 +101,7 @@ public class AICore implements Runnable {
                         if (null == bestReturned) {
                             bestReturned = consumerArray[i].getInternalReturn();
                         }
-                        if (bestReturned.getAi() < consumerArray[i].getInternalReturn().getAi()) {
+                        if (bestReturned.getRating() < consumerArray[i].getInternalReturn().getRating()) {
                             bestReturned = consumerArray[i].getInternalReturn();
                         }
                     }

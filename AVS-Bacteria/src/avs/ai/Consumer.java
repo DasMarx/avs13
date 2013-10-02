@@ -41,7 +41,7 @@ class Consumer implements Runnable {
                     if (null == getInternalReturn()) {
                         setInternalReturn(myReturn);
                     }
-                    if (getInternalReturn().getAi() < myReturn.getAi()) {
+                    if (getInternalReturn().getRating() < myReturn.getRating()) {
                         setInternalReturn(myReturn);
                     }
                 } else {
