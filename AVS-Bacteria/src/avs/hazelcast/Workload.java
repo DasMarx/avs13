@@ -44,7 +44,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
             final GameGrid outerGrid = grid.getCopy();
             outerGrid.processChanges(outerCell, false);
             counter++;
-            if (deepness < 0) {
+            if (deepness < 1) {
                 
                 for (Cell c : outerGrid.getCellsPossessedByAI()) {
                     LinkedList<Cell> tmpList = new LinkedList<Cell>();

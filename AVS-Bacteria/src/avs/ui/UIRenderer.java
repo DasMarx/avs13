@@ -224,16 +224,16 @@ public class UIRenderer implements Runnable {
             return;
         }
 
-        if (updateGridCounter > (2)) {
+//        if (updateGridCounter > (2)) {
             if (!changes.isEmpty()) {
                 CellChange currentchange = changes.removeFirst();
                 if (null != currentchange) {
                     gameGrid.consumeCellChange(currentchange);
                 }
-            }
-            updateGridCounter = 0;
+//            }
+//            updateGridCounter = 0;
         }
-        updateGridCounter++;
+//        updateGridCounter++;
         
 
         // TODO Auto-generated method stub
