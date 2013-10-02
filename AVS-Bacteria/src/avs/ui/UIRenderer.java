@@ -440,6 +440,9 @@ synchronized (this) {
         double angle = 0;
         for (int i = 0; i < gridTiles; i++) {
             for (int j = 0; j < gridTiles; j++) {
+
+            	
+            	
                 final Cell tmpCell = gameGrid.getCell(i, j);
                 switch (tmpCell.getDirection()) {
                 case Attributes.UP:
@@ -462,9 +465,9 @@ synchronized (this) {
                     (int) (j * gameFieldRectangleCurrent.getHeight() / gridTiles + gameFieldRectangleCurrent.getY()) + (gameFieldRectangleCurrent.getHeight() / gridTiles / 2));
 
                 double adding;
-
-                adding = (timeRunning / 50 + i * j + i) % (gameFieldRectangleCurrent.getWidth() / gridTiles);
-
+                adding = (gameFieldRectangleCurrent.getWidth() / gridTiles) / 2000.0* (((timeRunning+i*10*j*10+i*10) %2000));
+                
+                
                 switch (tmpCell.getOwner()) {
                 case Attributes.PLAYER:
                     g2d.drawImage(
