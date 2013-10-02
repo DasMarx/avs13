@@ -171,12 +171,12 @@ public class UIRenderer implements Runnable {
             // Akkumulator befüllen
             
         	currentTime = System.currentTimeMillis();
-            if ((currentTime - lastTime) > FRAME_PERIOD) {
+            if ((currentTime - lastTime) >= FRAME_PERIOD) {
                 timeAccumulator += (currentTime - lastTime);
                 lastTime = currentTime;
             }
 
-            while (timeAccumulator > FRAME_PERIOD) {
+            while (timeAccumulator >= FRAME_PERIOD) {
                 timeAccumulator -= FRAME_PERIOD;
                 calculate();
             }
@@ -184,7 +184,7 @@ public class UIRenderer implements Runnable {
             userInterface.repaint();
 
             
-            if (lastFPSTime < currentTime - 500) {
+            if (lastFPSTime <= currentTime - 1000) {
                 fps = fpscounter;
                 cps = cpscounter;
                 runningLoopps = runningCounter;
@@ -199,7 +199,7 @@ public class UIRenderer implements Runnable {
 //            long timeDiff = System.currentTimeMillis() - currentTime;
 //            sleepTime = (getFRAME_PERIOD() - timeDiff);
             currentTime = System.currentTimeMillis();
-            sleepTime = FRAME_PERIOD - (currentTime-lastTime) +1;
+            sleepTime = (currentTime-lastTime) + FRAME_PERIOD;
 //            sleepTime = lastTime - (currentTime + FRAME_PERIOD);
             if (sleepTime > 0) {
                 try {
