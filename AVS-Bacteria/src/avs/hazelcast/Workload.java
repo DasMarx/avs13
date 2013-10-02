@@ -40,31 +40,23 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
         int counter = 1;
         WorkLoadReturn bestReturned = null;
         
-        for (Cell workToBeDoneCell : work) {
-            GameGrid outerGrid = grid.getCopy();
-            outerGrid.processChanges(workToBeDoneCell, false);
-            
-            if (deepness < 1) {
+        for (Cell outerCell : work) {
+            final GameGrid outerGrid = grid.getCopy();
+            outerGrid.processChanges(outerCell, false);
+            counter++;
+            if (deepness < 0) {
                 
                 for (Cell c : outerGrid.getCellsPossessedByAI()) {
                     LinkedList<Cell> tmpList = new LinkedList<Cell>();
                     tmpList.add(c);
                     final Workload myTmpWorkload = new Workload(outerGrid.getCopy(), tmpList, initialX, initialY, deepness + 1);
-                    WorkLoadReturn myReturn = myTmpWorkload.call();
+                    final WorkLoadReturn myReturn = myTmpWorkload.call();
                     counter += myReturn.getCounter();
-                    if (null == bestReturned) {
-                        bestReturned = myReturn;
-                    } else if (bestReturned.getRating() < myReturn.getRating()) {
-                        bestReturned = myReturn;
-                    }
+                    bestReturned = compareWorkloads(bestReturned, myReturn);
                 }
                 
             } else {
-                if (null == bestReturned) {
-                    bestReturned = new WorkLoadReturn(workToBeDoneCell, initialX, initialY, outerGrid.getRating(), counter);
-                } else if (bestReturned.getRating() < outerGrid.getRating()) {
-                    bestReturned = new WorkLoadReturn(workToBeDoneCell, initialX, initialY,  outerGrid.getRating(), counter);
-                }
+                bestReturned = compareWorkloads(bestReturned, new WorkLoadReturn(outerCell, initialX, initialY, outerGrid.getRating(), counter));
             }
             
         }
@@ -74,6 +66,20 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
             return bestReturned;
         }
         return null;
+    }
+
+    /**
+     * @param bestReturned
+     * @param myReturn
+     * @return
+     */
+    private WorkLoadReturn compareWorkloads(WorkLoadReturn bestReturned, final WorkLoadReturn myReturn) {
+        if (null == bestReturned) {
+            bestReturned = myReturn;
+        } else if (bestReturned.getRating() < myReturn.getRating()) {
+            bestReturned = myReturn;
+        }
+        return bestReturned;
     }
 
 }
