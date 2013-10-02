@@ -228,7 +228,7 @@ public class UIRenderer implements Runnable {
     }
 
     private void calculate() {
-//    	synchronized (this) {
+    	synchronized (this) {
 			
 		
         timeRunning += FRAME_PERIOD;
@@ -317,11 +317,11 @@ public class UIRenderer implements Runnable {
 
         }
 
-//    }
+    }
     }
     
     public void draw(Graphics g) {
-//synchronized (this) {
+synchronized (this) {
 	
 
         // double a = Math.sin(timeRunning / 900.0) * 0;
@@ -635,7 +635,7 @@ public class UIRenderer implements Runnable {
         g2d.drawString(cps + " CPS", 5, 40);
         g2d.drawString(ips + " IPS", 5, 60);
         g2d.drawString("Players turn? " + String.valueOf(gameManager.isPlayersTurn()), 100, 20);
-//}
+}
     }
 
     public void setGameGrid(GameGrid gameGrid) {
