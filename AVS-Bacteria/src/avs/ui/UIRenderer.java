@@ -31,7 +31,7 @@ public class UIRenderer implements Runnable {
     UserInterface userInterface;
 
     // geplante fps
-    private static final int MAX_FPS = 30;
+    private static final int MAX_FPS = 40;
     // einzelnde Frame Zeit
     private static final int FRAME_PERIOD = 1000 / MAX_FPS;
     
@@ -57,9 +57,9 @@ public class UIRenderer implements Runnable {
 
     Color colorBlack = new Color(0, 0, 0);
 
-    long fps = 0, cps = 0, ips = 0;
+    long fps = 0, cps = 0, runningLoopps = 0;
 
-    long fpscounter = 0, ipscounter = 0, cpscounter = 0;
+    long fpscounter = 0, runningCounter = 0, cpscounter = 0;
 
     long lastFPSTime = 0;
     
@@ -105,6 +105,8 @@ public class UIRenderer implements Runnable {
 
     private BufferedImage imageEnergyBallEnemy = null;
 
+    private BufferedImage imageBoardLCDDisplay = null;
+    
     private GameGrid gameGrid = null;
 
     private GameManager gameManager;
@@ -136,6 +138,8 @@ public class UIRenderer implements Runnable {
             imageBoardPlayersTurn = ImageIO.read(getClass().getResourceAsStream("/green_light.png"));
             imageBoardEnemyTurn = ImageIO.read(getClass().getResourceAsStream("/red_light.png"));
 
+            imageBoardLCDDisplay = ImageIO.read(getClass().getResourceAsStream("/lcd_display.png"));
+            
             imageEnergyBallFriendly = ImageIO.read(getClass().getResourceAsStream("/energyball_friendly.png"));
             imageEnergyBallNeutral = ImageIO.read(getClass().getResourceAsStream("/energyball_neutral.png"));
             imageEnergyBallEnemy = ImageIO.read(getClass().getResourceAsStream("/energyball_enemy.png"));
@@ -166,53 +170,36 @@ public class UIRenderer implements Runnable {
         while (running) {
             // Akkumulator befüllen
             
-
-//            if ((currentTime - lastTime) > FRAME_PERIOD) {
-//                timeAccumulator = (currentTime - lastTime);
-//                lastTime = currentTime;
-//            }
-//            
-//
-//            while (timeAccumulator < FRAME_PERIOD) {
-//                currentTime = System.currentTimeMillis();
-////                timeAccumulator += core.getFRAME_PERIOD();
-//                timeAccumulator += FRAME_PERIOD;
-////                timeRunning += FRAME_PERIOD;
-//                calculate();
-//            }
-
-            currentTime = System.currentTimeMillis();
-            
+        	currentTime = System.currentTimeMillis();
             if ((currentTime - lastTime) > FRAME_PERIOD) {
-                timeAccumulator = (currentTime - lastTime);
+                timeAccumulator += (currentTime - lastTime);
+                lastTime = currentTime;
             }
-            lastTime = currentTime;
+
             while (timeAccumulator > FRAME_PERIOD) {
                 timeAccumulator -= FRAME_PERIOD;
-                
                 calculate();
             }
             
-            calculate();
             userInterface.repaint();
 
             
             if (lastFPSTime < currentTime - 500) {
                 fps = fpscounter;
                 cps = cpscounter;
-                ips = ipscounter;
+                runningLoopps = runningCounter;
                 fpscounter = 0;
                 cpscounter = 0;
-                ipscounter = 0;
+                runningCounter = 0;
                 lastFPSTime = currentTime;
             }
 
-            ipscounter++;
+            runningCounter++;
             
 //            long timeDiff = System.currentTimeMillis() - currentTime;
 //            sleepTime = (getFRAME_PERIOD() - timeDiff);
-//            currentTime = System.currentTimeMillis();
-            sleepTime = lastTime - currentTime + FRAME_PERIOD;
+            currentTime = System.currentTimeMillis();
+            sleepTime = FRAME_PERIOD - (currentTime-lastTime) +1;
 //            sleepTime = lastTime - (currentTime + FRAME_PERIOD);
             if (sleepTime > 0) {
                 try {
@@ -371,7 +358,7 @@ synchronized (this) {
             imageBoard.getWidth(),
             imageBoard.getHeight(),
             null);
-
+        
         if (gameManager.isPlayersTurn()) {
             g2d.drawImage(
                 imageBoardPlayersTurn,
@@ -398,8 +385,25 @@ synchronized (this) {
                 null);
         }
 
+        // Draw gameBoard
+        g2d.drawImage(
+            imageBoardLCDDisplay,
+            (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2),
+            (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2),
+            (int) (gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2),
+            (int) (gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2),
+            0,
+            0,
+            imageBoardLCDDisplay.getWidth(),
+            imageBoardLCDDisplay.getHeight(),
+            null);
+        
+        
+        
+        
         g2d.setColor(colorBlack);
 
+       
         // Draw Floor
         // Player
         for (final Cell cells : gameGrid.getCellsPossessedByPlayer()) {
@@ -633,7 +637,7 @@ synchronized (this) {
         g2d.setColor(colorRed);
         g2d.drawString(fps + " FPS", 5, 20);
         g2d.drawString(cps + " CPS", 5, 40);
-        g2d.drawString(ips + " IPS", 5, 60);
+        g2d.drawString(runningLoopps + " RunningLoopsPS", 5, 60);
         g2d.drawString("Players turn? " + String.valueOf(gameManager.isPlayersTurn()), 100, 20);
 }
     }
