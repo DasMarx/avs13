@@ -154,7 +154,7 @@ public class UIRenderer implements Runnable {
            // File f = new File (path+"/bin/SF.ttf");
             //System.out.println(f.getAbsolutePath());
             
-            Font font = Font.createFont(Font.TRUETYPE_FONT, new File(path +"/bin/SF.ttf"));
+            Font font = Font.createFont(Font.TRUETYPE_FONT, new File(path +"/SF.ttf"));
     		GraphicsEnvironment ge = GraphicsEnvironment
     				.getLocalGraphicsEnvironment();
     		ge.registerFont(font);
