@@ -7,16 +7,22 @@ package avs.ui;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
+
 import javax.imageio.ImageIO;
+
 import avs.game.Attributes;
 import avs.game.Cell;
 import avs.game.CellChange;
@@ -143,11 +149,24 @@ public class UIRenderer implements Runnable {
             imageEnergyBallFriendly = ImageIO.read(getClass().getResourceAsStream("/energyball_friendly.png"));
             imageEnergyBallNeutral = ImageIO.read(getClass().getResourceAsStream("/energyball_neutral.png"));
             imageEnergyBallEnemy = ImageIO.read(getClass().getResourceAsStream("/energyball_enemy.png"));
-
+            
+            String path = System.getProperty("user.dir");
+           // File f = new File (path+"/bin/SF.ttf");
+            //System.out.println(f.getAbsolutePath());
+            
+            Font font = Font.createFont(Font.TRUETYPE_FONT, new File(path +"/bin/SF.ttf"));
+    		GraphicsEnvironment ge = GraphicsEnvironment
+    				.getLocalGraphicsEnvironment();
+    		ge.registerFont(font);
+    		
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
+        } catch (FontFormatException e) {
+			e.printStackTrace();
+		}
+        
+//        File here = new File(".");
+//        System.out.println(here.getAbsolutePath());
     }
 
     public void initialize(GameManager gameManager) {
