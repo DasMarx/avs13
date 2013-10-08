@@ -264,12 +264,16 @@ public class UIRenderer implements Runnable {
 
         double update = 20.0;
 
-        gameFieldRectangleDestination.setRect(size / 20, size / 20, size - size / 10, size - size / 10);
+        
 
         // Mousecheck
         if (mouseButtonR) {
             gameFieldRectangleDestination.setRect(size / 4, size / 4, size - size / 2, size - size / 2);
-        }
+        } else if (!gameManager.isPlayersTurn()) {
+        	gameFieldRectangleDestination.setRect(size / 8, size / 8, size - size / 4, size - size / 4);
+		} else {
+			gameFieldRectangleDestination.setRect(size / 20, size / 20, size - size / 10, size - size / 10);
+		}
 
         double setX = ((gameFieldRectangleDestination.getX() - gameFieldRectangleCurrent.getX()));
         if (Math.abs(setX) < 2) {
