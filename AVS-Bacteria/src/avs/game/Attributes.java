@@ -17,10 +17,19 @@ public class Attributes implements Serializable {
     public static final int DOWN = 2;
 
     public static final int LEFT = 3;
-    
+
     public static final int PLAYER = -1;
-    
+
     public static final int NEUTRAL = 0;
-    
+
     public static final int AI = 1;
+
+    public static final double UP_THETA = Math.toRadians(0);
+
+    public static final double RIGHT_THETA = Math.toRadians(90);
+
+    public static final double DOWN_THETA = Math.toRadians(180);
+
+    public static final double LEFT_THETA = Math.toRadians(270);
+
 }
