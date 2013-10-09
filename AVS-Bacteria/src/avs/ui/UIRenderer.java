@@ -6,6 +6,7 @@ package avs.ui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
@@ -18,6 +19,7 @@ import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Rectangle2D.Double;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -259,17 +261,18 @@ public class UIRenderer implements Runnable {
             if (!initialized) {
                 return;
             }
+            
 
-            // if (updateGridCounter > (2)) {
+             if (updateGridCounter > (2)) {
             if (!changes.isEmpty()) {
                 CellChange currentchange = changes.removeFirst();
                 if (null != currentchange) {
                     gameGrid.consumeCellChange(currentchange);
                 }
-                // }
-                // updateGridCounter = 0;
+                 }
+                 updateGridCounter = 0;
             }
-            // updateGridCounter++;
+             updateGridCounter++;
 
             // TODO Auto-generated method stub
 
@@ -333,8 +336,8 @@ public class UIRenderer implements Runnable {
                 if (gameFieldRectangleCurrent.contains(mouseLastEvent.getX(), mouseLastEvent.getY())) {
 
                     currentHoveredField.setLocation(
-                        Math.floor(gridTiles * (mouseLastEvent.getX() - gameFieldRectangleCurrent.x) / gameFieldRectangleCurrent.width),
-                        Math.floor(gridTiles * (mouseLastEvent.getY() - gameFieldRectangleCurrent.y) / gameFieldRectangleCurrent.height));
+                        Math.floor(gridTiles * (mouseLastEvent.getX() - gameFieldRectangleCurrent.getX()) / gameFieldRectangleCurrent.width),
+                        Math.floor(gridTiles * (mouseLastEvent.getY() - gameFieldRectangleCurrent.getY()) / gameFieldRectangleCurrent.height));
                 } else {
                     currentHoveredField.setLocation(-1, -1);
                 }
@@ -345,8 +348,14 @@ public class UIRenderer implements Runnable {
     }
 
     public void draw(Graphics g) {
+        
+        final Double gameFieldRectangleCurrentTmp ;
+        final Dimension userInterfaceTmpSize ;
         synchronized (this) {
-
+            gameFieldRectangleCurrentTmp = new Double();
+            gameFieldRectangleCurrentTmp.setRect(gameFieldRectangleCurrent);
+            userInterfaceTmpSize = new Dimension(userInterface.getSize());
+        }
             // double a = Math.sin(timeRunning / 900.0) * 0;
             // double b = Math.sin(timeRunning / 700.0) * 0;
             // double c = Math.sin(timeRunning / 500.0) * 0;
@@ -369,16 +378,18 @@ public class UIRenderer implements Runnable {
             // g2d.clearRect(0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight());
 
             // Draw Background
+            
+            
             g2d.drawImage(
                 imageBackground,
                 0,
                 0,
-                (int) userInterface.getSize().getWidth(),
-                (int) userInterface.getSize().getHeight(),
-                (int) ((imageBackground.getWidth() / 2) - (userInterface.getSize().getWidth() / 2)),
-                (int) ((imageBackground.getHeight() / 2) - (userInterface.getSize().getHeight() / 2)),
-                (int) ((imageBackground.getWidth() / 2) + (userInterface.getSize().getWidth() / 2)),
-                (int) ((imageBackground.getHeight() / 2) + (userInterface.getSize().getHeight() / 2)),
+                (int) userInterfaceTmpSize.getWidth(),
+                (int) userInterfaceTmpSize.getHeight(),
+                (int) ((imageBackground.getWidth() / 2) - (userInterfaceTmpSize.getWidth() / 2)),
+                (int) ((imageBackground.getHeight() / 2) - (userInterfaceTmpSize.getHeight() / 2)),
+                (int) ((imageBackground.getWidth() / 2) + (userInterfaceTmpSize.getWidth() / 2)),
+                (int) ((imageBackground.getHeight() / 2) + (userInterfaceTmpSize.getHeight() / 2)),
                 null);
 
             // TODO: Draw animated stars for background
@@ -386,10 +397,10 @@ public class UIRenderer implements Runnable {
             // Draw gameBoard
             g2d.drawImage(
                 imageBoard,
-                (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2),
-                (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2),
-                (int) (gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2),
-                (int) (gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
                 0,
                 0,
                 imageBoard.getWidth(),
@@ -399,10 +410,10 @@ public class UIRenderer implements Runnable {
             if (gameManager.isPlayersTurn()) {
                 g2d.drawImage(
                     imageBoardPlayersTurn,
-                    (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2),
-                    (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2),
-                    (int) (gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2),
-                    (int) (gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2),
+                    (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
+                    (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
+                    (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
+                    (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
                     0,
                     0,
                     imageBoardPlayersTurn.getWidth(),
@@ -411,10 +422,10 @@ public class UIRenderer implements Runnable {
             } else {
                 g2d.drawImage(
                     imageBoardEnemyTurn,
-                    (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2),
-                    (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2),
-                    (int) (gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2),
-                    (int) (gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2),
+                    (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
+                    (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
+                    (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
+                    (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
                     0,
                     0,
                     imageBoardEnemyTurn.getWidth(),
@@ -425,10 +436,10 @@ public class UIRenderer implements Runnable {
             // Draw gameBoard
             g2d.drawImage(
                 imageBoardLCDDisplay,
-                (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2),
-                (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2),
-                (int) (gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2),
-                (int) (gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
                 0,
                 0,
                 imageBoardLCDDisplay.getWidth(),
@@ -442,10 +453,10 @@ public class UIRenderer implements Runnable {
             for (final Cell cells : gameGrid.getCellsPossessedByPlayer()) {
                 g2d.drawImage(
                     imageFloorFriendly,
-                    (int) (cells.getX() * gameFieldRectangleCurrent.getWidth() / gridTiles - (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getX()),
-                    (int) (cells.getY() * gameFieldRectangleCurrent.getHeight() / gridTiles - (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getY()),
-                    (int) ((cells.getX() * gameFieldRectangleCurrent.getWidth() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getX()),
-                    (int) ((cells.getY() * gameFieldRectangleCurrent.getHeight() / gridTiles) + gameFieldRectangleCurrent.getY() + (gameFieldRectangleCurrent.getHeight() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2)),
+                    (int) (cells.getX() * gameFieldRectangleCurrentTmp.getWidth() / gridTiles - (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getX()),
+                    (int) (cells.getY() * gameFieldRectangleCurrentTmp.getHeight() / gridTiles - (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getY()),
+                    (int) ((cells.getX() * gameFieldRectangleCurrentTmp.getWidth() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getX()),
+                    (int) ((cells.getY() * gameFieldRectangleCurrentTmp.getHeight() / gridTiles) + gameFieldRectangleCurrentTmp.getY() + (gameFieldRectangleCurrentTmp.getHeight() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2)),
                     0,
                     0,
                     imageFloorFriendly.getWidth(),
@@ -457,10 +468,10 @@ public class UIRenderer implements Runnable {
             for (final Cell cells : gameGrid.getCellsPossessedByAI()) {
                 g2d.drawImage(
                     imageFloorEnemy,
-                    (int) (cells.getX() * gameFieldRectangleCurrent.getWidth() / gridTiles - (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getX()),
-                    (int) (cells.getY() * gameFieldRectangleCurrent.getHeight() / gridTiles - (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getY()),
-                    (int) ((cells.getX() * gameFieldRectangleCurrent.getWidth() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2) + gameFieldRectangleCurrent.getX()),
-                    (int) ((cells.getY() * gameFieldRectangleCurrent.getHeight() / gridTiles) + gameFieldRectangleCurrent.getY() + (gameFieldRectangleCurrent.getHeight() / gridTiles) + (gameFieldRectangleCurrent.getWidth() / gridTiles / 2)),
+                    (int) (cells.getX() * gameFieldRectangleCurrentTmp.getWidth() / gridTiles - (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getX()),
+                    (int) (cells.getY() * gameFieldRectangleCurrentTmp.getHeight() / gridTiles - (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getY()),
+                    (int) ((cells.getX() * gameFieldRectangleCurrentTmp.getWidth() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getX()),
+                    (int) ((cells.getY() * gameFieldRectangleCurrentTmp.getHeight() / gridTiles) + gameFieldRectangleCurrentTmp.getY() + (gameFieldRectangleCurrentTmp.getHeight() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2)),
                     0,
                     0,
                     imageFloorEnemy.getWidth(),
@@ -468,8 +479,8 @@ public class UIRenderer implements Runnable {
                     null);
             }
 
-            final double lengthX = gameFieldRectangleCurrent.getWidth() / gridTiles;
-            final double lengthY = gameFieldRectangleCurrent.getHeight() / gridTiles;
+            final double lengthX = gameFieldRectangleCurrentTmp.getWidth() / gridTiles;
+            final double lengthY = gameFieldRectangleCurrentTmp.getHeight() / gridTiles;
             // Draw Energyflow
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 
@@ -493,8 +504,8 @@ public class UIRenderer implements Runnable {
                     default:
                         theta = 0;
                     }
-                    final double positionX = i * lengthX + gameFieldRectangleCurrent.getX();
-                    final double positionY = j * lengthY + gameFieldRectangleCurrent.getY();
+                    final double positionX = i * lengthX + gameFieldRectangleCurrentTmp.getX();
+                    final double positionY = j * lengthY + gameFieldRectangleCurrentTmp.getY();
                     final double rotateX = positionX + (lengthX / 2);
                     final double rotateY = positionY + (lengthY / 2);
                     g2d.rotate(theta, rotateX, rotateY);
@@ -550,10 +561,10 @@ public class UIRenderer implements Runnable {
             // Draw BoardGrid
             g2d.drawImage(
                 imageBoardGrid,
-                (int) (gameFieldRectangleCurrent.getX() - gameFieldRectangleCurrent.getWidth() / 2),
-                (int) (gameFieldRectangleCurrent.getY() - gameFieldRectangleCurrent.getHeight() / 2),
-                (int) (gameFieldRectangleCurrent.getX() + gameFieldRectangleCurrent.getWidth() + gameFieldRectangleCurrent.getWidth() / 2),
-                (int) (gameFieldRectangleCurrent.getY() + gameFieldRectangleCurrent.getHeight() + gameFieldRectangleCurrent.getHeight() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
+                (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
                 0,
                 0,
                 imageBoard.getWidth(),
@@ -591,8 +602,8 @@ public class UIRenderer implements Runnable {
                     // (int) (gameFieldRectangle.width / gridSize ),
                     // (int) (gameFieldRectangle.height / gridSize ));
 
-                    final double positionX = i * lengthX + gameFieldRectangleCurrent.getX();
-                    final double positionY = j * lengthY + gameFieldRectangleCurrent.getY();
+                    final double positionX = i * lengthX + gameFieldRectangleCurrentTmp.getX();
+                    final double positionY = j * lengthY + gameFieldRectangleCurrentTmp.getY();
                     final double rotateX = positionX + (lengthX / 2);
                     final double rotateY = positionY + (lengthY / 2);
                     g2d.rotate(theta, rotateX, rotateY);
@@ -662,20 +673,20 @@ public class UIRenderer implements Runnable {
 
             g2d.setColor(colorRed);
             g2d.drawRect(
-                (int) gameFieldRectangleCurrent.getX(),
-                (int) gameFieldRectangleCurrent.getY(),
-                (int) gameFieldRectangleCurrent.getWidth(),
-                (int) gameFieldRectangleCurrent.getHeight());
+                (int) gameFieldRectangleCurrentTmp.getX(),
+                (int) gameFieldRectangleCurrentTmp.getY(),
+                (int) gameFieldRectangleCurrentTmp.getWidth(),
+                (int) gameFieldRectangleCurrentTmp.getHeight());
 
             g2d.setFont(font);
             g2d.setColor(colorRed);
             g2d.drawString(fps + " FPS", 5, 20);
             g2d.drawString(cps + " CPS", 5, 40);
             g2d.drawString(runningLoopps + " RunningLoopsPS", 5, 60);
-            g2d.drawString("Players turn? " + String.valueOf(gameManager.isPlayersTurn()), 100, 20);
+//            g2d.drawString("Players turn? " + String.valueOf(gameManager.isPlayersTurn()), 100, 20);
 
             g2d.dispose();
-        }
+//        }
 
     }
 

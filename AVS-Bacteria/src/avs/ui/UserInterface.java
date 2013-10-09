@@ -48,6 +48,7 @@ public class UserInterface extends JPanel implements MouseMotionListener, MouseL
 	@Override
 	public void paintComponent(Graphics g) {
 		renderer.draw(g);
+		g.dispose();
 	}
 
 	public void setControl(boolean controlflag) {
