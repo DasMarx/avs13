@@ -23,6 +23,8 @@ public class Attributes implements Serializable {
     public static final int NEUTRAL = 0;
 
     public static final int AI = 1;
+    
+    public static final int HOVER = 2;
 
     public static final double UP_THETA = Math.toRadians(0);
 

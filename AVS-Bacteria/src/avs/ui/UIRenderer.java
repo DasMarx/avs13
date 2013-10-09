@@ -115,6 +115,8 @@ public class UIRenderer implements Runnable {
 
     private BufferedImage imageBoardLCDDisplay = null;
 
+    private GameGrid showGameGrid = null;
+
     private GameGrid gameGrid = null;
 
     private GameManager gameManager;
@@ -261,18 +263,17 @@ public class UIRenderer implements Runnable {
             if (!initialized) {
                 return;
             }
-            
 
-             if (updateGridCounter > (2)) {
-            if (!changes.isEmpty()) {
-                CellChange currentchange = changes.removeFirst();
-                if (null != currentchange) {
-                    gameGrid.consumeCellChange(currentchange);
+            if (updateGridCounter > (2)) {
+                if (!changes.isEmpty()) {
+                    CellChange currentchange = changes.removeFirst();
+                    if (null != currentchange) {
+                        gameGrid.consumeCellChange(currentchange);
+                    }
                 }
-                 }
-                 updateGridCounter = 0;
+                updateGridCounter = 0;
             }
-             updateGridCounter++;
+            updateGridCounter++;
 
             // TODO Auto-generated method stub
 
@@ -344,354 +345,368 @@ public class UIRenderer implements Runnable {
 
             }
 
+            GameGrid tmpGameGrid = gameGrid.getCopy();
+            Cell tmpCell = tmpGameGrid.getCell((int) currentHoveredField.getX(), (int) currentHoveredField.getY());
+            if (null != tmpCell) {
+                if (tmpCell.getOwner() == Attributes.PLAYER) {
+                    tmpCell.setOwner(Attributes.HOVER);
+                    tmpGameGrid.processChanges(tmpCell, false);
+                } else {
+                    tmpCell.setOwner(Attributes.HOVER);
+                }
+                
+            }
+            showGameGrid = tmpGameGrid;
+
         }
     }
 
     public void draw(Graphics g) {
-        
-        final Double gameFieldRectangleCurrentTmp ;
-        final Dimension userInterfaceTmpSize ;
+
+        final Double gameFieldRectangleCurrentTmp;
+        final Dimension userInterfaceTmpSize;
         synchronized (this) {
             gameFieldRectangleCurrentTmp = new Double();
             gameFieldRectangleCurrentTmp.setRect(gameFieldRectangleCurrent);
             userInterfaceTmpSize = new Dimension(userInterface.getSize());
         }
-            // double a = Math.sin(timeRunning / 900.0) * 0;
-            // double b = Math.sin(timeRunning / 700.0) * 0;
-            // double c = Math.sin(timeRunning / 500.0) * 0;
-            // double d = Math.sin(timeRunning / 300.0) * 0;
+        // double a = Math.sin(timeRunning / 900.0) * 0;
+        // double b = Math.sin(timeRunning / 700.0) * 0;
+        // double c = Math.sin(timeRunning / 500.0) * 0;
+        // double d = Math.sin(timeRunning / 300.0) * 0;
 
-            // gameFieldRectangleCurrent.setRect(gameFieldRectangleDestination.getX() + (gameFieldRectangleDestination.getX() -
-            // gameFieldRectangleCurrent.getX()) / update, gameFieldRectangleDestination.getY() + (gameFieldRectangleDestination.getY() -
-            // gameFieldRectangleCurrent.getY()) / update, gameFieldRectangleDestination.getWidth() +
-            // (gameFieldRectangleDestination.getWidth()
-            // - gameFieldRectangleCurrent.getWidth()) / update, gameFieldRectangleDestination.getHeight() +
-            // (gameFieldRectangleDestination.getHeight() - gameFieldRectangleCurrent.getHeight()) / update);
+        // gameFieldRectangleCurrent.setRect(gameFieldRectangleDestination.getX() + (gameFieldRectangleDestination.getX() -
+        // gameFieldRectangleCurrent.getX()) / update, gameFieldRectangleDestination.getY() + (gameFieldRectangleDestination.getY() -
+        // gameFieldRectangleCurrent.getY()) / update, gameFieldRectangleDestination.getWidth() +
+        // (gameFieldRectangleDestination.getWidth()
+        // - gameFieldRectangleCurrent.getWidth()) / update, gameFieldRectangleDestination.getHeight() +
+        // (gameFieldRectangleDestination.getHeight() - gameFieldRectangleCurrent.getHeight()) / update);
 
-            // gameFieldRectangleCurrent = new Rectangle((int) (a), (int) b , (int) (c + size), (int) (d + size));
+        // gameFieldRectangleCurrent = new Rectangle((int) (a), (int) b , (int) (c + size), (int) (d + size));
 
-            Graphics2D g2d = (Graphics2D) g;
-            // set the opacity
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        Graphics2D g2d = (Graphics2D) g;
+        // set the opacity
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
-            fpscounter++;
-            // g2d.clearRect(0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight());
+        fpscounter++;
+        // g2d.clearRect(0, 0, (int) userInterface.getSize().getWidth(), (int) userInterface.getSize().getHeight());
 
-            // Draw Background
-            
-            
+        // Draw Background
+
+        final double lengthX = gameFieldRectangleCurrentTmp.getWidth() / gridTiles;
+        final double lengthY = gameFieldRectangleCurrentTmp.getHeight() / gridTiles;
+
+        g2d.drawImage(
+            imageBackground,
+            0,
+            0,
+            (int) userInterfaceTmpSize.getWidth(),
+            (int) userInterfaceTmpSize.getHeight(),
+            (int) ((imageBackground.getWidth() / 2) - (userInterfaceTmpSize.getWidth() / 2)),
+            (int) ((imageBackground.getHeight() / 2) - (userInterfaceTmpSize.getHeight() / 2)),
+            (int) ((imageBackground.getWidth() / 2) + (userInterfaceTmpSize.getWidth() / 2)),
+            (int) ((imageBackground.getHeight() / 2) + (userInterfaceTmpSize.getHeight() / 2)),
+            null);
+
+        // TODO: Draw animated stars for background
+
+        // Draw gameBoard
+        g2d.drawImage(
+            imageBoard,
+            (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
+            (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
+            (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
+            (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
+            0,
+            0,
+            imageBoard.getWidth(),
+            imageBoard.getHeight(),
+            null);
+
+        if (gameManager.isPlayersTurn()) {
             g2d.drawImage(
-                imageBackground,
-                0,
-                0,
-                (int) userInterfaceTmpSize.getWidth(),
-                (int) userInterfaceTmpSize.getHeight(),
-                (int) ((imageBackground.getWidth() / 2) - (userInterfaceTmpSize.getWidth() / 2)),
-                (int) ((imageBackground.getHeight() / 2) - (userInterfaceTmpSize.getHeight() / 2)),
-                (int) ((imageBackground.getWidth() / 2) + (userInterfaceTmpSize.getWidth() / 2)),
-                (int) ((imageBackground.getHeight() / 2) + (userInterfaceTmpSize.getHeight() / 2)),
-                null);
-
-            // TODO: Draw animated stars for background
-
-            // Draw gameBoard
-            g2d.drawImage(
-                imageBoard,
+                imageBoardPlayersTurn,
                 (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
                 (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
                 (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
                 (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
                 0,
                 0,
-                imageBoard.getWidth(),
-                imageBoard.getHeight(),
+                imageBoardPlayersTurn.getWidth(),
+                imageBoardPlayersTurn.getHeight(),
                 null);
-
-            if (gameManager.isPlayersTurn()) {
-                g2d.drawImage(
-                    imageBoardPlayersTurn,
-                    (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
-                    (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
-                    (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
-                    (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
-                    0,
-                    0,
-                    imageBoardPlayersTurn.getWidth(),
-                    imageBoardPlayersTurn.getHeight(),
-                    null);
-            } else {
-                g2d.drawImage(
-                    imageBoardEnemyTurn,
-                    (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
-                    (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
-                    (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
-                    (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
-                    0,
-                    0,
-                    imageBoardEnemyTurn.getWidth(),
-                    imageBoardEnemyTurn.getHeight(),
-                    null);
-            }
-
-            // Draw gameBoard
+        } else {
             g2d.drawImage(
-                imageBoardLCDDisplay,
+                imageBoardEnemyTurn,
                 (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
                 (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
                 (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
                 (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
                 0,
                 0,
-                imageBoardLCDDisplay.getWidth(),
-                imageBoardLCDDisplay.getHeight(),
+                imageBoardEnemyTurn.getWidth(),
+                imageBoardEnemyTurn.getHeight(),
                 null);
+        }
 
-            g2d.setColor(colorBlack);
+        // Draw gameBoard
+        g2d.drawImage(
+            imageBoardLCDDisplay,
+            (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
+            (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
+            (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
+            (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
+            0,
+            0,
+            imageBoardLCDDisplay.getWidth(),
+            imageBoardLCDDisplay.getHeight(),
+            null);
 
-            // Draw Floor
-            // Player
-            for (final Cell cells : gameGrid.getCellsPossessedByPlayer()) {
-                g2d.drawImage(
-                    imageFloorFriendly,
-                    (int) (cells.getX() * gameFieldRectangleCurrentTmp.getWidth() / gridTiles - (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getX()),
-                    (int) (cells.getY() * gameFieldRectangleCurrentTmp.getHeight() / gridTiles - (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getY()),
-                    (int) ((cells.getX() * gameFieldRectangleCurrentTmp.getWidth() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getX()),
-                    (int) ((cells.getY() * gameFieldRectangleCurrentTmp.getHeight() / gridTiles) + gameFieldRectangleCurrentTmp.getY() + (gameFieldRectangleCurrentTmp.getHeight() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2)),
-                    0,
-                    0,
-                    imageFloorFriendly.getWidth(),
-                    imageFloorFriendly.getHeight(),
-                    null);
-            }
+        g2d.setColor(colorBlack);
 
-            // AI
-            for (final Cell cells : gameGrid.getCellsPossessedByAI()) {
-                g2d.drawImage(
-                    imageFloorEnemy,
-                    (int) (cells.getX() * gameFieldRectangleCurrentTmp.getWidth() / gridTiles - (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getX()),
-                    (int) (cells.getY() * gameFieldRectangleCurrentTmp.getHeight() / gridTiles - (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getY()),
-                    (int) ((cells.getX() * gameFieldRectangleCurrentTmp.getWidth() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2) + gameFieldRectangleCurrentTmp.getX()),
-                    (int) ((cells.getY() * gameFieldRectangleCurrentTmp.getHeight() / gridTiles) + gameFieldRectangleCurrentTmp.getY() + (gameFieldRectangleCurrentTmp.getHeight() / gridTiles) + (gameFieldRectangleCurrentTmp.getWidth() / gridTiles / 2)),
-                    0,
-                    0,
-                    imageFloorEnemy.getWidth(),
-                    imageFloorEnemy.getHeight(),
-                    null);
-            }
+        // Draw Floor
+        // Player
+        for (final Cell cells : showGameGrid.getCellsPossessedByPlayer()) {
+            g2d.drawImage(
+                imageFloorFriendly,
+                (int) (cells.getX() * lengthX - (lengthX / 2) + gameFieldRectangleCurrentTmp.getX()),
+                (int) (cells.getY() * lengthY - (lengthY / 2) + gameFieldRectangleCurrentTmp.getY()),
+                (int) ((cells.getX() * lengthX) + (lengthX) + (lengthX / 2) + gameFieldRectangleCurrentTmp.getX()),
+                (int) ((cells.getY() * lengthY) + (lengthY) + (lengthY / 2) + gameFieldRectangleCurrentTmp.getY()),
+                0,
+                0,
+                imageFloorFriendly.getWidth(),
+                imageFloorFriendly.getHeight(),
+                null);
+        }
 
-            final double lengthX = gameFieldRectangleCurrentTmp.getWidth() / gridTiles;
-            final double lengthY = gameFieldRectangleCurrentTmp.getHeight() / gridTiles;
-            // Draw Energyflow
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+        // AI
+        for (final Cell cells : showGameGrid.getCellsPossessedByAI()) {
+            g2d.drawImage(
+                imageFloorEnemy,
+                (int) (cells.getX() * lengthX - (lengthX / 2) + gameFieldRectangleCurrentTmp.getX()),
+                (int) (cells.getY() * lengthY - (lengthY / 2) + gameFieldRectangleCurrentTmp.getY()),
+                (int) ((cells.getX() * lengthX) + (lengthX) + (lengthX / 2) + gameFieldRectangleCurrentTmp.getX()),
+                (int) ((cells.getY() * lengthY) + (lengthY) + (lengthY / 2) + gameFieldRectangleCurrentTmp.getY()),
+                0,
+                0,
+                imageFloorEnemy.getWidth(),
+                imageFloorEnemy.getHeight(),
+                null);
+        }
 
-            for (int i = 0; i < gridTiles; i++) {
-                for (int j = 0; j < gridTiles; j++) {
-                    final double theta;
-                    final Cell tmpCell = gameGrid.getCell(i, j);
-                    switch (tmpCell.getDirection()) {
-                    case Attributes.UP:
-                        theta = Attributes.UP_THETA;
-                        break;
-                    case Attributes.RIGHT:
-                        theta = Attributes.RIGHT_THETA;
-                        break;
-                    case Attributes.DOWN:
-                        theta = Attributes.DOWN_THETA;
-                        break;
-                    case Attributes.LEFT:
-                        theta = Attributes.LEFT_THETA;
-                        break;
-                    default:
-                        theta = 0;
-                    }
-                    final double positionX = i * lengthX + gameFieldRectangleCurrentTmp.getX();
-                    final double positionY = j * lengthY + gameFieldRectangleCurrentTmp.getY();
-                    final double rotateX = positionX + (lengthX / 2);
-                    final double rotateY = positionY + (lengthY / 2);
-                    g2d.rotate(theta, rotateX, rotateY);
+        // Draw Energyflow
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 
-                    final double adding = (lengthY) / 2000.0 * (((timeRunning + i * 10 * j * 10 + i * 10) % 2000));
-
-                    switch (tmpCell.getOwner()) {
-                    case Attributes.PLAYER:
-                        g2d.drawImage(
-                            imageEnergyBallFriendly,
-                            (int) (positionX + (lengthX / 3)),
-                            (int) (positionY - adding + (lengthY / 3)),
-                            (int) (positionX + lengthX - (lengthX / 3)),
-                            (int) (positionY + lengthY - adding - (lengthX / 3)),
-                            0,
-                            0,
-                            imageEnergyBallFriendly.getWidth(),
-                            imageEnergyBallFriendly.getHeight(),
-                            null);
-                        break;
-                    case Attributes.NEUTRAL:
-                        g2d.drawImage(
-                            imageEnergyBallNeutral,
-                            (int) (positionX + (lengthX / 3)),
-                            (int) (positionY - adding + (lengthY / 3)),
-                            (int) (positionX + lengthX - (lengthX / 3)),
-                            (int) (positionY + lengthY - adding - (lengthX / 3)),
-                            0,
-                            0,
-                            imageEnergyBallNeutral.getWidth(),
-                            imageEnergyBallNeutral.getHeight(),
-                            null);
-                        break;
-                    case Attributes.AI:
-                        g2d.drawImage(
-                            imageEnergyBallEnemy,
-                            (int) (positionX + (lengthX / 3)),
-                            (int) (positionY - adding + (lengthY / 3)),
-                            (int) (positionX + lengthX - (lengthX / 3)),
-                            (int) (positionY + lengthY - adding - (lengthX / 3)),
-                            0,
-                            0,
-                            imageEnergyBallEnemy.getWidth(),
-                            imageEnergyBallEnemy.getHeight(),
-                            null);
-                        break;
-                    }
-
-                    g2d.rotate(-theta, rotateX, rotateY);
+        for (int i = 0; i < gridTiles; i++) {
+            for (int j = 0; j < gridTiles; j++) {
+                final double theta;
+                final Cell tmpCell = showGameGrid.getCell(i, j);
+                switch (tmpCell.getDirection()) {
+                case Attributes.UP:
+                    theta = Attributes.UP_THETA;
+                    break;
+                case Attributes.RIGHT:
+                    theta = Attributes.RIGHT_THETA;
+                    break;
+                case Attributes.DOWN:
+                    theta = Attributes.DOWN_THETA;
+                    break;
+                case Attributes.LEFT:
+                    theta = Attributes.LEFT_THETA;
+                    break;
+                default:
+                    theta = 0;
                 }
-            }
+                final double positionX = i * lengthX + gameFieldRectangleCurrentTmp.getX();
+                final double positionY = j * lengthY + gameFieldRectangleCurrentTmp.getY();
+                final double rotateX = positionX + (lengthX / 2);
+                final double rotateY = positionY + (lengthY / 2);
+                g2d.rotate(theta, rotateX, rotateY);
 
-            // Draw BoardGrid
-            g2d.drawImage(
-                imageBoardGrid,
-                (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
-                (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
-                (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
-                (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
-                0,
-                0,
-                imageBoard.getWidth(),
-                imageBoard.getHeight(),
-                null);
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+                final double adding = (lengthY) / 2000.0 * (((timeRunning + i * 10 * j * 10 + i * 10) % 2000));
 
-            // TODO Auto-generated method stub
-            for (int i = 0; i < gridTiles; i++) {
-                for (int j = 0; j < gridTiles; j++) {
-                    // Draw Arrow
-                    final double theta;
-                    final Cell tmpCell = gameGrid.getCell(i, j);
-                    switch (tmpCell.getDirection()) {
-                    case Attributes.UP:
-                        theta = Attributes.UP_THETA;
-                        break;
-                    case Attributes.RIGHT:
-                        theta = Attributes.RIGHT_THETA;
-                        break;
-                    case Attributes.DOWN:
-                        theta = Attributes.DOWN_THETA;
-                        break;
-                    case Attributes.LEFT:
-                        theta = Attributes.LEFT_THETA;
-                        break;
-                    default:
-                        theta = 0;
-                    }
-
-                    // angle += Math.sin(timeRunning / 150.0) * 45;
-
-                    // g.drawRect((int) (i * gameFieldRectangle.width / gridSize),
-                    // (int) (j * gameFieldRectangle.height / gridSize) + gameFieldRectangle.y,
-                    // (int) (gameFieldRectangle.width / gridSize ),
-                    // (int) (gameFieldRectangle.height / gridSize ));
-
-                    final double positionX = i * lengthX + gameFieldRectangleCurrentTmp.getX();
-                    final double positionY = j * lengthY + gameFieldRectangleCurrentTmp.getY();
-                    final double rotateX = positionX + (lengthX / 2);
-                    final double rotateY = positionY + (lengthY / 2);
-                    g2d.rotate(theta, rotateX, rotateY);
-
-                    switch (tmpCell.getOwner()) {
-                    case Attributes.PLAYER:
-                        g2d.drawImage(
-                            imageArrowFriendly,
-                            (int) positionX,
-                            (int) positionY,
-                            (int) (positionX + lengthX),
-                            (int) (positionY + lengthY),
-                            0,
-                            0,
-                            imageArrowFriendly.getWidth(),
-                            imageArrowFriendly.getHeight(),
-                            null);
-                        break;
-                    case Attributes.NEUTRAL:
-                        g2d.drawImage(
-                            imageArrowNeutral,
-                            (int) positionX,
-                            (int) positionY,
-                            (int) (positionX + lengthX),
-                            (int) (positionY + lengthY),
-                            0,
-                            0,
-                            imageArrowNeutral.getWidth(),
-                            imageArrowNeutral.getHeight(),
-                            null);
-                        break;
-                    case Attributes.AI:
-                        g2d.drawImage(
-                            imageArrowEnemy,
-                            (int) positionX,
-                            (int) positionY,
-                            (int) (positionX + lengthX),
-                            (int) (positionY + lengthY),
-                            0,
-                            0,
-                            imageArrowEnemy.getWidth(),
-                            imageArrowEnemy.getHeight(),
-                            null);
-                        break;
-                    }
-
-                    // Aktuell gehoverten Pfeil überblenden
-                    if (currentHoveredField.x == i && currentHoveredField.y == j) {
-
-                        g2d.drawImage(
-                            imageArrowChoosen,
-                            (int) positionX,
-                            (int) positionY,
-                            (int) (positionX + lengthX),
-                            (int) (positionY + lengthY),
-                            0,
-                            0,
-                            imageArrowEnemy.getWidth(),
-                            imageArrowEnemy.getHeight(),
-                            null);
-
-                    }
-
-                    g2d.rotate(-theta, rotateX, rotateY);
+                switch (tmpCell.getOwner()) {
+                case Attributes.PLAYER:
+                    g2d.drawImage(
+                        imageEnergyBallFriendly,
+                        (int) (positionX + (lengthX / 3)),
+                        (int) (positionY - adding + (lengthY / 3)),
+                        (int) (positionX + lengthX - (lengthX / 3)),
+                        (int) (positionY + lengthY - adding - (lengthX / 3)),
+                        0,
+                        0,
+                        imageEnergyBallFriendly.getWidth(),
+                        imageEnergyBallFriendly.getHeight(),
+                        null);
+                    break;
+                case Attributes.NEUTRAL:
+                    g2d.drawImage(
+                        imageEnergyBallNeutral,
+                        (int) (positionX + (lengthX / 3)),
+                        (int) (positionY - adding + (lengthY / 3)),
+                        (int) (positionX + lengthX - (lengthX / 3)),
+                        (int) (positionY + lengthY - adding - (lengthX / 3)),
+                        0,
+                        0,
+                        imageEnergyBallNeutral.getWidth(),
+                        imageEnergyBallNeutral.getHeight(),
+                        null);
+                    break;
+                case Attributes.AI:
+                    g2d.drawImage(
+                        imageEnergyBallEnemy,
+                        (int) (positionX + (lengthX / 3)),
+                        (int) (positionY - adding + (lengthY / 3)),
+                        (int) (positionX + lengthX - (lengthX / 3)),
+                        (int) (positionY + lengthY - adding - (lengthX / 3)),
+                        0,
+                        0,
+                        imageEnergyBallEnemy.getWidth(),
+                        imageEnergyBallEnemy.getHeight(),
+                        null);
+                    break;
                 }
+
+                g2d.rotate(-theta, rotateX, rotateY);
             }
+        }
 
-            g2d.setColor(colorRed);
-            g2d.drawRect(
-                (int) gameFieldRectangleCurrentTmp.getX(),
-                (int) gameFieldRectangleCurrentTmp.getY(),
-                (int) gameFieldRectangleCurrentTmp.getWidth(),
-                (int) gameFieldRectangleCurrentTmp.getHeight());
+        // Draw BoardGrid
+        g2d.drawImage(
+            imageBoardGrid,
+            (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2),
+            (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2),
+            (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2),
+            (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2),
+            0,
+            0,
+            imageBoard.getWidth(),
+            imageBoard.getHeight(),
+            null);
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 
-            g2d.setFont(font);
-            g2d.setColor(colorRed);
-            g2d.drawString(fps + " FPS", 5, 20);
-            g2d.drawString(cps + " CPS", 5, 40);
-            g2d.drawString(runningLoopps + " RunningLoopsPS", 5, 60);
-//            g2d.drawString("Players turn? " + String.valueOf(gameManager.isPlayersTurn()), 100, 20);
+        // TODO Auto-generated method stub
+        for (int i = 0; i < gridTiles; i++) {
+            for (int j = 0; j < gridTiles; j++) {
+                // Draw Arrow
+                final double theta;
+                final Cell tmpCell = showGameGrid.getCell(i, j);
+                switch (tmpCell.getDirection()) {
+                case Attributes.UP:
+                    theta = Attributes.UP_THETA;
+                    break;
+                case Attributes.RIGHT:
+                    theta = Attributes.RIGHT_THETA;
+                    break;
+                case Attributes.DOWN:
+                    theta = Attributes.DOWN_THETA;
+                    break;
+                case Attributes.LEFT:
+                    theta = Attributes.LEFT_THETA;
+                    break;
+                default:
+                    theta = 0;
+                }
 
-            g2d.dispose();
-//        }
+                // angle += Math.sin(timeRunning / 150.0) * 45;
+
+                // g.drawRect((int) (i * gameFieldRectangle.width / gridSize),
+                // (int) (j * gameFieldRectangle.height / gridSize) + gameFieldRectangle.y,
+                // (int) (gameFieldRectangle.width / gridSize ),
+                // (int) (gameFieldRectangle.height / gridSize ));
+
+                final double positionX = i * lengthX + gameFieldRectangleCurrentTmp.getX();
+                final double positionY = j * lengthY + gameFieldRectangleCurrentTmp.getY();
+                final double rotateX = positionX + (lengthX / 2);
+                final double rotateY = positionY + (lengthY / 2);
+                g2d.rotate(theta, rotateX, rotateY);
+
+                // Aktuell gehoverten Pfeil überblenden
+                // if (currentHoveredField.x == i && currentHoveredField.y == j) {
+                //
+                // } else {
+                switch (tmpCell.getOwner()) {
+                case Attributes.PLAYER:
+                    g2d.drawImage(
+                        imageArrowFriendly,
+                        (int) positionX,
+                        (int) positionY,
+                        (int) (positionX + lengthX),
+                        (int) (positionY + lengthY),
+                        0,
+                        0,
+                        imageArrowFriendly.getWidth(),
+                        imageArrowFriendly.getHeight(),
+                        null);
+                    break;
+                case Attributes.NEUTRAL:
+                    g2d.drawImage(
+                        imageArrowNeutral,
+                        (int) positionX,
+                        (int) positionY,
+                        (int) (positionX + lengthX),
+                        (int) (positionY + lengthY),
+                        0,
+                        0,
+                        imageArrowNeutral.getWidth(),
+                        imageArrowNeutral.getHeight(),
+                        null);
+                    break;
+                case Attributes.AI:
+                    g2d.drawImage(
+                        imageArrowEnemy,
+                        (int) positionX,
+                        (int) positionY,
+                        (int) (positionX + lengthX),
+                        (int) (positionY + lengthY),
+                        0,
+                        0,
+                        imageArrowEnemy.getWidth(),
+                        imageArrowEnemy.getHeight(),
+                        null);
+                    break;
+                case Attributes.HOVER:
+                    g2d.drawImage(
+                        imageArrowChoosen,
+                        (int) positionX,
+                        (int) positionY,
+                        (int) (positionX + lengthX),
+                        (int) (positionY + lengthY),
+                        0,
+                        0,
+                        imageArrowEnemy.getWidth(),
+                        imageArrowEnemy.getHeight(),
+                        null);
+                    // }
+                }
+
+                g2d.rotate(-theta, rotateX, rotateY);
+            }
+        }
+
+        g2d.setColor(colorRed);
+        g2d.drawRect(
+            (int) gameFieldRectangleCurrentTmp.getX(),
+            (int) gameFieldRectangleCurrentTmp.getY(),
+            (int) gameFieldRectangleCurrentTmp.getWidth(),
+            (int) gameFieldRectangleCurrentTmp.getHeight());
+
+        g2d.setFont(font);
+        g2d.setColor(colorRed);
+        g2d.drawString(fps + " FPS", 5, 20);
+        g2d.drawString(cps + " CPS", 5, 40);
+        g2d.drawString(runningLoopps + " RunningLoopsPS", 5, 60);
+        // g2d.drawString("Players turn? " + String.valueOf(gameManager.isPlayersTurn()), 100, 20);
+
+        g2d.dispose();
+        // }
 
     }
 
     public void setGameGrid(GameGrid gameGrid) {
         this.gameGrid = gameGrid;
+        this.showGameGrid = this.gameGrid.getCopy();
         gridTiles = gameGrid.getLength();
         initialized = true;
     };

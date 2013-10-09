@@ -188,6 +188,18 @@ public class GameGrid implements Serializable {
             write.unlock();
         }
     }
+    
+    public void removeOwner(Cell c, int owner) {
+        write.lock();
+        try {
+            cellsPossessedByPlayer.remove(c);
+            cellsPossessedByAI.remove(c);
+            getCell(c.getX(), c.getY()).setOwner(owner);
+        } finally {
+            write.unlock();
+        }
+    }
+    
 
     /**
      * @param x coordinate of the cell to be turned
@@ -299,11 +311,17 @@ public class GameGrid implements Serializable {
         if (target.getOwner() == owner) {
             return false;
         }
-        if (owner == Attributes.PLAYER)
+        switch (owner) {
+        case Attributes.PLAYER:
             addCellPlayer(target);
-        else
+            break;
+        case Attributes.AI:
             addCellAI(target);
-        
+            break;
+        case Attributes.HOVER:
+        default:
+            removeOwner(target,owner);
+        }
         return true;
     }
 
