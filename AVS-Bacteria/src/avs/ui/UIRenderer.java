@@ -151,9 +151,7 @@ public class UIRenderer implements Runnable {
 			imageEnergyBallNeutral = ImageIO.read(getClass().getResourceAsStream("/energyball_neutral.png"));
 			imageEnergyBallEnemy = ImageIO.read(getClass().getResourceAsStream("/energyball_enemy.png"));
 
-//			font = new Font("Arial",Font.BOLD,20);
-//			InputStream is = getClass().getResourceAsStream("./digital.ttf");
-			font = Font.createFont(Font.TRUETYPE_FONT, new File("digital.ttf")).deriveFont(Font.BOLD, 24);
+			font = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/DS-DIGI.TTF")).deriveFont(Font.BOLD, 24);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -161,9 +159,7 @@ public class UIRenderer implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		// File here = new File(".");
-		// System.out.println(here.getAbsolutePath());
+		
 	}
 
 	public void initialize(GameManager gameManager) {
