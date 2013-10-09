@@ -10,9 +10,12 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Transparency;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -123,32 +126,59 @@ public class UIRenderer implements Runnable {
 
     private Rectangle2D.Double gameFieldRectangleDestination;
 
+    private BufferedImage createImage(String position) {
+        // prepare a original Image source
+        Image image;
+        try {
+            image = ImageIO.read(this.getClass().getResourceAsStream(position));
+            // Get current GraphicsConfiguration
+            GraphicsConfiguration graphicsConfiguration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+
+            // Create a Compatible BufferedImage
+            BufferedImage bufferedImage = graphicsConfiguration.createCompatibleImage(
+                image.getWidth(null),
+                image.getHeight(null),
+                Transparency.TRANSLUCENT);
+            // Copy from original Image to new Compatible BufferedImage
+            Graphics tempGraphics = bufferedImage.getGraphics();
+            tempGraphics.drawImage(image, 0, 0, null);
+            tempGraphics.dispose();
+
+            return bufferedImage;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
     public UIRenderer(UserInterface userInterface) {
         this.userInterface = userInterface;
 
         // Init Images
         try {
-            imageArrowFriendly = ImageIO.read(getClass().getResourceAsStream("/arrow_friendly.png"));
-            imageArrowEnemy = ImageIO.read(getClass().getResourceAsStream("/arrow_enemy.png"));
-            imageArrowNeutral = ImageIO.read(getClass().getResourceAsStream("/arrow_neutral.png"));
-            imageArrowChoosen = ImageIO.read(getClass().getResourceAsStream("/arrow_choosen.png"));
+            imageArrowFriendly = createImage("/arrow_friendly.png");
+            imageArrowEnemy = createImage("/arrow_enemy.png");
+            imageArrowNeutral = createImage("/arrow_neutral.png");
+            imageArrowChoosen = createImage("/arrow_choosen.png");
             // imageFogFriendly = ImageIO.read(new File("img/fog_friendly.png"));
             // imageFogEnemy = ImageIO.read(new File("img/fog_enemy.png"));
 
-            imageFloorFriendly = ImageIO.read(getClass().getResourceAsStream("/floor_friendly.png"));
-            imageFloorEnemy = ImageIO.read(getClass().getResourceAsStream("/floor_enemy.png"));
+            imageFloorFriendly = createImage("/floor_friendly.png");
+            imageFloorEnemy = createImage("/floor_enemy.png");
 
-            imageBackground = ImageIO.read(getClass().getResourceAsStream("/background.jpg"));
-            imageBoard = ImageIO.read(getClass().getResourceAsStream("/board_greenlight.png"));
-            imageBoardGrid = ImageIO.read(getClass().getResourceAsStream("/grid.png"));
-            imageBoardPlayersTurn = ImageIO.read(getClass().getResourceAsStream("/green_light.png"));
-            imageBoardEnemyTurn = ImageIO.read(getClass().getResourceAsStream("/red_light.png"));
+            imageBackground = createImage("/background.jpg");
+            imageBoard = createImage("/board_greenlight.png");
+            imageBoardGrid = createImage("/grid.png");
+            imageBoardPlayersTurn = createImage("/green_light.png");
+            imageBoardEnemyTurn = createImage("/red_light.png");
 
-            imageBoardLCDDisplay = ImageIO.read(getClass().getResourceAsStream("/lcd_display.png"));
+            imageBoardLCDDisplay = createImage("/lcd_display.png");
 
-            imageEnergyBallFriendly = ImageIO.read(getClass().getResourceAsStream("/energyball_friendly.png"));
-            imageEnergyBallNeutral = ImageIO.read(getClass().getResourceAsStream("/energyball_neutral.png"));
-            imageEnergyBallEnemy = ImageIO.read(getClass().getResourceAsStream("/energyball_enemy.png"));
+            imageEnergyBallFriendly = createImage("/energyball_friendly.png");
+            imageEnergyBallNeutral = createImage("/energyball_neutral.png");
+            imageEnergyBallEnemy = createImage("/energyball_enemy.png");
 
             font = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/DS-DIGI.TTF")).deriveFont(Font.BOLD, 24);
 
@@ -441,7 +471,6 @@ public class UIRenderer implements Runnable {
                     null);
             }
 
-            
             final double lengthX = gameFieldRectangleCurrent.getWidth() / gridTiles;
             final double lengthY = gameFieldRectangleCurrent.getHeight() / gridTiles;
             // Draw Energyflow
@@ -482,7 +511,7 @@ public class UIRenderer implements Runnable {
                             (int) (positionX + (lengthX / 3)),
                             (int) (positionY - adding + (lengthY / 3)),
                             (int) (positionX + lengthX - (lengthX / 3)),
-                            (int) (positionY + lengthY - adding - (lengthX / 3)), 
+                            (int) (positionY + lengthY - adding - (lengthX / 3)),
                             0,
                             0,
                             imageEnergyBallFriendly.getWidth(),
@@ -495,7 +524,7 @@ public class UIRenderer implements Runnable {
                             (int) (positionX + (lengthX / 3)),
                             (int) (positionY - adding + (lengthY / 3)),
                             (int) (positionX + lengthX - (lengthX / 3)),
-                            (int) (positionY + lengthY - adding - (lengthX / 3)), 
+                            (int) (positionY + lengthY - adding - (lengthX / 3)),
                             0,
                             0,
                             imageEnergyBallNeutral.getWidth(),
@@ -508,7 +537,7 @@ public class UIRenderer implements Runnable {
                             (int) (positionX + (lengthX / 3)),
                             (int) (positionY - adding + (lengthY / 3)),
                             (int) (positionX + lengthX - (lengthX / 3)),
-                            (int) (positionY + lengthY - adding - (lengthX / 3)), 
+                            (int) (positionY + lengthY - adding - (lengthX / 3)),
                             0,
                             0,
                             imageEnergyBallEnemy.getWidth(),
@@ -564,7 +593,6 @@ public class UIRenderer implements Runnable {
                     // (int) (j * gameFieldRectangle.height / gridSize) + gameFieldRectangle.y,
                     // (int) (gameFieldRectangle.width / gridSize ),
                     // (int) (gameFieldRectangle.height / gridSize ));
-
 
                     final double positionX = i * lengthX + gameFieldRectangleCurrent.getX();
                     final double positionY = j * lengthY + gameFieldRectangleCurrent.getY();
