@@ -381,6 +381,7 @@ public class UIRenderer implements Runnable {
         final double lengthY = gameFieldRectangleCurrentTmp.getHeight() / gridTiles;
 
         drawBackground(userInterfaceTmpSize, g2d);
+        //the following method takes nearly 1/3 time to render
         drawGameBoad(gameFieldRectangleCurrentTmp, g2d);
 
         g2d.setColor(colorBlack);
@@ -391,6 +392,7 @@ public class UIRenderer implements Runnable {
 
         drawEnergyflow(gameFieldRectangleCurrentTmp, g2d, lengthX, lengthY);
         
+        //the following method takes nearly 1/3 time to render
         drawBoardGrid(gameFieldRectangleCurrentTmp, g2d);
         
         drawArrows(gameFieldRectangleCurrentTmp, g2d, lengthX, lengthY);
@@ -483,7 +485,7 @@ public class UIRenderer implements Runnable {
                 final double rotateX = positionX + (lengthX / 2);
                 final double rotateY = positionY + (lengthY / 2);
                 
-                rotaetImage(g2d, theta, rotateX, rotateY);
+                g2d.rotate(theta, rotateX, rotateY);
 
                 switch (tmpCell.getOwner()) {
                 case Attributes.PLAYER:
@@ -539,20 +541,9 @@ public class UIRenderer implements Runnable {
                         null);
                 }
 
-                rotaetImage(g2d,-theta,rotateX,rotateY);
-//                g2d.rotate(-theta, rotateX, rotateY);
+                g2d.rotate(-theta, rotateX, rotateY);
             }
         }
-    }
-
-    /**
-     * @param g2d
-     * @param theta
-     * @param rotateX
-     * @param rotateY
-     */
-    private void rotaetImage(Graphics2D g2d, final double theta, final double rotateX, final double rotateY) {
-        g2d.rotate(theta, rotateX, rotateY);
     }
 
     /**
