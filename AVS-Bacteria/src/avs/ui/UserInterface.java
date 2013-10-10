@@ -48,6 +48,7 @@ public class UserInterface extends JPanel implements MouseMotionListener, MouseL
 	@Override
 	public void paintComponent(Graphics g) {
 	    Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+	    Thread.currentThread().setName("AVS:AWT Thread");
 		renderer.draw(g);
 		g.dispose();
 	}
