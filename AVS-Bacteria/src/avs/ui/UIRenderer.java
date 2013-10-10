@@ -577,7 +577,7 @@ public class UIRenderer implements Runnable {
                 final double positionY = j * lengthY + gameFieldRectangleCurrentTmp.getY();
                 final double rotateX = positionX + (lengthX / 2);
                 final double rotateY = positionY + (lengthY / 2);
-                rotaetImage(g2d, theta, rotateX, rotateY);
+                g2d.rotate(theta, rotateX, rotateY);
 
                 final double adding = (lengthY) / 2000.0 * (((timeRunning + i * 10 * j * 10 + i * 10) % 2000));
 
