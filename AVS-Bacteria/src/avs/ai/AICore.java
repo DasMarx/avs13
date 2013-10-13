@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import avs.game.Attributes;
 import avs.game.Cell;
@@ -51,17 +52,19 @@ public class AICore implements Runnable {
 
                 // Creating shared object
                 BlockingQueue<WorkLoadReturn> futureQueue = new LinkedBlockingQueue<WorkLoadReturn>();
-                AtomicInteger concurrentExecution = new AtomicInteger(0);
+                int semaphoreCount = 100;
+                Semaphore semaphore = new Semaphore( semaphoreCount, true );
+//                AtomicInteger concurrentExecution = new AtomicInteger(0);
                 // Creating Producer and Consumer Thread
-                Thread prodThread = new Thread(new Producer(futureQueue, this,concurrentExecution));
+                Thread prodThread = new Thread(new Producer(futureQueue, this,semaphore));
 
                 ProducerStillRunning = true;
-                int THREAD_COUNT = 6;
+                int THREAD_COUNT = 5;
 
                 Consumer[] consumerArray = new Consumer[THREAD_COUNT];
                 Thread[] consumerThreadArray = new Thread[THREAD_COUNT];
                 for (int i = 0; i < THREAD_COUNT; i++) {
-                    consumerArray[i] = new Consumer(futureQueue,this,concurrentExecution);
+                    consumerArray[i] = new Consumer(futureQueue,this);
                     consumerThreadArray[i] = new Thread(consumerArray[i]);
                 }
 
@@ -73,6 +76,12 @@ public class AICore implements Runnable {
 
                 try {
                     prodThread.join();
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                try {
+                    semaphore.acquire(semaphoreCount);
                 } catch (InterruptedException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -111,7 +120,7 @@ public class AICore implements Runnable {
                     System.out.print(consumerArray[i].getCounter() + " ");
                 }
                 System.out.println("");
-                System.out.println("futureQueue " + futureQueue.size() + " concurrentExecution " + concurrentExecution.get());
+                System.out.println("futureQueue " + futureQueue.size() + " concurrentExecution " + semaphore.availablePermits());
 
                 System.out.println("done " + calc + " calculations in " + (calcTime) + " ms which is " + calcPerSec + " calc/ms");
                 if (bestReturned == null) {

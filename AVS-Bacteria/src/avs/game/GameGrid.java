@@ -38,7 +38,7 @@ public class GameGrid implements Serializable {
 
     private HashSet<Cell> cellsPossessedByAI = new HashSet<Cell>();
 
-    private static final int gridSize = 30;
+    private final int gridSize = 30;
 
     Random r;
 
@@ -151,8 +151,8 @@ public class GameGrid implements Serializable {
      */
     public GameGrid getCopy() {
         GameGrid g = new GameGrid();
-        for (int i = 0; i < gameGrid.length; i++) {
-            for (int j = 0; j < gameGrid.length; j++) {
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
 //                g.gameGrid[i][j] = new Cell(i, j, gameGrid[i][j].getOwner(), gameGrid[i][j].getDirection());
                 g.gameGrid[i][j] = new Cell(gameGrid[i][j]);
             }

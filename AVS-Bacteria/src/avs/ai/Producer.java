@@ -3,6 +3,7 @@ package avs.ai;
 import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import avs.game.Cell;
 import avs.game.GameGrid;
@@ -17,9 +18,9 @@ class Producer implements Runnable {
 
     private AICore aiCore;
 
-    private AtomicInteger concurrentExecution;
+    private Semaphore concurrentExecution;
     
-    private int WORK_COUNTER = 5;
+    private int WORK_COUNTER = 10;
     
     ExecutionCallback<WorkLoadReturn> myCallback = new ExecutionCallback<WorkLoadReturn>() {
 
@@ -30,19 +31,19 @@ class Producer implements Runnable {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            concurrentExecution.decrementAndGet();
+            concurrentExecution.release();
         }
 
         public void onFailure(Throwable t) {
-            concurrentExecution.decrementAndGet();
+            concurrentExecution.release();
             t.printStackTrace();
         }
     };
 
-    public Producer(BlockingQueue<WorkLoadReturn> sharedQueue, AICore aiCore, AtomicInteger concurrentExecution) {
+    public Producer(BlockingQueue<WorkLoadReturn> sharedQueue, AICore aiCore, Semaphore semaphore) {
         this.futureQueue = sharedQueue;
         this.aiCore = aiCore;
-        this.concurrentExecution = concurrentExecution;
+        this.concurrentExecution = semaphore;
     }
 
     @Override
@@ -77,15 +78,12 @@ class Producer implements Runnable {
      * @param task
      */
     private void sendToQueue( Callable<WorkLoadReturn> task) {
-        while (concurrentExecution.get() > 100) {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        try {
+            concurrentExecution.acquire();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        concurrentExecution.incrementAndGet();
         aiCore.getExecutorService().submit(task, myCallback);
     }
 

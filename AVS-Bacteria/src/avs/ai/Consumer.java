@@ -1,6 +1,7 @@
 package avs.ai;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import avs.hazelcast.WorkLoadReturn;
@@ -14,19 +15,17 @@ class Consumer implements Runnable {
 
     private int counter = 0;
 
-    private AtomicInteger concurrentExecution;
 
     private AICore aiCore;
 
-    public Consumer(BlockingQueue<WorkLoadReturn> futureQueue2, AICore aiCore, AtomicInteger concurrentExecution) {
+    public Consumer(BlockingQueue<WorkLoadReturn> futureQueue2, AICore aiCore) {
         this.aiCore = aiCore;
         this.futureQueue = futureQueue2;
-        this.concurrentExecution = concurrentExecution;
     }
 
     @Override
     public void run() {
-        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+//        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         Thread.currentThread().setName("AVS:Consumer Thread");
         // while (!Thread.currentThread().isInterrupted()) {
         // if (aiCore.consumerProducerStillRunning()) {
@@ -34,7 +33,7 @@ class Consumer implements Runnable {
         while (running) {
             try {
                 WorkLoadReturn myReturn;
-                myReturn = futureQueue.poll(100, TimeUnit.MILLISECONDS);
+                myReturn = futureQueue.poll(1, TimeUnit.MILLISECONDS);
                 if (null != myReturn) {
 //                    concurrentExecution.decrementAndGet();
                     setCounter(getCounter() + myReturn.getCounter() + 1);
@@ -46,9 +45,9 @@ class Consumer implements Runnable {
                     }
                 } else {
                     if (!aiCore.ProducerStillRunning()) {
-                        if (concurrentExecution.get() == 0) {
+//                        if (concurrentExecution.availablePermits() == 0) {
                             running = false;
-                        }
+//                        }
                     }
                 }
 
