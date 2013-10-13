@@ -76,6 +76,13 @@ public class Cell implements Serializable{
         this.direction = direction;
     }
 
+    public Cell(Cell cellToCopy) {
+        this.x = cellToCopy.getX();
+        this.y = cellToCopy.getY();
+        this.owner = cellToCopy.getOwner();
+        this.direction = cellToCopy.getDirection();
+    }
+    
     /**
      * Initializes a new {@link Cell}.
      */

@@ -153,7 +153,8 @@ public class GameGrid implements Serializable {
         GameGrid g = new GameGrid();
         for (int i = 0; i < gameGrid.length; i++) {
             for (int j = 0; j < gameGrid.length; j++) {
-                g.gameGrid[i][j] = new Cell(i, j, gameGrid[i][j].getOwner(), gameGrid[i][j].getDirection());
+//                g.gameGrid[i][j] = new Cell(i, j, gameGrid[i][j].getOwner(), gameGrid[i][j].getDirection());
+                g.gameGrid[i][j] = new Cell(gameGrid[i][j]);
             }
         }
         g.cellsPossessedByAI = getCellsPossessedByAI();
