@@ -23,6 +23,12 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 
     private LinkedList<Cell> work;
 
+    private Cell cell;
+
+    int counter = 1;
+    
+    WorkLoadReturn bestReturned = null;
+    
     public Workload() {
     }
 
@@ -34,38 +40,46 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
         this.deepness = deepness;
     }
 
+    public Workload(GameGrid copy, Cell c, int initialX2, int initialY2, int i) {
+        this.grid = copy;
+        this.cell = c;
+        this.initialX = initialX2;
+        this.initialY = initialY2;
+        this.deepness = i;
+    }
+
     @Override
     public WorkLoadReturn call() throws Exception {
-        // System.out.println("field " + x + ":" + y + " is worth: " + grid.getCellsPossessedByAiCount() + " at deepness of " + deepness);
-        int counter = 1;
-        WorkLoadReturn bestReturned = null;
-        
-        for (Cell outerCell : work) {
-            final GameGrid outerGrid = grid.getCopy();
-            outerGrid.processChanges(outerCell, false);
-            counter++;
-            if (deepness < 1) {
-                
-                for (Cell c : outerGrid.getCellsPossessedByAI()) {
-                    LinkedList<Cell> tmpList = new LinkedList<Cell>();
-                    tmpList.add(c);
-                    final Workload myTmpWorkload = new Workload(outerGrid.getCopy(), tmpList, initialX, initialY, deepness + 1);
-                    final WorkLoadReturn myReturn = myTmpWorkload.call();
-                    counter += myReturn.getCounter();
-                    bestReturned = compareWorkloads(bestReturned, myReturn);
-                }
-                
-            } else {
-                bestReturned = compareWorkloads(bestReturned, new WorkLoadReturn(outerCell, initialX, initialY, outerGrid.getRating(), counter));
+        if ( null != work) {
+            for (Cell outerCell : work) {
+                final GameGrid outerGrid = grid.getCopy();
+                doWork(outerCell,outerGrid);
             }
-            
+        } else {
+            doWork(cell,grid);
         }
-        
         if (null != bestReturned) {
             bestReturned.setCounter(counter);
             return bestReturned;
         }
         return null;
+    }
+
+    private void doWork(Cell tmpCell, GameGrid tmpGrid) throws Exception {
+        tmpGrid.processChanges(tmpCell, false);
+        counter++;
+        if (deepness < 4) {
+            for (Cell c : tmpGrid.getCellsPossessedByAI()) {
+                final Workload myTmpWorkload = new Workload(tmpGrid.getCopy(), c, initialX, initialY, deepness + 1);
+                final WorkLoadReturn myReturn = myTmpWorkload.call();
+                if (null != myReturn) {
+                    counter += myReturn.getCounter();
+                    bestReturned = compareWorkloads(bestReturned, myReturn);
+                }
+            }
+        } else {
+            bestReturned = compareWorkloads(bestReturned, new WorkLoadReturn(tmpCell, initialX, initialY, tmpGrid.getRating(), counter));
+        }
     }
 
     /**

@@ -447,7 +447,7 @@ public class UIRenderer implements Runnable {
             g2d.drawString(localExecutorStats.getStartedTaskCount() + " " + localExecutorStats.getPendingTaskCount(), 100, 40);
         }
         if (null != members) {
-            g2d.drawString("Members active: " + members.size(), 150, 40);
+            g2d.drawString("Members active: " + members.size(), 180, 40);
         }
     }
 

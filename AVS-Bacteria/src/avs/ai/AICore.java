@@ -86,22 +86,25 @@ public class AICore implements Runnable {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
-//                try {
-//                    semaphore.acquire(semaphoreCount);
-//                } catch (InterruptedException e1) {
-//                    // TODO Auto-generated catch block
-//                    e1.printStackTrace();
-//                }
+                System.out.println("Producer finished");
+                
                 ProducerStillRunning = false;
                 for (int i = 0; i < THREAD_COUNT; i++) {
                     try {
                         consumerThreadArray[i].join();
+                        System.out.println("Consumer finished");
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
 
+                try {
+                    semaphore.acquire(semaphoreCount);
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
                 long endTime = System.currentTimeMillis();
                 long calcTime = endTime - startTime;
                 int calc = 0;
@@ -126,7 +129,7 @@ public class AICore implements Runnable {
                     System.out.print(consumerArray[i].getCounter() + " ");
                 }
                 System.out.println("");
-                System.out.println("futureQueue " + futureQueue.size() + " concurrentExecution " + semaphore.availablePermits());
+                System.out.println("futureQueue " + futureQueue.size() + " workQueue " + workQueue.size());
 
                 System.out.println("done " + calc + " calculations in " + (calcTime) + " ms which is " + calcPerSec + " calc/ms");
                 if (bestReturned == null) {
@@ -208,11 +211,11 @@ public class AICore implements Runnable {
         return work;
     }
     
-    public void incrementWork() {
+    public synchronized void incrementWork() {
         work++;
     }
     
-    public void incrementWorkDone() {
+    public synchronized void incrementWorkDone() {
         workDone++;
     }
 

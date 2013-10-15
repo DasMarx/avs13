@@ -24,7 +24,7 @@ class Producer implements Runnable {
 
     private AICore aiCore;
 
-    private int WORK_COUNTER = 50;
+    private int WORK_COUNTER = 10;
 
     // private Map<Member, ISemaphore> mySemaphoreMap;
 
@@ -35,7 +35,6 @@ class Producer implements Runnable {
     public Producer(BlockingQueue<Callable<WorkLoadReturn>> workQueue, AICore aiCore) {
         this.workQueue = workQueue;
         this.aiCore = aiCore;
-        
     }
 
     @Override
@@ -45,9 +44,9 @@ class Producer implements Runnable {
         aiCore.setWork(0);
         aiCore.setWorkDone(0);
         for (Cell c : aiCore.getGrid().getCellsPossessedByAI()) {
-
             GameGrid currentGrid = aiCore.getGrid().getCopy();
             currentGrid.processChanges(c, false);
+           
             LinkedList<Cell> workList = null;
             for (Cell innerC : currentGrid.getCellsPossessedByAI()) {
                 if (null == workList) {
@@ -55,13 +54,13 @@ class Producer implements Runnable {
                 }
                 workList.add(innerC);
                 if (workList.size() >= WORK_COUNTER) {
-                    Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), workList, c.getX(), c.getY(), 0);
+                    Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), workList, c.getX(), c.getY(), 2);
                     workQueue.add(task);
                     workList = null;
                 }
             }
             if (null != workList) {
-                Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), workList, c.getX(), c.getY(), 0);
+                Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), workList, c.getX(), c.getY(), 2);
                 workQueue.add(task);
                 workList = null;
             }

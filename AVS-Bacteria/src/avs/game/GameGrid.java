@@ -215,7 +215,6 @@ public class GameGrid implements Serializable {
         if (trackChanges) {
             changes.add(produceCellChange(target));
             processChanges(processedCells, target, target.getOwner(), changes);
-            
         } else {
             processChangesWithoutSavingInformation(processedCells, target, target.getOwner());
         }

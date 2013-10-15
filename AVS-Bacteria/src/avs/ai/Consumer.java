@@ -56,26 +56,15 @@ class Consumer implements Runnable {
         boolean running = true;
         while (running) {
             try {
-                sendToQueue(workQueue.poll(1, TimeUnit.MILLISECONDS));
-                WorkLoadReturn myReturn;
-                myReturn = futureQueue.poll(1, TimeUnit.MILLISECONDS);
-                if (null != myReturn) {
-                    setCounter(getCounter() + myReturn.getCounter() + 1);
-                    if (null == getInternalReturn()) {
-                        setInternalReturn(myReturn);
-                    }
-                    if (getInternalReturn().getRating() < myReturn.getRating()) {
-                        setInternalReturn(myReturn);
-                    }
-                } else {
-                    if (!aiCore.ProducerStillRunning()) {
-                        if (workQueue.size() == 0) {
-                            running = false;
-                        }
+                if (!sendToQueue(workQueue.poll(1, TimeUnit.MILLISECONDS)) && !aiCore.ProducerStillRunning()) {
+                    if (workQueue.size() == 0) {
+                        running = false;
                     }
                 }
-            } catch (InterruptedException ex) {
+            } catch (InterruptedException e) {
                 running = false;
+                e.printStackTrace();
+
             }
 
         }
@@ -94,17 +83,18 @@ class Consumer implements Runnable {
         return counter;
     }
 
-    public void setCounter(int counter) {
+    public synchronized void setCounter(int counter) {
         this.counter = counter;
     }
 
     /**
      * @param myCallback
      * @param task
+     * @throws InterruptedException
      */
-    private void sendToQueue(Callable<WorkLoadReturn> task) {
-        if (null == task){
-            return;
+    private boolean sendToQueue(Callable<WorkLoadReturn> task) throws InterruptedException {
+        if (null == task) {
+            return false;
         }
         try {
             semaphore.acquire();
@@ -114,21 +104,17 @@ class Consumer implements Runnable {
         }
         while (true) {
             final int item = new Random().nextInt(memberArray.length);
-            long currentTime = System.currentTimeMillis();
-            if (semaphoreArray[item].tryAcquire()) {
-                System.out.println(memberArray[item].toString() + " : " + (System.currentTimeMillis() - currentTime) + " ms");
-                semaphoreArray[item].release();
-            }
-            if (semaphoreArray[item].tryAcquire()) {
+            if (semaphoreArray[item].tryAcquire(30, TimeUnit.MILLISECONDS)) {
                 aiCore.incrementWork();
                 aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 
                     public void onResponse(WorkLoadReturn response) {
-                        try {
-                            futureQueue.put(response);
-                        } catch (InterruptedException e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                        setCounter(getCounter() + response.getCounter() + 1);
+                        if (null == getInternalReturn()) {
+                            setInternalReturn(response);
+                        }
+                        if (getInternalReturn().getRating() < response.getRating()) {
+                            setInternalReturn(response);
                         }
                         aiCore.incrementWorkDone();
                         semaphore.release();
@@ -141,7 +127,7 @@ class Consumer implements Runnable {
                         t.printStackTrace();
                     }
                 });
-                return;
+                return true;
             }
 
         }
