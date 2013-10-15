@@ -4,6 +4,7 @@ package avs.game;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 import avs.ai.AICore;
+import avs.hazelcast.HazelcastWorker;
 import avs.ui.UserInterface;
 
 /**
@@ -41,6 +42,8 @@ public class GameManager {
     
     private LinkedList<CellChange> allChanges = new LinkedList<CellChange>();
 
+    private HazelcastWorker myHazelcastWorker = new HazelcastWorker();
+
     /**
      * Initializes a new {@link GameManager}.
      * 
@@ -77,6 +80,12 @@ public class GameManager {
                 timeAccumulator -= timeDelta;
                 timeRunning += timeDelta;
             }
+            
+            userInterface.setWork(aiCore.getWork());
+            userInterface.setWorkDone(aiCore.getWorkDone());
+            userInterface.setStats(myHazelcastWorker.getInstance().getExecutorService("default").getLocalExecutorStats());
+            userInterface.setMemberStats(myHazelcastWorker.getInstance().getCluster().getMembers());
+            
             if (!allChanges.isEmpty()) {
                 LinkedList<CellChange> changes = gameGrid.processChanges(allChanges.removeFirst(),true);
                 userInterface.updateGrid(changes);
@@ -96,7 +105,9 @@ public class GameManager {
                     e.printStackTrace();
                 }
             }
+            
         }
+        myHazelcastWorker.getInstance().getLifecycleService().shutdown();
 
     }
 
@@ -161,22 +172,7 @@ public class GameManager {
         return !isPlayersTurn();
     }
 
-    // /**
-    // * @return last change
-    // */
-    // public LinkedList<CellChanges> getChanges() {
-    // synchronized (allChanges) {
-    // return allChanges.getLast();
-    // }
-    // }
-    //
-    // /**
-    // * @param the turn whos changes are requested
-    // * @return the changes of the specified turn
-    // */
-    // public LinkedList<CellChanges> getChanges(int turn){
-    // synchronized (allChanges){
-    // return allChanges.get(turn);
-    // }
-    // }
+    public HazelcastWorker getHazelCastWorker() {
+        return myHazelcastWorker ;
+    }
 }

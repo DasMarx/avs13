@@ -9,7 +9,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.LinkedList;
+import java.util.Set;
 import javax.swing.JPanel;
+import com.hazelcast.core.Member;
+import com.hazelcast.monitor.LocalExecutorStats;
 import avs.game.Attributes;
 import avs.game.CellChange;
 import avs.game.GameGrid;
@@ -106,5 +109,21 @@ public class UserInterface extends JPanel implements MouseMotionListener, MouseL
 		// TODO Auto-generated method stub
 		
 	}
+
+    public void setWork(int work) {
+        renderer.setWork(work);
+    }
+
+    public void setWorkDone(int workDone) {
+        renderer.setWorkDone(workDone);
+    }
+
+    public void setStats(LocalExecutorStats localExecutorStats) {
+        renderer.setStats(localExecutorStats);
+    }
+
+    public void setMemberStats(Set<Member> members) {
+        renderer.setMemberStats(members);
+    }
 
 }

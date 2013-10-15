@@ -4,6 +4,7 @@ package avs.ai;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,6 +15,7 @@ import avs.game.GameManager;
 import avs.hazelcast.HazelcastWorker;
 import avs.hazelcast.WorkLoadReturn;
 import com.hazelcast.core.IExecutorService;
+import com.hazelcast.core.ISemaphore;
 
 public class AICore implements Runnable {
 
@@ -33,17 +35,20 @@ public class AICore implements Runnable {
 
     public void initialize(GameManager gm) {
         this.setGm(gm);
-        setMyWorker(new HazelcastWorker());
+        setMyWorker(gm.getHazelCastWorker());
     }
 
     public void setGameGrid(GameGrid grid) {
         this.setGrid(grid);
-
     }
+    
+    private int work = 0, workDone = 0;
 
     public void run() {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         setExecutorService(getMyWorker().getInstance().getExecutorService("default"));
+        ISemaphore hazelCastSemaphore = getMyWorker().getInstance().getSemaphore(getMyWorker().getInstance().getCluster().getLocalMember().getUuid());
+        hazelCastSemaphore.init(100);
         while (isRunning()) {
             if (getGm().isAIsTurn()) {
 
@@ -52,19 +57,20 @@ public class AICore implements Runnable {
 
                 // Creating shared object
                 BlockingQueue<WorkLoadReturn> futureQueue = new LinkedBlockingQueue<WorkLoadReturn>();
-                int semaphoreCount = 100;
+                BlockingQueue<Callable<WorkLoadReturn>> workQueue = new LinkedBlockingQueue<Callable<WorkLoadReturn>>(); 
+                int semaphoreCount = 350;
                 Semaphore semaphore = new Semaphore( semaphoreCount, true );
 //                AtomicInteger concurrentExecution = new AtomicInteger(0);
                 // Creating Producer and Consumer Thread
-                Thread prodThread = new Thread(new Producer(futureQueue, this,semaphore));
+                Thread prodThread = new Thread(new Producer(workQueue, this));
 
                 ProducerStillRunning = true;
-                int THREAD_COUNT = 5;
+                int THREAD_COUNT = 10;
 
                 Consumer[] consumerArray = new Consumer[THREAD_COUNT];
                 Thread[] consumerThreadArray = new Thread[THREAD_COUNT];
                 for (int i = 0; i < THREAD_COUNT; i++) {
-                    consumerArray[i] = new Consumer(futureQueue,this);
+                    consumerArray[i] = new Consumer(workQueue,futureQueue,this,semaphore);
                     consumerThreadArray[i] = new Thread(consumerArray[i]);
                 }
 
@@ -80,12 +86,12 @@ public class AICore implements Runnable {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
-                try {
-                    semaphore.acquire(semaphoreCount);
-                } catch (InterruptedException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+//                try {
+//                    semaphore.acquire(semaphoreCount);
+//                } catch (InterruptedException e1) {
+//                    // TODO Auto-generated catch block
+//                    e1.printStackTrace();
+//                }
                 ProducerStillRunning = false;
                 for (int i = 0; i < THREAD_COUNT; i++) {
                     try {
@@ -196,5 +202,29 @@ public class AICore implements Runnable {
 
     public void setMyWorker(HazelcastWorker myWorker) {
         this.myWorker = myWorker;
+    }
+
+    public int getWork() {
+        return work;
+    }
+    
+    public void incrementWork() {
+        work++;
+    }
+    
+    public void incrementWorkDone() {
+        workDone++;
+    }
+
+    public void setWork(int work) {
+        this.work = work;
+    }
+
+    public int getWorkDone() {
+        return workDone;
+    }
+
+    public void setWorkDone(int workDone) {
+        this.workDone = workDone;
     }
 }

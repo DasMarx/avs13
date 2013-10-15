@@ -23,7 +23,10 @@ import java.awt.geom.Rectangle2D.Double;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Set;
 import javax.imageio.ImageIO;
+import com.hazelcast.core.Member;
+import com.hazelcast.monitor.LocalExecutorStats;
 import avs.game.Attributes;
 import avs.game.Cell;
 import avs.game.CellChange;
@@ -126,6 +129,12 @@ public class UIRenderer implements Runnable {
     private Rectangle2D.Double gameFieldRectangleCurrent;
 
     private Rectangle2D.Double gameFieldRectangleDestination;
+
+    private int work = 0, workDone = 0;
+
+    private LocalExecutorStats localExecutorStats;
+
+    private Set<Member> members;
 
     private BufferedImage createImage(String position) {
         // prepare a original Image source
@@ -433,6 +442,13 @@ public class UIRenderer implements Runnable {
         g2d.drawString(fps + " FPS", 5, 20);
         g2d.drawString(cps + " CPS", 5, 40);
         g2d.drawString(runningLoopps + " RunningLoopsPS", 5, 60);
+        g2d.drawString(work + "/" + workDone + " diff: " + (work - workDone), 100, 20);
+        if (null != localExecutorStats) {
+            g2d.drawString(localExecutorStats.getStartedTaskCount() + " " + localExecutorStats.getPendingTaskCount(), 100, 40);
+        }
+        if (null != members) {
+            g2d.drawString("Members active: " + members.size(), 150, 40);
+        }
     }
 
     /**
@@ -763,6 +779,22 @@ public class UIRenderer implements Runnable {
             return new Point(-1, -1);
         }
 
+    }
+
+    public void setWork(int work) {
+        this.work  = work;
+    }
+
+    public void setWorkDone(int workDone) {
+        this.workDone = workDone;
+    }
+
+    public void setStats(LocalExecutorStats localExecutorStats) {
+        this.localExecutorStats = localExecutorStats;
+    }
+
+    public void setMemberStats(Set<Member> members) {
+        this.members = members;
     }
 
 }
