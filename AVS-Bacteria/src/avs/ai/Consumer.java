@@ -80,7 +80,7 @@ class Consumer implements Runnable {
         return counter;
     }
 
-    public synchronized void setCounter(int counter) {
+    public void setCounter(int counter) {
         this.counter = counter;
     }
 
@@ -101,7 +101,7 @@ class Consumer implements Runnable {
         }
         while (true) {
             final int item = new Random().nextInt(memberArray.length);
-            if (semaphoreArray[item].tryAcquire(30, TimeUnit.MILLISECONDS)) {
+            if (semaphoreArray[item].tryAcquire(50, TimeUnit.MILLISECONDS)) {
                 aiCore.incrementWork();
                 aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 
@@ -113,9 +113,9 @@ class Consumer implements Runnable {
                         if (getInternalReturn().getRating() < response.getRating()) {
                             setInternalReturn(response);
                         }
-                        aiCore.incrementWorkDone();
                         semaphore.release();
                         semaphoreArray[item].release();
+                        aiCore.incrementWorkDone();
                     }
 
                     public void onFailure(Throwable t) {
