@@ -7,15 +7,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import avs.hazelcast.WorkLoadReturn;
 import com.hazelcast.core.ExecutionCallback;
 import com.hazelcast.core.ISemaphore;
 import com.hazelcast.core.Member;
-import avs.hazelcast.WorkLoadReturn;
 
 // Consumer Class in Java
 class Consumer implements Runnable {
-
-    private final BlockingQueue<WorkLoadReturn> futureQueue;
 
     private WorkLoadReturn internalReturn = null;
 
@@ -31,9 +29,8 @@ class Consumer implements Runnable {
 
     private ISemaphore[] semaphoreArray;
 
-    public Consumer(BlockingQueue<Callable<WorkLoadReturn>> workQueue, BlockingQueue<WorkLoadReturn> futureQueue, AICore aiCore, Semaphore semaphore) {
+    public Consumer(BlockingQueue<Callable<WorkLoadReturn>> workQueue, AICore aiCore, Semaphore semaphore) {
         this.aiCore = aiCore;
-        this.futureQueue = futureQueue;
         this.workQueue = workQueue;
         this.semaphore = semaphore;
 

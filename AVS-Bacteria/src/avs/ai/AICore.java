@@ -7,7 +7,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
 import avs.game.Attributes;
 import avs.game.Cell;
 import avs.game.GameGrid;
@@ -33,6 +32,10 @@ public class AICore implements Runnable {
 
     private boolean ProducerStillRunning = false;
 
+    int SEMAPHORE_COUNT = 500;
+
+    int THREAD_COUNT = 10;
+
     public void initialize(GameManager gm) {
         this.setGm(gm);
         setMyWorker(gm.getHazelCastWorker());
@@ -41,13 +44,14 @@ public class AICore implements Runnable {
     public void setGameGrid(GameGrid grid) {
         this.setGrid(grid);
     }
-    
+
     private int work = 0, workDone = 0;
 
     public void run() {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         setExecutorService(getMyWorker().getInstance().getExecutorService("default"));
-        ISemaphore hazelCastSemaphore = getMyWorker().getInstance().getSemaphore(getMyWorker().getInstance().getCluster().getLocalMember().getUuid());
+        ISemaphore hazelCastSemaphore = getMyWorker().getInstance().getSemaphore(
+            getMyWorker().getInstance().getCluster().getLocalMember().getUuid());
         hazelCastSemaphore.init(100);
         while (isRunning()) {
             if (getGm().isAIsTurn()) {
@@ -56,21 +60,18 @@ public class AICore implements Runnable {
                 long startTime = System.currentTimeMillis();
 
                 // Creating shared object
-                BlockingQueue<WorkLoadReturn> futureQueue = new LinkedBlockingQueue<WorkLoadReturn>();
-                BlockingQueue<Callable<WorkLoadReturn>> workQueue = new LinkedBlockingQueue<Callable<WorkLoadReturn>>(); 
-                int semaphoreCount = 350;
-                Semaphore semaphore = new Semaphore( semaphoreCount, true );
-//                AtomicInteger concurrentExecution = new AtomicInteger(0);
+                BlockingQueue<Callable<WorkLoadReturn>> workQueue = new LinkedBlockingQueue<Callable<WorkLoadReturn>>(200);
+                Semaphore semaphore = new Semaphore(SEMAPHORE_COUNT, true);
+
                 // Creating Producer and Consumer Thread
                 Thread prodThread = new Thread(new Producer(workQueue, this));
 
                 ProducerStillRunning = true;
-                int THREAD_COUNT = 10;
 
                 Consumer[] consumerArray = new Consumer[THREAD_COUNT];
                 Thread[] consumerThreadArray = new Thread[THREAD_COUNT];
                 for (int i = 0; i < THREAD_COUNT; i++) {
-                    consumerArray[i] = new Consumer(workQueue,futureQueue,this,semaphore);
+                    consumerArray[i] = new Consumer(workQueue, this, semaphore);
                     consumerThreadArray[i] = new Thread(consumerArray[i]);
                 }
 
@@ -87,7 +88,7 @@ public class AICore implements Runnable {
                     e1.printStackTrace();
                 }
                 System.out.println("Producer finished");
-                
+
                 ProducerStillRunning = false;
                 for (int i = 0; i < THREAD_COUNT; i++) {
                     try {
@@ -100,7 +101,7 @@ public class AICore implements Runnable {
                 }
 
                 try {
-                    semaphore.acquire(semaphoreCount);
+                    semaphore.acquire(SEMAPHORE_COUNT);
                 } catch (InterruptedException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -124,12 +125,12 @@ public class AICore implements Runnable {
                         }
                     }
                 }
-                
+
                 for (int i = 0; i < THREAD_COUNT; i++) {
                     System.out.print(consumerArray[i].getCounter() + " ");
                 }
                 System.out.println("");
-                System.out.println("futureQueue " + futureQueue.size() + " workQueue " + workQueue.size());
+                System.out.println(" workQueue " + workQueue.size());
 
                 System.out.println("done " + calc + " calculations in " + (calcTime) + " ms which is " + calcPerSec + " calc/ms");
                 if (bestReturned == null) {
@@ -210,11 +211,11 @@ public class AICore implements Runnable {
     public int getWork() {
         return work;
     }
-    
+
     public synchronized void incrementWork() {
         work++;
     }
-    
+
     public synchronized void incrementWorkDone() {
         workDone++;
     }

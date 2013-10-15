@@ -2,16 +2,12 @@
 package avs.ai;
 
 import java.util.LinkedList;
-import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Semaphore;
 import avs.game.Cell;
 import avs.game.GameGrid;
 import avs.hazelcast.WorkLoadReturn;
 import avs.hazelcast.Workload;
-import com.hazelcast.core.ExecutionCallback;
 import com.hazelcast.core.ISemaphore;
 import com.hazelcast.core.Member;
 
@@ -54,14 +50,24 @@ class Producer implements Runnable {
                 }
                 workList.add(innerC);
                 if (workList.size() >= WORK_COUNTER) {
-                    Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), workList, c.getX(), c.getY(), 2);
-                    workQueue.add(task);
+                    Callable<WorkLoadReturn> task = new Workload(currentGrid, workList, c.getX(), c.getY(), 2);
+                    try {
+                        workQueue.put(task);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                     workList = null;
                 }
             }
             if (null != workList) {
                 Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), workList, c.getX(), c.getY(), 2);
-                workQueue.add(task);
+                try {
+                    workQueue.put(task);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 workList = null;
             }
         }

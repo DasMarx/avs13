@@ -13,10 +13,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.awt.Transparency;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
@@ -25,13 +23,13 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Set;
 import javax.imageio.ImageIO;
-import com.hazelcast.core.Member;
-import com.hazelcast.monitor.LocalExecutorStats;
 import avs.game.Attributes;
 import avs.game.Cell;
 import avs.game.CellChange;
 import avs.game.GameGrid;
 import avs.game.GameManager;
+import com.hazelcast.core.Member;
+import com.hazelcast.monitor.LocalExecutorStats;
 
 /**
  * @author HZU
