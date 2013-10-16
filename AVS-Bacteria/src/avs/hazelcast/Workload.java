@@ -14,12 +14,11 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
      */
     private static final long serialVersionUID = -1157763274200244389L;
 
-    private GameGrid grid;
+    private final GameGrid grid;
 
-    private int initialX, initialY;
-
-    // TODO: Include Parent-Hash
-    private int deepness;
+    private final int initialX, initialY;
+    
+    private final int deepness;
 
     private LinkedList<Cell> work;
 
@@ -28,9 +27,6 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     int counter = 1;
     
     WorkLoadReturn bestReturned = null;
-    
-    public Workload() {
-    }
 
     public Workload(GameGrid grid, LinkedList<Cell> work, int initialX, int initialY, int deepness) {
         this.work = work;
@@ -40,12 +36,12 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
         this.deepness = deepness;
     }
 
-    public Workload(GameGrid copy, Cell c, int initialX2, int initialY2, int i) {
-        this.grid = copy;
+    public Workload(GameGrid grid, Cell c, int initialX, int initialY, int deepness) {
+        this.grid = grid;
         this.cell = c;
-        this.initialX = initialX2;
-        this.initialY = initialY2;
-        this.deepness = i;
+        this.initialX = initialX;
+        this.initialY = initialY;
+        this.deepness = deepness;
     }
 
     @Override
@@ -68,7 +64,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     private void doWork(Cell tmpCell, GameGrid tmpGrid) throws Exception {
         tmpGrid.processChanges(tmpCell, false);
         counter++;
-        if (deepness < 4) {
+        if (deepness < 3) {
             for (Cell c : tmpGrid.getCellsPossessedByAI()) {
                 final Workload myTmpWorkload = new Workload(tmpGrid.getCopy(), c, initialX, initialY, deepness + 1);
                 final WorkLoadReturn myReturn = myTmpWorkload.call();
@@ -89,9 +85,9 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
      */
     private WorkLoadReturn compareWorkloads(WorkLoadReturn bestReturned, final WorkLoadReturn myReturn) {
         if (null == bestReturned) {
-            bestReturned = myReturn;
+            return myReturn;
         } else if (bestReturned.getRating() < myReturn.getRating()) {
-            bestReturned = myReturn;
+            return myReturn;
         }
         return bestReturned;
     }
