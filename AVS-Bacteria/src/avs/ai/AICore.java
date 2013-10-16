@@ -58,7 +58,7 @@ public class AICore implements Runnable {
         while (isRunning()) {
             
             if (!hazelcastSemaphoreInitiated) {
-                if (hazelCastSemaphore.init(50)) {
+                if (hazelCastSemaphore.init(100)) {
                     hazelcastSemaphoreInitiated = true;
                 }
             }
