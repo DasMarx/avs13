@@ -47,21 +47,10 @@ public class AICore implements Runnable {
 
     private int work = 0, workDone = 0;
 
-    private boolean hazelcastSemaphoreInitiated;
-
     public void run() {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         setExecutorService(getMyWorker().getInstance().getExecutorService("default"));
-        ISemaphore hazelCastSemaphore = getMyWorker().getInstance().getSemaphore(
-            getMyWorker().getInstance().getCluster().getLocalMember().getUuid());
-        
         while (isRunning()) {
-            
-            if (!hazelcastSemaphoreInitiated) {
-                if (hazelCastSemaphore.init(100)) {
-                    hazelcastSemaphoreInitiated = true;
-                }
-            }
             
             if (getGm().isAIsTurn()) {
 
