@@ -28,6 +28,8 @@ class Consumer implements Runnable {
     private Member[] memberArray;
 
     private ISemaphore[] semaphoreArray;
+    
+    final Random r = new Random();
 
     public Consumer(BlockingQueue<Callable<WorkLoadReturn>> workQueue, AICore aiCore, Semaphore semaphore) {
         this.aiCore = aiCore;
@@ -100,8 +102,8 @@ class Consumer implements Runnable {
             e.printStackTrace();
         }
         while (true) {
-            final int item = new Random().nextInt(memberArray.length);
-            if (semaphoreArray[item].tryAcquire(50, TimeUnit.MILLISECONDS)) {
+            final int item = r.nextInt(memberArray.length);
+            if (semaphoreArray[item].tryAcquire()) {
                 aiCore.incrementWork();
                 aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 
