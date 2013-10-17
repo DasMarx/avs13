@@ -54,16 +54,7 @@ public class AICore implements Runnable {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         setExecutorService(getMyWorker().getInstance().getExecutorService("default"));
         
-        Set<Member> members = getMyWorker().getInstance().getCluster().getMembers();
-        Member[] memberArray = new Member[members.size()];
-        Semaphore[]  semaphoreArray = new Semaphore[members.size()];
-        
-        int index = 0;
-        for (Member m : members) {
-            memberArray[index] = m;
-            semaphoreArray[index] = new Semaphore(SEMAPHORE_COUNT);
-            index++;
-        }
+       
         
         while (isRunning()) {
             
@@ -81,7 +72,19 @@ public class AICore implements Runnable {
 
                 ProducerStillRunning = true;
                 
+                Set<Member> members = getMyWorker().getInstance().getCluster().getMembers();
+                if (members.size() > 2) {
+                    members.remove(getMyWorker().getInstance().getCluster().getLocalMember());
+                }
+                Member[] memberArray = new Member[members.size()];
+                Semaphore[]  semaphoreArray = new Semaphore[members.size()];
                 
+                int index = 0;
+                for (Member m : members) {
+                    memberArray[index] = m;
+                    semaphoreArray[index] = new Semaphore(SEMAPHORE_COUNT);
+                    index++;
+                }
 
                 Consumer[] consumerArray = new Consumer[THREAD_COUNT];
                 Thread[] consumerThreadArray = new Thread[THREAD_COUNT];
