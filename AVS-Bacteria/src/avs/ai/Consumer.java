@@ -2,14 +2,12 @@
 package avs.ai;
 
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import avs.hazelcast.WorkLoadReturn;
 import com.hazelcast.core.ExecutionCallback;
-import com.hazelcast.core.ISemaphore;
 import com.hazelcast.core.Member;
 
 // Consumer Class in Java
@@ -27,24 +25,18 @@ class Consumer implements Runnable {
 
     private Member[] memberArray;
 
-    private ISemaphore[] semaphoreArray;
+    private final Semaphore[] semaphoreArray;
     
     final Random r = new Random();
 
-    public Consumer(BlockingQueue<Callable<WorkLoadReturn>> workQueue, AICore aiCore, Semaphore semaphore) {
+    public Consumer(BlockingQueue<Callable<WorkLoadReturn>> workQueue, AICore aiCore, Semaphore semaphore,Member[] memberArray, Semaphore[] semaphoreArray) {
         this.aiCore = aiCore;
         this.workQueue = workQueue;
         this.semaphore = semaphore;
-
-        Set<Member> members = aiCore.getMyWorker().getInstance().getCluster().getMembers();
-        memberArray = new Member[members.size()];
-        semaphoreArray = new ISemaphore[members.size()];
-        int index = 0;
-        for (Member m : members) {
-            memberArray[index] = m;
-            semaphoreArray[index] = aiCore.getMyWorker().getInstance().getSemaphore(m.getUuid());
-            index++;
-        }
+        this.memberArray = memberArray;
+        this.semaphoreArray = semaphoreArray;
+        
+       
 
     }
 
@@ -103,7 +95,7 @@ class Consumer implements Runnable {
         }
         while (true) {
             final int item = r.nextInt(memberArray.length);
-            if (semaphoreArray[item].availablePermits() > 0 && semaphoreArray[item].tryAcquire()) {
+            if (semaphoreArray[item].availablePermits() > 0 && semaphoreArray[item].tryAcquire(100,TimeUnit.MILLISECONDS)) {
                 aiCore.incrementWork();
                 aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 

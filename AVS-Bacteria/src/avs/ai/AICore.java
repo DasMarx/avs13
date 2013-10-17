@@ -3,6 +3,7 @@ package avs.ai;
 
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -14,7 +15,7 @@ import avs.game.GameManager;
 import avs.hazelcast.HazelcastWorker;
 import avs.hazelcast.WorkLoadReturn;
 import com.hazelcast.core.IExecutorService;
-import com.hazelcast.core.ISemaphore;
+import com.hazelcast.core.Member;
 
 public class AICore implements Runnable {
 
@@ -32,7 +33,9 @@ public class AICore implements Runnable {
 
     private boolean ProducerStillRunning = false;
 
-    int SEMAPHORE_COUNT = 500;
+    final int FULL_SEMAPHORE_COUNT = 500;
+    
+    final int SEMAPHORE_COUNT=50;
 
     int THREAD_COUNT = 10;
 
@@ -50,6 +53,18 @@ public class AICore implements Runnable {
     public void run() {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         setExecutorService(getMyWorker().getInstance().getExecutorService("default"));
+        
+        Set<Member> members = getMyWorker().getInstance().getCluster().getMembers();
+        Member[] memberArray = new Member[members.size()];
+        Semaphore[]  semaphoreArray = new Semaphore[members.size()];
+        
+        int index = 0;
+        for (Member m : members) {
+            memberArray[index] = m;
+            semaphoreArray[index] = new Semaphore(SEMAPHORE_COUNT);
+            index++;
+        }
+        
         while (isRunning()) {
             
             if (getGm().isAIsTurn()) {
@@ -59,17 +74,19 @@ public class AICore implements Runnable {
 
                 // Creating shared object
                 BlockingQueue<Callable<WorkLoadReturn>> workQueue = new LinkedBlockingQueue<Callable<WorkLoadReturn>>(200);
-                Semaphore semaphore = new Semaphore(SEMAPHORE_COUNT, true);
+                Semaphore semaphore = new Semaphore(FULL_SEMAPHORE_COUNT, true);
 
                 // Creating Producer and Consumer Thread
                 Thread prodThread = new Thread(new Producer(workQueue, this));
 
                 ProducerStillRunning = true;
+                
+                
 
                 Consumer[] consumerArray = new Consumer[THREAD_COUNT];
                 Thread[] consumerThreadArray = new Thread[THREAD_COUNT];
                 for (int i = 0; i < THREAD_COUNT; i++) {
-                    consumerArray[i] = new Consumer(workQueue, this, semaphore);
+                    consumerArray[i] = new Consumer(workQueue, this, semaphore, memberArray, semaphoreArray);
                     consumerThreadArray[i] = new Thread(consumerArray[i]);
                 }
 
@@ -82,7 +99,6 @@ public class AICore implements Runnable {
                 try {
                     prodThread.join();
                 } catch (InterruptedException e1) {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
                 System.out.println("Producer finished");
@@ -99,7 +115,7 @@ public class AICore implements Runnable {
                 }
 
                 try {
-                    semaphore.acquire(SEMAPHORE_COUNT);
+                    semaphore.acquire(FULL_SEMAPHORE_COUNT);
                 } catch (InterruptedException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();

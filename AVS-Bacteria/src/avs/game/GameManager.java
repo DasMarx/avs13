@@ -73,7 +73,6 @@ public class GameManager {
             if ((currentTime - lastTime) > timeDelta) {
                 timeAccumulator = (currentTime - lastTime);
                 lastTime = currentTime;
-
             }
 
             while (timeAccumulator > timeDelta) {
@@ -85,6 +84,7 @@ public class GameManager {
             userInterface.setWorkDone(aiCore.getWorkDone());
             userInterface.setStats(myHazelcastWorker.getInstance().getExecutorService("default").getLocalExecutorStats());
             userInterface.setMemberStats(myHazelcastWorker.getInstance().getCluster().getMembers());
+//            userInterface.setAvaibleSlots(myHazelcastWorker.getInstance().getSemaphore(myHazelcastWorker.getInstance().getCluster().getLocalMember().getUuid()).availablePermits());
             
             if (!allChanges.isEmpty()) {
                 LinkedList<CellChange> changes = gameGrid.processChanges(allChanges.removeFirst(),true);
@@ -105,7 +105,6 @@ public class GameManager {
                     e.printStackTrace();
                 }
             }
-            
         }
         myHazelcastWorker.getInstance().getLifecycleService().shutdown();
 

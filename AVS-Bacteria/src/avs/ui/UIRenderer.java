@@ -134,9 +134,11 @@ public class UIRenderer implements Runnable {
 
     private Set<Member> members;
 
+//    private int avaiblePermits = 0;
+
     private BufferedImage createImage(String position) {
         // prepare a original Image source
-        BufferedImage  image;
+        BufferedImage image;
         try {
             image = ImageIO.read(this.getClass().getResourceAsStream(position));
             // Get current GraphicsConfiguration
@@ -149,7 +151,7 @@ public class UIRenderer implements Runnable {
                 image.getTransparency());
             // Copy from original Image to new Compatible BufferedImage
             Graphics2D tempGraphics = bufferedImage.createGraphics();
-            tempGraphics.drawImage(image, 0, 0, image.getWidth (), image.getHeight (), null );
+            tempGraphics.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
             tempGraphics.dispose();
 
             return bufferedImage;
@@ -361,7 +363,7 @@ public class UIRenderer implements Runnable {
                 } else {
                     tmpCell.setOwner(Attributes.HOVER);
                 }
-                
+
             }
             showGameGrid = tmpGameGrid;
 
@@ -388,20 +390,20 @@ public class UIRenderer implements Runnable {
         final double lengthY = gameFieldRectangleCurrentTmp.getHeight() / gridTiles;
 
         drawBackground(userInterfaceTmpSize, g2d);
-        //the following method takes nearly 1/3 time to render
+        // the following method takes nearly 1/3 time to render
         drawGameBoad(gameFieldRectangleCurrentTmp, g2d);
 
         g2d.setColor(colorBlack);
-        
+
         drawFloor(gameFieldRectangleCurrentTmp, g2d, lengthX, lengthY);
-        
+
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 
         drawEnergyflow(gameFieldRectangleCurrentTmp, g2d, lengthX, lengthY);
-        
-        //the following method takes nearly 1/3 time to render
+
+        // the following method takes nearly 1/3 time to render
         drawBoardGrid(gameFieldRectangleCurrentTmp, g2d);
-        
+
         drawArrows(gameFieldRectangleCurrentTmp, g2d, lengthX, lengthY);
 
         drawRectangleAroundGrid(gameFieldRectangleCurrentTmp, g2d);
@@ -446,7 +448,16 @@ public class UIRenderer implements Runnable {
         }
         if (null != members) {
             g2d.drawString("Members active: " + members.size(), 180, 40);
+            // Iterator<Member> it = members.iterator();
+            // int i = 80;
+            // while (it.hasNext()) {
+            // Member tmpMember = it.next();
+            // g2d.drawString(tmpMember.toString() + " : " + tmpMember.getUuid(), 5, i);
+            // i += 20;
+            // }
+            
         }
+//        g2d.drawString("Avaible Permits: " + avaiblePermits, 5, 80);
     }
 
     /**
@@ -498,7 +509,7 @@ public class UIRenderer implements Runnable {
                 final double positionY = j * lengthY + gameFieldRectangleCurrentTmp.getY();
                 final double rotateX = positionX + (lengthX / 2);
                 final double rotateY = positionY + (lengthY / 2);
-                
+
                 g2d.rotate(theta, rotateX, rotateY);
 
                 switch (tmpCell.getOwner()) {
@@ -780,7 +791,7 @@ public class UIRenderer implements Runnable {
     }
 
     public void setWork(int work) {
-        this.work  = work;
+        this.work = work;
     }
 
     public void setWorkDone(int workDone) {
@@ -794,5 +805,4 @@ public class UIRenderer implements Runnable {
     public void setMemberStats(Set<Member> members) {
         this.members = members;
     }
-
 }
