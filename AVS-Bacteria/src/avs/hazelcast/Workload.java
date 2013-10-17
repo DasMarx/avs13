@@ -20,7 +20,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     
     private final int deepness;
 
-    private LinkedList<Cell> work;
+//    private LinkedList<Cell> work;
 
     private Cell cell;
 
@@ -28,13 +28,13 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     
     WorkLoadReturn bestReturned = null;
 
-    public Workload(GameGrid grid, LinkedList<Cell> work, int initialX, int initialY, int deepness) {
-        this.work = work;
-        this.grid = grid;
-        this.initialX = initialX;
-        this.initialY = initialY;
-        this.deepness = deepness;
-    }
+//    public Workload(GameGrid grid, LinkedList<Cell> work, int initialX, int initialY, int deepness) {
+//        this.work = work;
+//        this.grid = grid;
+//        this.initialX = initialX;
+//        this.initialY = initialY;
+//        this.deepness = deepness;
+//    }
 
     public Workload(GameGrid grid, Cell c, int initialX, int initialY, int deepness) {
         this.grid = grid;
@@ -46,14 +46,14 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 
     @Override
     public WorkLoadReturn call() throws Exception {
-        if ( null != work) {
-            for (Cell outerCell : work) {
-                final GameGrid outerGrid = grid.getCopy();
-                doWork(outerCell,outerGrid);
-            }
-        } else {
+//        if ( null != work) {
+//            for (Cell outerCell : work) {
+//                final GameGrid outerGrid = grid.getCopy();
+//                doWork(outerCell,outerGrid);
+//            }
+//        } else {
             doWork(cell,grid);
-        }
+//        }
         if (null != bestReturned) {
             bestReturned.setCounter(counter);
             return bestReturned;

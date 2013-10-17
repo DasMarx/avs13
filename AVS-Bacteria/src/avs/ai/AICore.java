@@ -37,7 +37,7 @@ public class AICore implements Runnable {
     
     final int SEMAPHORE_COUNT=50;
 
-    int THREAD_COUNT = 10;
+    int THREAD_COUNT = 4;
 
     public void initialize(GameManager gm) {
         this.setGm(gm);

@@ -42,34 +42,41 @@ class Producer implements Runnable {
         for (Cell c : aiCore.getGrid().getCellsPossessedByAI()) {
             GameGrid currentGrid = aiCore.getGrid().getCopy();
             currentGrid.processChanges(c, false);
+            Callable<WorkLoadReturn> task = new Workload(currentGrid, c, c.getX(), c.getY(), 1);
+            try {
+                workQueue.put(task);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
            
-            LinkedList<Cell> workList = null;
-            for (Cell innerC : currentGrid.getCellsPossessedByAI()) {
-                if (null == workList) {
-                    workList = new LinkedList<Cell>();
-                }
-                workList.add(innerC);
-                if (workList.size() >= WORK_COUNTER) {
-                    Callable<WorkLoadReturn> task = new Workload(currentGrid, workList, c.getX(), c.getY(), 2);
-                    try {
-                        workQueue.put(task);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    workList = null;
-                }
-            }
-            if (null != workList) {
-                Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), workList, c.getX(), c.getY(), 2);
-                try {
-                    workQueue.put(task);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                workList = null;
-            }
+//            LinkedList<Cell> workList = null;
+//            for (Cell innerC : currentGrid.getCellsPossessedByAI()) {
+//                if (null == workList) {
+//                    workList = new LinkedList<Cell>();
+//                }
+//                workList.add(innerC);
+//                if (workList.size() >= WORK_COUNTER) {
+//                    Callable<WorkLoadReturn> task = new Workload(currentGrid, workList, c.getX(), c.getY(), 2);
+//                    try {
+//                        workQueue.put(task);
+//                    } catch (InterruptedException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+//                    workList = null;
+//                }
+//            }
+//            if (null != workList) {
+//                Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), workList, c.getX(), c.getY(), 2);
+//                try {
+//                    workQueue.put(task);
+//                } catch (InterruptedException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+//                workList = null;
+//            }
         }
     }
 
