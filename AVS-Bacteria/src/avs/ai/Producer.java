@@ -20,7 +20,7 @@ class Producer implements Runnable {
 
     private AICore aiCore;
 
-    private int WORK_COUNTER = 10;
+    private int WORK_COUNTER = 25;
 
     // private Map<Member, ISemaphore> mySemaphoreMap;
 
