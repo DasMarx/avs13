@@ -49,6 +49,7 @@ class Producer implements Runnable {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            aiCore.incrementWork();
            
 //            LinkedList<Cell> workList = null;
 //            for (Cell innerC : currentGrid.getCellsPossessedByAI()) {
