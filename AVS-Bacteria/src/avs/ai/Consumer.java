@@ -95,7 +95,7 @@ class Consumer implements Runnable {
         }
         while (true) {
             final int item = r.nextInt(memberArray.length);
-            if (semaphoreArray[item].availablePermits() > 0 && semaphoreArray[item].tryAcquire(100,TimeUnit.MILLISECONDS)) {
+            if (semaphoreArray[item].availablePermits() > 0 && semaphoreArray[item].tryAcquire(20,TimeUnit.MILLISECONDS)) {
                 
                 aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 
