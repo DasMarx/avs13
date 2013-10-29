@@ -64,7 +64,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     private void doWork(Cell tmpCell, GameGrid tmpGrid) throws Exception {
         tmpGrid.processChanges(tmpCell, false);
         counter++;
-        if (deepness < 3) {
+        if (deepness < 4) {
             for (Cell c : tmpGrid.getCellsPossessedByAI()) {
                 final Workload myTmpWorkload = new Workload(tmpGrid.getCopy(), c, initialX, initialY, deepness + 1);
                 final WorkLoadReturn myReturn = myTmpWorkload.call();

@@ -419,7 +419,7 @@ public class UIRenderer implements Runnable {
 	}
 
 	private void drawProgressBar(Double gameFieldRectangleCurrentTmp, Graphics2D g2d, double lengthY) {
-		if (!gameManager.isPlayersTurn() && work > 49 & workDone >0) {
+		if (!gameManager.isPlayersTurn() && work != workDone) {
             g2d.drawImage(
                 imageProgressBar1,
                 (int) (gameFieldRectangleCurrentTmp.getX()),
