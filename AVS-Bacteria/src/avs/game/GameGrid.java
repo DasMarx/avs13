@@ -76,7 +76,7 @@ public class GameGrid implements Serializable {
     public int getRating() {
         read.lock();
         try {
-            return 2 * cellsPossessedByAI.size() - cellsPossessedByPlayer.size();
+            return  cellsPossessedByAI.size() - cellsPossessedByPlayer.size() * 10;
         } finally {
             read.unlock();
         }
