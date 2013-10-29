@@ -35,9 +35,6 @@ class Consumer implements Runnable {
         this.semaphore = semaphore;
         this.memberArray = memberArray;
         this.semaphoreArray = semaphoreArray;
-        
-       
-
     }
 
     @Override
@@ -77,6 +74,19 @@ class Consumer implements Runnable {
     public void setCounter(int counter) {
         this.counter = counter;
     }
+    
+    public synchronized void increaseCounter(int count) {
+        this.counter += count;
+    }
+    
+    public synchronized void compareWorkload(WorkLoadReturn response) {
+        if (null == getInternalReturn()) {
+            setInternalReturn(response);
+        }
+        if (getInternalReturn().getRating() < response.getRating()) {
+            setInternalReturn(response);
+        }
+    }
 
     /**
      * @param myCallback
@@ -100,13 +110,8 @@ class Consumer implements Runnable {
                 aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 
                     public void onResponse(WorkLoadReturn response) {
-                        setCounter(getCounter() + response.getCounter() + 1);
-                        if (null == getInternalReturn()) {
-                            setInternalReturn(response);
-                        }
-                        if (getInternalReturn().getRating() < response.getRating()) {
-                            setInternalReturn(response);
-                        }
+                        increaseCounter(response.getCounter() + 1);
+                        compareWorkload(response);
                         semaphore.release();
                         semaphoreArray[item].release();
                         aiCore.incrementWorkDone();

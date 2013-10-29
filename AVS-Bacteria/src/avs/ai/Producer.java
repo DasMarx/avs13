@@ -40,9 +40,9 @@ class Producer implements Runnable {
         aiCore.setWork(0);
         aiCore.setWorkDone(0);
         for (Cell c : aiCore.getGrid().getCellsPossessedByAI()) {
-            GameGrid currentGrid = aiCore.getGrid().getCopy();
-            currentGrid.processChanges(c, false);
-            Callable<WorkLoadReturn> task = new Workload(currentGrid, c, c.getX(), c.getY(), 1);
+//            GameGrid currentGrid = aiCore.getGrid().getCopy();
+//            currentGrid.processChanges(c, false);
+            Callable<WorkLoadReturn> task = new Workload(aiCore.getGrid().getCopy(), c, c.getX(), c.getY(), 1);
             try {
                 workQueue.put(task);
             } catch (InterruptedException e) {
@@ -51,20 +51,21 @@ class Producer implements Runnable {
             }
             aiCore.incrementWork();
            
-//            LinkedList<Cell> workList = null;
+////            LinkedList<Cell> workList = null;
 //            for (Cell innerC : currentGrid.getCellsPossessedByAI()) {
-//                if (null == workList) {
-//                    workList = new LinkedList<Cell>();
-//                }
-//                workList.add(innerC);
-//                if (workList.size() >= WORK_COUNTER) {
-//                    Callable<WorkLoadReturn> task = new Workload(currentGrid, workList, c.getX(), c.getY(), 2);
+////                if (null == workList) {
+////                    workList = new LinkedList<Cell>();
+////                }
+////                workList.add(innerC);
+////                if (workList.size() >= WORK_COUNTER) {
+//                    Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), innerC, c.getX(), c.getY(), 2);
 //                    try {
 //                        workQueue.put(task);
 //                    } catch (InterruptedException e) {
 //                        // TODO Auto-generated catch block
 //                        e.printStackTrace();
 //                    }
+//                    aiCore.incrementWork();
 //                    workList = null;
 //                }
 //            }

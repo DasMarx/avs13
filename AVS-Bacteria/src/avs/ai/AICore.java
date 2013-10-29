@@ -33,7 +33,7 @@ public class AICore implements Runnable {
 
     private boolean ProducerStillRunning = false;
 
-    final int FULL_SEMAPHORE_COUNT = 500;
+    final int FULL_SEMAPHORE_COUNT = 1000;
     
     final int SEMAPHORE_COUNT=50;
 
@@ -64,7 +64,7 @@ public class AICore implements Runnable {
                 long startTime = System.currentTimeMillis();
 
                 // Creating shared object
-                BlockingQueue<Callable<WorkLoadReturn>> workQueue = new LinkedBlockingQueue<Callable<WorkLoadReturn>>(200);
+                BlockingQueue<Callable<WorkLoadReturn>> workQueue = new LinkedBlockingQueue<Callable<WorkLoadReturn>>(FULL_SEMAPHORE_COUNT);
                 Semaphore semaphore = new Semaphore(FULL_SEMAPHORE_COUNT, true);
 
                 // Creating Producer and Consumer Thread
