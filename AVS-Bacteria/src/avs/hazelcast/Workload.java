@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
 import avs.game.Cell;
+import avs.game.CellChange;
 import avs.game.GameGrid;
 
 public class Workload implements Callable<WorkLoadReturn>, Serializable {
@@ -62,11 +63,11 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     }
 
     private void doWork(Cell tmpCell, GameGrid tmpGrid) throws Exception {
-        tmpGrid.processChanges(tmpCell, false);
+        LinkedList<CellChange> changes = tmpGrid.processChanges(tmpCell, false);
         counter++;
-        if (deepness < 3) {
+        if (deepness < 5) {
             for (Cell c : tmpGrid.getCellsPossessedByAI()) {
-                final Workload myTmpWorkload = new Workload(tmpGrid.getCopy(), c, initialX, initialY, deepness + 1);
+                final Workload myTmpWorkload = new Workload(tmpGrid, c, initialX, initialY, deepness + 1);
                 final WorkLoadReturn myReturn = myTmpWorkload.call();
                 if (null != myReturn) {
                     counter += myReturn.getCounter();
@@ -75,6 +76,9 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
             }
         } else {
             bestReturned = compareWorkloads(bestReturned, new WorkLoadReturn(tmpCell, initialX, initialY, tmpGrid.getRating(), counter));
+        }
+        for (CellChange change: changes) {
+            tmpGrid.consumeCellChange(change);
         }
     }
 
