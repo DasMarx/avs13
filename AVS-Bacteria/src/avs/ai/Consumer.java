@@ -26,10 +26,10 @@ class Consumer implements Runnable {
     private Member[] memberArray;
 
     private final Semaphore[] semaphoreArray;
-    
+
     final Random r = new Random();
 
-    public Consumer(BlockingQueue<Callable<WorkLoadReturn>> workQueue, AICore aiCore, Semaphore semaphore,Member[] memberArray, Semaphore[] semaphoreArray) {
+    public Consumer(BlockingQueue<Callable<WorkLoadReturn>> workQueue, AICore aiCore, Semaphore semaphore, Member[] memberArray, Semaphore[] semaphoreArray) {
         this.aiCore = aiCore;
         this.workQueue = workQueue;
         this.semaphore = semaphore;
@@ -74,12 +74,13 @@ class Consumer implements Runnable {
     public void setCounter(int counter) {
         this.counter = counter;
     }
-    
+
     public synchronized void increaseCounter(int count) {
         this.counter += count;
     }
-    
+
     public synchronized void compareWorkload(WorkLoadReturn response) {
+        System.out.println("response rating for " + response.getInitialX() + " " + response.getInitialY() + " is: " + response.getRating());
         if (null == getInternalReturn()) {
             setInternalReturn(response);
         } else if (getInternalReturn().getRating() < response.getRating()) {
@@ -104,8 +105,8 @@ class Consumer implements Runnable {
         }
         while (true) {
             final int item = r.nextInt(memberArray.length);
-            if (semaphoreArray[item].tryAcquire(20,TimeUnit.MILLISECONDS)) {
-                
+            if (semaphoreArray[item].tryAcquire(20, TimeUnit.MILLISECONDS)) {
+
                 aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 
                     public void onResponse(WorkLoadReturn response) {

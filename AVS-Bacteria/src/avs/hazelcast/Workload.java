@@ -25,7 +25,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 
     private Cell cell;
 
-    int counter = 1;
+    int counter = 0;
     
     WorkLoadReturn bestReturned = null;
 
@@ -63,9 +63,9 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     }
 
     private void doWork(Cell tmpCell, GameGrid tmpGrid) throws Exception {
-        LinkedList<CellChange> changes = tmpGrid.processChanges(tmpCell, false);
+        final LinkedList<CellChange> changes = tmpGrid.processChanges(tmpCell, false);
         counter++;
-        if (deepness < 5) {
+        if (deepness < 3) {
             for (Cell c : tmpGrid.getCellsPossessedByAI()) {
                 final Workload myTmpWorkload = new Workload(tmpGrid, c, initialX, initialY, deepness + 1);
                 final WorkLoadReturn myReturn = myTmpWorkload.call();
@@ -75,7 +75,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
                 }
             }
         } else {
-            bestReturned = compareWorkloads(bestReturned, new WorkLoadReturn(tmpCell, initialX, initialY, tmpGrid.getRating(), counter));
+            bestReturned = new WorkLoadReturn(tmpCell, initialX, initialY, tmpGrid.getRating(), counter);
         }
         for (CellChange change: changes) {
             tmpGrid.consumeCellChange(change);

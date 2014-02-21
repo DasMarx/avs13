@@ -23,14 +23,6 @@ public class GameGrid implements Serializable {
 
     private final Cell[][] gameGrid;
 
-    // private ConcurrentHashMap<Cell, Boolean> cellsPossedByPlayerMap = new ConcurrentHashMap<Cell, Boolean>();
-    //
-    // private Set<Cell> cellsPossessedByPlayer = Collections.newSetFromMap(cellsPossedByPlayerMap);
-    //
-    // private ConcurrentHashMap<Cell, Boolean> cellsPossessedByAIMap = new ConcurrentHashMap<Cell, Boolean>();
-    //
-    // private Set<Cell> cellsPossessedByAI = Collections.newSetFromMap(cellsPossessedByAIMap);
-
     private HashSet<Cell> cellsPossessedByPlayer = new HashSet<Cell>();
 
     private HashSet<Cell> cellsPossessedByAI = new HashSet<Cell>();
@@ -280,7 +272,7 @@ public class GameGrid implements Serializable {
 
         if (processedCells.add(target)) {
             final CellChange beforeChange = produceCellChange(target);
-            if (!changeOwner(target, owner)) {
+            if (changeOwner(target, owner)) {
                 changes.add(beforeChange);
             }
 
