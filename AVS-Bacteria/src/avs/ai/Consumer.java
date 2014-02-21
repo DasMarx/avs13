@@ -82,8 +82,7 @@ class Consumer implements Runnable {
     public synchronized void compareWorkload(WorkLoadReturn response) {
         if (null == getInternalReturn()) {
             setInternalReturn(response);
-        }
-        if (getInternalReturn().getRating() < response.getRating()) {
+        } else if (getInternalReturn().getRating() < response.getRating()) {
             setInternalReturn(response);
         }
     }
@@ -105,7 +104,7 @@ class Consumer implements Runnable {
         }
         while (true) {
             final int item = r.nextInt(memberArray.length);
-            if (semaphoreArray[item].availablePermits() > 0 && semaphoreArray[item].tryAcquire(20,TimeUnit.MILLISECONDS)) {
+            if (semaphoreArray[item].tryAcquire(20,TimeUnit.MILLISECONDS)) {
                 
                 aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 

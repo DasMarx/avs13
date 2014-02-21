@@ -21,7 +21,7 @@ public class GameGrid implements Serializable {
      */
     private static final long serialVersionUID = -399936942981838923L;
 
-    private Cell[][] gameGrid;
+    private final Cell[][] gameGrid;
 
     // private ConcurrentHashMap<Cell, Boolean> cellsPossedByPlayerMap = new ConcurrentHashMap<Cell, Boolean>();
     //
@@ -108,7 +108,6 @@ public class GameGrid implements Serializable {
      */
     public void initialize() {
         r = new Random();
-        gameGrid = new Cell[gridSize][gridSize];
         for (int i = 0; i < gameGrid.length; i++) {
             for (int j = 0; j < gameGrid.length; j++) {
                 gameGrid[i][j] = new Cell(i, j, Attributes.NEUTRAL, r.nextInt(4));

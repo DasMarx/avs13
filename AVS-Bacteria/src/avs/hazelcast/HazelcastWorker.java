@@ -12,9 +12,6 @@ public class HazelcastWorker {
     public synchronized HazelcastInstance getInstance() {
         if (hz == null) {
             hz = Hazelcast.newHazelcastInstance();
-            final ISemaphore hazelCastSemaphore = hz.getSemaphore(
-                hz.getCluster().getLocalMember().getUuid());
-            hazelCastSemaphore.init(100);
         }
         return hz;
     }
