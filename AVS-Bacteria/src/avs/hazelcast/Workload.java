@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import avs.game.Cell;
 import avs.game.CellChange;
 import avs.game.GameGrid;
+import static avs.game.Constants.*;
 
 public class Workload implements Callable<WorkLoadReturn>, Serializable {
 
@@ -49,7 +50,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
     private void doWork(Cell tmpCell, GameGrid tmpGrid) throws Exception {
         final LinkedList<CellChange> changes = tmpGrid.processChanges(tmpCell, false);
         counter++;
-        if (deepness < 3) {
+        if (deepness < WORK_DEEPNESS) {
             for (Cell c : tmpGrid.getCellsPossessedByAI()) {
                 final Workload myTmpWorkload = new Workload(tmpGrid, c, initialX, initialY, deepness + 1);
                 final WorkLoadReturn myReturn = myTmpWorkload.call();

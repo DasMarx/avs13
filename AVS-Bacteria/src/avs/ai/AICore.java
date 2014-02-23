@@ -49,8 +49,6 @@ public class AICore implements Runnable {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         setExecutorService(getMyWorker().getInstance().getExecutorService("default"));
         
-       
-        
         while (isRunning()) {
             
             if (getGm().isAIsTurn()) {
@@ -68,7 +66,7 @@ public class AICore implements Runnable {
                 ProducerStillRunning = true;
                 
                 Set<Member> members = getMyWorker().getInstance().getCluster().getMembers();
-                if (members.size() > 2) {
+                if (members.size() >= 2) {
                     members.remove(getMyWorker().getInstance().getCluster().getLocalMember());
                 }
                 Member[] memberArray = new Member[members.size()];
@@ -77,20 +75,21 @@ public class AICore implements Runnable {
                 int index = 0;
                 for (Member m : members) {
                     memberArray[index] = m;
-                    semaphoreArray[index] = new Semaphore(SEMAPHORE_COUNT);
+                    semaphoreArray[index] = new Semaphore(SEMAPHORE_COUNT_WORK_FOR_EACH_MEMBER);
                     index++;
                 }
 
-                Consumer[] consumerArray = new Consumer[CONSUMER_THREAD_COUNT];
-                Thread[] consumerThreadArray = new Thread[CONSUMER_THREAD_COUNT];
-                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
+                int consumerThreadCount = CONSUMER_THREAD_COUNT_PLUS_MEMBER + members.size();
+                Consumer[] consumerArray = new Consumer[consumerThreadCount];
+                Thread[] consumerThreadArray = new Thread[consumerThreadCount];
+                for (int i = 0; i < consumerThreadCount; i++) {
                     consumerArray[i] = new Consumer(workQueue, this, semaphore, memberArray, semaphoreArray);
                     consumerThreadArray[i] = new Thread(consumerArray[i]);
                 }
 
                 // Starting producer and Consumer thread
                 prodThread.start();
-                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
+                for (int i = 0; i < consumerThreadCount; i++) {
                     consumerThreadArray[i].start();
                 }
 
@@ -102,12 +101,11 @@ public class AICore implements Runnable {
                 System.out.println("Producer finished");
 
                 ProducerStillRunning = false;
-                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
+                for (int i = 0; i < consumerThreadCount; i++) {
                     try {
                         consumerThreadArray[i].join();
-                        System.out.println("Consumer finished");
+                        System.out.println("Consumer " + i + " finished");
                     } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -115,19 +113,18 @@ public class AICore implements Runnable {
                 try {
                     semaphore.acquire(FULL_SEMAPHORE_COUNT);
                 } catch (InterruptedException e1) {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
                 long endTime = System.currentTimeMillis();
                 long calcTime = endTime - startTime;
                 int calc = 0;
-                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
+                for (int i = 0; i < consumerThreadCount; i++) {
                     calc += consumerArray[i].getCounter();
                 }
                 long calcPerSec = (calc / calcTime);
 
                 WorkLoadReturn bestReturned = null;
-                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
+                for (int i = 0; i < consumerThreadCount; i++) {
                     if (null != consumerArray[i].getInternalReturn()) {
                         if (null == bestReturned) {
                             bestReturned = consumerArray[i].getInternalReturn();
@@ -138,7 +135,7 @@ public class AICore implements Runnable {
                     }
                 }
 
-                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
+                for (int i = 0; i < consumerThreadCount; i++) {
                     System.out.print(consumerArray[i].getCounter() + " ");
                 }
                 System.out.println("");
@@ -159,9 +156,8 @@ public class AICore implements Runnable {
 
             } else {
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }

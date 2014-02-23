@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import avs.hazelcast.WorkLoadReturn;
 import com.hazelcast.core.ExecutionCallback;
 import com.hazelcast.core.Member;
+import static avs.game.Constants.*;
 
 // Consumer Class in Java
 class Consumer implements Runnable {
@@ -52,11 +53,8 @@ class Consumer implements Runnable {
             } catch (InterruptedException e) {
                 running = false;
                 e.printStackTrace();
-
             }
-
         }
-
     }
 
     public WorkLoadReturn getInternalReturn() {
@@ -105,8 +103,9 @@ class Consumer implements Runnable {
         }
         while (true) {
             final int item = r.nextInt(memberArray.length);
-            if (semaphoreArray[item].tryAcquire(20, TimeUnit.MILLISECONDS)) {
+            if (semaphoreArray[item].tryAcquire(MAX_WAIT_TIME_FOR_SEMAPHORE_ACQUIRE, TimeUnit.MILLISECONDS)) {
 
+                System.out.println("Sending job to member " + memberArray[item].toString());
                 aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 
                     public void onResponse(WorkLoadReturn response) {
