@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.hazelcast.monitor.LocalExecutorStats;
 import avs.ai.AICore;
-import avs.hazelcast.HazelcastWorker;
+import avs.hazelcast.HazelcastInstanceImpl;
 import avs.ui.UserInterface;
 
 /**
@@ -44,7 +44,7 @@ public class GameManager {
 
     private LinkedList<CellChange> allChanges = new LinkedList<CellChange>();
 
-    private HazelcastWorker myHazelcastWorker = new HazelcastWorker();
+    private HazelcastInstanceImpl myHazelcastInstance = new HazelcastInstanceImpl();
 
     /**
      * Initializes a new {@link GameManager}.
@@ -86,8 +86,8 @@ public class GameManager {
             userInterface.setWorkDone(aiCore.getWorkDone());
 
             try {
-                userInterface.setMemberStats(myHazelcastWorker.getInstance().getCluster().getMembers());
-                userInterface.setStats(myHazelcastWorker.getInstance().getExecutorService("default").getLocalExecutorStats());
+                userInterface.setMemberStats(myHazelcastInstance.getInstance().getCluster().getMembers());
+                userInterface.setStats(myHazelcastInstance.getInstance().getExecutorService("default").getLocalExecutorStats());
             } catch (HazelcastInstanceNotActiveException hze) {
                 // Do nothing here
             }
@@ -112,7 +112,7 @@ public class GameManager {
                 }
             }
         }
-        myHazelcastWorker.getInstance().getLifecycleService().shutdown();
+        myHazelcastInstance.getInstance().getLifecycleService().shutdown();
 
     }
 
@@ -177,7 +177,7 @@ public class GameManager {
         return !isPlayersTurn();
     }
 
-    public HazelcastWorker getHazelCastWorker() {
-        return myHazelcastWorker;
+    public HazelcastInstanceImpl getHazelCastWorker() {
+        return myHazelcastInstance;
     }
 }

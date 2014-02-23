@@ -12,7 +12,7 @@ import avs.game.Attributes;
 import avs.game.Cell;
 import avs.game.GameGrid;
 import avs.game.GameManager;
-import avs.hazelcast.HazelcastWorker;
+import avs.hazelcast.HazelcastInstanceImpl;
 import avs.hazelcast.WorkLoadReturn;
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.Member;
@@ -28,7 +28,7 @@ public class AICore implements Runnable {
 
     private GameGrid grid;
 
-    private HazelcastWorker myWorker;
+    private HazelcastInstanceImpl myHazelcastInstanceImpl;
 
     private IExecutorService executorService;
 
@@ -36,7 +36,7 @@ public class AICore implements Runnable {
 
     public void initialize(GameManager gm) {
         this.setGm(gm);
-        setMyWorker(gm.getHazelCastWorker());
+        setMyHazelcastInstanceImpl(gm.getHazelCastWorker());
     }
 
     public void setGameGrid(GameGrid grid) {
@@ -47,7 +47,7 @@ public class AICore implements Runnable {
 
     public void run() {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-        setExecutorService(getMyWorker().getInstance().getExecutorService("default"));
+        setExecutorService(getMyHazelcastInstanceImpl().getInstance().getExecutorService("default"));
         
         while (isRunning()) {
             
@@ -65,9 +65,9 @@ public class AICore implements Runnable {
 
                 ProducerStillRunning = true;
                 
-                Set<Member> members = getMyWorker().getInstance().getCluster().getMembers();
+                Set<Member> members = getMyHazelcastInstanceImpl().getInstance().getCluster().getMembers();
                 if (members.size() >= 2) {
-                    members.remove(getMyWorker().getInstance().getCluster().getLocalMember());
+                    members.remove(getMyHazelcastInstanceImpl().getInstance().getCluster().getLocalMember());
                 }
                 Member[] memberArray = new Member[members.size()];
                 Semaphore[]  semaphoreArray = new Semaphore[members.size()];
@@ -208,12 +208,12 @@ public class AICore implements Runnable {
         this.running = running;
     }
 
-    public HazelcastWorker getMyWorker() {
-        return myWorker;
+    public HazelcastInstanceImpl getMyHazelcastInstanceImpl() {
+        return myHazelcastInstanceImpl;
     }
 
-    public void setMyWorker(HazelcastWorker myWorker) {
-        this.myWorker = myWorker;
+    public void setMyHazelcastInstanceImpl(HazelcastInstanceImpl myWorker) {
+        this.myHazelcastInstanceImpl = myWorker;
     }
 
     public int getWork() {

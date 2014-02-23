@@ -4,7 +4,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
 
-public class HazelcastWorker {
+public class HazelcastInstanceImpl {
     
     private static volatile HazelcastInstance hz;
     
