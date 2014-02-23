@@ -469,9 +469,9 @@ public class UIRenderer implements Runnable {
 //		g2d.drawString(cps + " CPS", 5, 40);
 //		g2d.drawString(runningLoopps + " RunningLoopsPS", 5, 60);
 //		g2d.drawString(work + "/" + workDone + " diff: " + (work - workDone), 100, 20);
-//		if (null != localExecutorStats) {
-//			g2d.drawString(localExecutorStats.getStartedTaskCount() + " " + localExecutorStats.getPendingTaskCount(), 100, 40);
-//		}
+		if (null != localExecutorStats) {
+			g2d.drawString("Tasks done: " + localExecutorStats.getStartedTaskCount(), 150, 20);
+		}
 		if (null != members) {
 			g2d.drawString("Members active: " + members.size(), 5, 40);
 			// Iterator<Member> it = members.iterator();

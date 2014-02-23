@@ -4,6 +4,7 @@ package avs.ai;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import avs.hazelcast.WorkLoadReturn;
@@ -78,7 +79,7 @@ class Consumer implements Runnable {
     }
 
     public synchronized void compareWorkload(WorkLoadReturn response) {
-        System.out.println("response rating for " + response.getInitialX() + " " + response.getInitialY() + " is: " + response.getRating());
+//        System.out.println("response rating for " + response.getInitialX() + " " + response.getInitialY() + " is: " + response.getRating());
         if (null == getInternalReturn()) {
             setInternalReturn(response);
         } else if (getInternalReturn().getRating() < response.getRating()) {
@@ -101,32 +102,38 @@ class Consumer implements Runnable {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        while (true) {
+        boolean sendToHazelcast = false;
+        while (!sendToHazelcast) {
             final int item = r.nextInt(memberArray.length);
             if (semaphoreArray[item].tryAcquire(MAX_WAIT_TIME_FOR_SEMAPHORE_ACQUIRE, TimeUnit.MILLISECONDS)) {
+//                System.out.println("Sending job to member " + memberArray[item].toString());
+                try {
+                    aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 
-                System.out.println("Sending job to member " + memberArray[item].toString());
-                aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
+                        public void onResponse(WorkLoadReturn response) {
+                            increaseCounter(response.getCounter() + 1);
+                            compareWorkload(response);
+                            semaphore.release();
+                            semaphoreArray[item].release();
+                            aiCore.incrementWorkDone();
+                        }
 
-                    public void onResponse(WorkLoadReturn response) {
-                        increaseCounter(response.getCounter() + 1);
-                        compareWorkload(response);
-                        semaphore.release();
-                        semaphoreArray[item].release();
-                        aiCore.incrementWorkDone();
-                    }
-
-                    public void onFailure(Throwable t) {
-                        semaphore.release();
-                        semaphoreArray[item].release();
-                        t.printStackTrace();
-                    }
-                });
+                        public void onFailure(Throwable t) {
+                            semaphore.release();
+                            semaphoreArray[item].release();
+                            t.printStackTrace();
+                        }
+                    });
+                } catch (RejectedExecutionException e) {
+                    semaphore.release();
+                    semaphoreArray[item].release();
+                } finally {
+                    sendToHazelcast = true;
+                }
                 return true;
             }
-
         }
-
+        return false;
     }
 
 }
