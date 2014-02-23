@@ -8,71 +8,54 @@ public class WorkLoadReturn implements Serializable {
 
     private static final long serialVersionUID = -2581477518340282629L;
 
-    private int x, y, initialX, initialY, rating, counter;
+    private final int x, y, initialX, initialY, rating;
+
+    private int counter;
 
     public WorkLoadReturn(int x, int y, int initialX, int initialY, int rating, int counter) {
-        setX(x);
-        setY(y);
-        setInitialX(initialX);
-        setInitialY(initialY);
-        setRating(rating);
-        setCounter(counter);
+        this.x = x;
+        this.y = y;
+        this.initialX = initialX;
+        this.initialY = initialY;
+        this.rating = rating;
+        this.counter = counter;
     }
 
-    public WorkLoadReturn(Cell cell, int initialX2, int initialY2, int rating, int counter2) {
-        setX(cell.getX());
-        setY(cell.getY());
-        setInitialX(initialX2);
-        setInitialY(initialY2);
-        setRating(rating);
-        setCounter(counter2);
+    public WorkLoadReturn(Cell cell, int initialX, int initialY, int rating, int counter) {
+        this.x = cell.getX();
+        this.y = cell.getY();
+        this.initialX = initialX;
+        this.initialY = initialY;
+        this.rating = rating;
+        this.counter = counter;
     }
 
     public int getX() {
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
     public int getY() {
         return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     public int getInitialY() {
         return initialY;
     }
 
-    public void setInitialY(int initialY) {
-        this.initialY = initialY;
-    }
-
     public int getInitialX() {
         return initialX;
-    }
-
-    public void setInitialX(int initialX) {
-        this.initialX = initialX;
     }
 
     public int getCounter() {
         return counter;
     }
 
-    public void setCounter(int counter) {
-        this.counter = counter;
-    }
-
     public int getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
-        this.rating = rating;
+    public void setCounter(int counter) {
+        this.counter = counter;
     }
+
 }

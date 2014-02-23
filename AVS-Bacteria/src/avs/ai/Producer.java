@@ -1,11 +1,9 @@
 
 package avs.ai;
 
-import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import avs.game.Cell;
-import avs.game.GameGrid;
 import avs.hazelcast.WorkLoadReturn;
 import avs.hazelcast.Workload;
 import com.hazelcast.core.ISemaphore;
@@ -14,15 +12,10 @@ import com.hazelcast.core.Member;
 // Producer Class in java
 class Producer implements Runnable {
 
-//    private final BlockingQueue<WorkLoadReturn> futureQueue;
     
     private final BlockingQueue<Callable<WorkLoadReturn>> workQueue;
 
     private AICore aiCore;
-
-    private int WORK_COUNTER = 25;
-
-    // private Map<Member, ISemaphore> mySemaphoreMap;
 
     ISemaphore[] semaphoreArray;
 
@@ -40,45 +33,14 @@ class Producer implements Runnable {
         aiCore.setWork(0);
         aiCore.setWorkDone(0);
         for (Cell c : aiCore.getGrid().getCellsPossessedByAI()) {
-//            GameGrid currentGrid = aiCore.getGrid().getCopy();
-//            currentGrid.processChanges(c, false);
             Callable<WorkLoadReturn> task = new Workload(aiCore.getGrid().getCopy(), c, c.getX(), c.getY(), 1);
             try {
                 workQueue.put(task);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             aiCore.incrementWork();
            
-////            LinkedList<Cell> workList = null;
-//            for (Cell innerC : currentGrid.getCellsPossessedByAI()) {
-////                if (null == workList) {
-////                    workList = new LinkedList<Cell>();
-////                }
-////                workList.add(innerC);
-////                if (workList.size() >= WORK_COUNTER) {
-//                    Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), innerC, c.getX(), c.getY(), 2);
-//                    try {
-//                        workQueue.put(task);
-//                    } catch (InterruptedException e) {
-//                        // TODO Auto-generated catch block
-//                        e.printStackTrace();
-//                    }
-//                    aiCore.incrementWork();
-//                    workList = null;
-//                }
-//            }
-//            if (null != workList) {
-//                Callable<WorkLoadReturn> task = new Workload(currentGrid.getCopy(), workList, c.getX(), c.getY(), 2);
-//                try {
-//                    workQueue.put(task);
-//                } catch (InterruptedException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
-//                workList = null;
-//            }
         }
     }
 

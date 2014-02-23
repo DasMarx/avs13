@@ -105,7 +105,7 @@ public class UIRenderer implements Runnable {
 
 	private BufferedImage imageBoard = null;
 
-	private BufferedImage imageBoardGrid = null;
+//	private BufferedImage imageBoardGrid = null;
 
 	private BufferedImage imageBoardPlayersTurn = null;
 
@@ -451,13 +451,13 @@ public class UIRenderer implements Runnable {
 		}
 	}
 
-	/**
-	 * @param gameFieldRectangleCurrentTmp
-	 * @param g2d
-	 */
-	private void drawBoardGrid(final Double gameFieldRectangleCurrentTmp, Graphics2D g2d) {
-		g2d.drawImage(imageBoardGrid, (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2), (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2), (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2), (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2), 0, 0, imageBoard.getWidth(), imageBoard.getHeight(), null);
-	}
+//	/**
+//	 * @param gameFieldRectangleCurrentTmp
+//	 * @param g2d
+//	 */
+//	private void drawBoardGrid(final Double gameFieldRectangleCurrentTmp, Graphics2D g2d) {
+//		g2d.drawImage(imageBoardGrid, (int) (gameFieldRectangleCurrentTmp.getX() - gameFieldRectangleCurrentTmp.getWidth() / 2), (int) (gameFieldRectangleCurrentTmp.getY() - gameFieldRectangleCurrentTmp.getHeight() / 2), (int) (gameFieldRectangleCurrentTmp.getX() + gameFieldRectangleCurrentTmp.getWidth() + gameFieldRectangleCurrentTmp.getWidth() / 2), (int) (gameFieldRectangleCurrentTmp.getY() + gameFieldRectangleCurrentTmp.getHeight() + gameFieldRectangleCurrentTmp.getHeight() / 2), 0, 0, imageBoard.getWidth(), imageBoard.getHeight(), null);
+//	}
 
 	/**
 	 * @param g2d
@@ -486,14 +486,14 @@ public class UIRenderer implements Runnable {
 		// g2d.drawString("Avaible Permits: " + avaiblePermits, 5, 80);
 	}
 
-	/**
-	 * @param gameFieldRectangleCurrentTmp
-	 * @param g2d
-	 */
-	private void drawRectangleAroundGrid(final Double gameFieldRectangleCurrentTmp, Graphics2D g2d) {
-		g2d.setColor(colorRed);
-		g2d.drawRect((int) gameFieldRectangleCurrentTmp.getX(), (int) gameFieldRectangleCurrentTmp.getY(), (int) gameFieldRectangleCurrentTmp.getWidth(), (int) gameFieldRectangleCurrentTmp.getHeight());
-	}
+//	/**
+//	 * @param gameFieldRectangleCurrentTmp
+//	 * @param g2d
+//	 */
+//	private void drawRectangleAroundGrid(final Double gameFieldRectangleCurrentTmp, Graphics2D g2d) {
+//		g2d.setColor(colorRed);
+//		g2d.drawRect((int) gameFieldRectangleCurrentTmp.getX(), (int) gameFieldRectangleCurrentTmp.getY(), (int) gameFieldRectangleCurrentTmp.getWidth(), (int) gameFieldRectangleCurrentTmp.getHeight());
+//	}
 
 	/**
 	 * @param gameFieldRectangleCurrentTmp
@@ -679,10 +679,18 @@ public class UIRenderer implements Runnable {
 	}
 
 	public void setStats(LocalExecutorStats localExecutorStats) {
-		this.localExecutorStats = localExecutorStats;
+		this.setLocalExecutorStats(localExecutorStats);
 	}
 
 	public void setMemberStats(Set<Member> members) {
 		this.members = members;
 	}
+
+    public LocalExecutorStats getLocalExecutorStats() {
+        return localExecutorStats;
+    }
+
+    public void setLocalExecutorStats(LocalExecutorStats localExecutorStats) {
+        this.localExecutorStats = localExecutorStats;
+    }
 }

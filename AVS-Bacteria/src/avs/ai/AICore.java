@@ -16,6 +16,7 @@ import avs.hazelcast.HazelcastWorker;
 import avs.hazelcast.WorkLoadReturn;
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.Member;
+import static avs.game.Constants.*;
 
 public class AICore implements Runnable {
 
@@ -32,12 +33,6 @@ public class AICore implements Runnable {
     private IExecutorService executorService;
 
     private boolean ProducerStillRunning = false;
-
-    final int FULL_SEMAPHORE_COUNT = 1000;
-    
-    final int SEMAPHORE_COUNT=50;
-
-    int THREAD_COUNT = 1;
 
     public void initialize(GameManager gm) {
         this.setGm(gm);
@@ -86,16 +81,16 @@ public class AICore implements Runnable {
                     index++;
                 }
 
-                Consumer[] consumerArray = new Consumer[THREAD_COUNT];
-                Thread[] consumerThreadArray = new Thread[THREAD_COUNT];
-                for (int i = 0; i < THREAD_COUNT; i++) {
+                Consumer[] consumerArray = new Consumer[CONSUMER_THREAD_COUNT];
+                Thread[] consumerThreadArray = new Thread[CONSUMER_THREAD_COUNT];
+                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
                     consumerArray[i] = new Consumer(workQueue, this, semaphore, memberArray, semaphoreArray);
                     consumerThreadArray[i] = new Thread(consumerArray[i]);
                 }
 
                 // Starting producer and Consumer thread
                 prodThread.start();
-                for (int i = 0; i < THREAD_COUNT; i++) {
+                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
                     consumerThreadArray[i].start();
                 }
 
@@ -107,7 +102,7 @@ public class AICore implements Runnable {
                 System.out.println("Producer finished");
 
                 ProducerStillRunning = false;
-                for (int i = 0; i < THREAD_COUNT; i++) {
+                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
                     try {
                         consumerThreadArray[i].join();
                         System.out.println("Consumer finished");
@@ -126,13 +121,13 @@ public class AICore implements Runnable {
                 long endTime = System.currentTimeMillis();
                 long calcTime = endTime - startTime;
                 int calc = 0;
-                for (int i = 0; i < THREAD_COUNT; i++) {
+                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
                     calc += consumerArray[i].getCounter();
                 }
                 long calcPerSec = (calc / calcTime);
 
                 WorkLoadReturn bestReturned = null;
-                for (int i = 0; i < THREAD_COUNT; i++) {
+                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
                     if (null != consumerArray[i].getInternalReturn()) {
                         if (null == bestReturned) {
                             bestReturned = consumerArray[i].getInternalReturn();
@@ -143,7 +138,7 @@ public class AICore implements Runnable {
                     }
                 }
 
-                for (int i = 0; i < THREAD_COUNT; i++) {
+                for (int i = 0; i < CONSUMER_THREAD_COUNT; i++) {
                     System.out.print(consumerArray[i].getCounter() + " ");
                 }
                 System.out.println("");

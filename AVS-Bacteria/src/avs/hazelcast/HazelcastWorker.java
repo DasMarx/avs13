@@ -2,7 +2,6 @@ package avs.hazelcast;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ISemaphore;
 
 
 public class HazelcastWorker {

@@ -10,7 +10,7 @@ public class CellChange implements Serializable {
      */
     private static final long serialVersionUID = 4398381295539290132L;
 
-    private int owner,x,y,direction;
+    private final int owner,x,y,direction;
 
     /**
      * Initializes a new {@link CellChange}.

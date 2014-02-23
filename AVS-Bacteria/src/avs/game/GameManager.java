@@ -152,8 +152,6 @@ public class GameManager {
      * @return the Game Grid
      */
     public GameGrid getGrid() {
-//        synchronized (gameGrid) {
-//            GameGrid g = ;
             return gameGrid.getCopy();
 //        }
     }
