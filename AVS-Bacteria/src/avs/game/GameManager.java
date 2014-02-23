@@ -3,6 +3,8 @@ package avs.game;
 
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
+import com.hazelcast.monitor.LocalExecutorStats;
 import avs.ai.AICore;
 import avs.hazelcast.HazelcastWorker;
 import avs.ui.UserInterface;
@@ -39,7 +41,7 @@ public class GameManager {
     long sleepTime = 0;
 
     private boolean locked = false;
-    
+
     private LinkedList<CellChange> allChanges = new LinkedList<CellChange>();
 
     private HazelcastWorker myHazelcastWorker = new HazelcastWorker();
@@ -79,15 +81,19 @@ public class GameManager {
                 timeAccumulator -= timeDelta;
                 timeRunning += timeDelta;
             }
-            
+
             userInterface.setWork(aiCore.getWork());
             userInterface.setWorkDone(aiCore.getWorkDone());
-            userInterface.setStats(myHazelcastWorker.getInstance().getExecutorService("default").getLocalExecutorStats());
-            userInterface.setMemberStats(myHazelcastWorker.getInstance().getCluster().getMembers());
-//            userInterface.setAvaibleSlots(myHazelcastWorker.getInstance().getSemaphore(myHazelcastWorker.getInstance().getCluster().getLocalMember().getUuid()).availablePermits());
-            
+
+            try {
+                userInterface.setMemberStats(myHazelcastWorker.getInstance().getCluster().getMembers());
+                userInterface.setStats(myHazelcastWorker.getInstance().getExecutorService("default").getLocalExecutorStats());
+            } catch (HazelcastInstanceNotActiveException hze) {
+                // Do nothing here
+            }
+
             if (!allChanges.isEmpty()) {
-                LinkedList<CellChange> changes = gameGrid.processChanges(allChanges.removeFirst(),true);
+                LinkedList<CellChange> changes = gameGrid.processChanges(allChanges.removeFirst(), true);
                 userInterface.updateGrid(changes);
                 if (gameGrid.getCellsPossessedByAiCount() == 0 || gameGrid.getCellsPossessedByPlayerCount() == 0) {
                     aiCore.setRunning(false);
@@ -109,7 +115,6 @@ public class GameManager {
         myHazelcastWorker.getInstance().getLifecycleService().shutdown();
 
     }
-
 
     /**
      * @param x
@@ -136,7 +141,7 @@ public class GameManager {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -144,7 +149,8 @@ public class GameManager {
      * @return true = player turn, false = ai turn
      */
     public boolean isPlayersTurn() {
-        if (locked) return false;
+        if (locked)
+            return false;
         return (turn.get() % 2) == 0;
     }
 
@@ -152,12 +158,13 @@ public class GameManager {
      * @return the Game Grid
      */
     public GameGrid getGrid() {
-            return gameGrid.getCopy();
-//        }
+        return gameGrid.getCopy();
+        // }
     }
 
     /**
      * This method will return the current turn
+     * 
      * @return
      */
     public int getTurn() {
@@ -165,11 +172,12 @@ public class GameManager {
     }
 
     public boolean isAIsTurn() {
-        if (locked) return false;
+        if (locked)
+            return false;
         return !isPlayersTurn();
     }
 
     public HazelcastWorker getHazelCastWorker() {
-        return myHazelcastWorker ;
+        return myHazelcastWorker;
     }
 }
