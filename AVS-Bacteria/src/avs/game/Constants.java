@@ -9,7 +9,7 @@ public class Constants {
 
     public static final int CONSUMER_THREAD_COUNT_PLUS_MEMBER = 2;
 
-    public static final int MAX_DEEPNESS = 3;
+    public static final int MAX_DEEPNESS = 4;
 
     public static final int MAX_WAIT_TIME_FOR_SEMAPHORE_ACQUIRE = 5;
 

@@ -49,7 +49,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
         if (USE_OPTIMIZATION_1) {
             final LinkedList<CellChange> changes = gameGrid.processChanges(cell, false);
             counter++;
-            if (currentDeepNess != MAX_DEEPNESS) {
+            if (currentDeepNess < MAX_DEEPNESS) {
                 for (Cell c : gameGrid.getCellsPossessedByAI()) {
                     processCellInsideWorkload(c, gameGrid, currentDeepNess + 1);
                 }
@@ -64,7 +64,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
         } else {
             gameGrid.processChanges(cell, false);
             counter++;
-            if (currentDeepNess != MAX_DEEPNESS) {
+            if (currentDeepNess < MAX_DEEPNESS) {
                 for (Cell c : gameGrid.getCellsPossessedByAI()) {
                     processCellInsideWorkload(c, gameGrid.getCopy(), currentDeepNess +1);
                 }
