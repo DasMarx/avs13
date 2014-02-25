@@ -49,12 +49,14 @@ public class AICore implements Runnable {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         getMyHazelcastInstanceImpl();
         setExecutorService(HazelcastInstanceImpl.getInstance().getExecutorService("default"));
-        
+
         while (isRunning()) {
-            
+
             if (getGm().isAIsTurn()) {
 
-                System.out.println("=== new Round ====");
+                if (LOGGING) {
+                    System.out.println("=== new Round ====");
+                }
                 long startTime = System.currentTimeMillis();
 
                 // Creating shared object
@@ -65,7 +67,7 @@ public class AICore implements Runnable {
                 Thread prodThread = new Thread(new Producer(workQueue, this));
 
                 ProducerStillRunning = true;
-                
+
                 getMyHazelcastInstanceImpl();
                 Set<Member> members = HazelcastInstanceImpl.getInstance().getCluster().getMembers();
                 if (members.size() >= 2) {
@@ -73,8 +75,8 @@ public class AICore implements Runnable {
                     members.remove(HazelcastInstanceImpl.getInstance().getCluster().getLocalMember());
                 }
                 Member[] memberArray = new Member[members.size()];
-                Semaphore[]  semaphoreArray = new Semaphore[members.size()];
-                
+                Semaphore[] semaphoreArray = new Semaphore[members.size()];
+
                 int index = 0;
                 for (Member m : members) {
                     memberArray[index] = m;
@@ -101,13 +103,18 @@ public class AICore implements Runnable {
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
-                System.out.println("Producer finished");
+
+                if (LOGGING) {
+                    System.out.println("Producer finished");
+                }
 
                 ProducerStillRunning = false;
                 for (int i = 0; i < consumerThreadCount; i++) {
                     try {
                         consumerThreadArray[i].join();
-                        System.out.println("Consumer " + i + " finished");
+                        if (LOGGING) {
+                            System.out.println("Consumer " + i + " finished");
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -138,13 +145,18 @@ public class AICore implements Runnable {
                     }
                 }
 
-                for (int i = 0; i < consumerThreadCount; i++) {
-                    System.out.print(consumerArray[i].getCounter() + " ");
+                if (LOGGING) {
+                    for (int i = 0; i < consumerThreadCount; i++) {
+                        System.out.print(consumerArray[i].getCounter() + " ");
+                    }
+                    System.out.println("");
+                    System.out.println(" workQueue " + workQueue.size());
+                    System.out.println("done " + calc + " calculations in " + calcTime + " ms which is " + calcPerSec + " calc/ms");
                 }
-                System.out.println("");
-                System.out.println(" workQueue " + workQueue.size());
+                if (!LOGGING && MORE_LOGGING) {
+                    System.out.println(calc + " " + calcTime);
+                }
 
-                System.out.println("done " + calc + " calculations in " + (calcTime) + " ms which is " + calcPerSec + " calc/ms");
                 if (bestReturned == null) {
                     LinkedList<Cell> ownedCells = new LinkedList<Cell>(grid.getCellsPossessedByAI());
                     int size = ownedCells.size();
@@ -153,7 +165,9 @@ public class AICore implements Runnable {
                     int nextTurnY = ownedCells.get(chosenCell).getY();
                     gm.chooseCell(nextTurnX, nextTurnY, Attributes.AI);
                 } else {
-                    System.out.println("Best choice is: " + bestReturned.getX() + ":" + bestReturned.getY());
+                    if (LOGGING) {
+                        System.out.println("Best choice is: " + bestReturned.getX() + ":" + bestReturned.getY());
+                    }
                     gm.chooseCell(bestReturned.getX(), bestReturned.getY(), Attributes.AI);
                 }
 

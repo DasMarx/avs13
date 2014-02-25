@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import static avs.game.Constants.*;
 
 /**
  * @author HZU
@@ -239,14 +240,11 @@ public class GameGrid implements Serializable {
 
         if (processedCells.add(target)) {
             if (saveChanges) {
-                if (changeOwner(target, owner)) {
-                    changes.add(produceCellChange(target));
-                }
+                changeOwner(target, owner);
+                changes.add(produceCellChange(target));
             } else {
-                final CellChange beforeChange = produceCellChange(target);
-                if (changeOwner(target, owner)) {
-                    changes.add(beforeChange);
-                }
+                changes.add(produceCellChange(target));
+                changeOwner(target, owner);
             }
 
             createMoreWork(processedCells, target, owner, changes, saveChanges);
@@ -263,21 +261,32 @@ public class GameGrid implements Serializable {
      */
     private void createMoreWork(final HashSet<Cell> processedCells, final Cell target, final int owner, final LinkedList<CellChange> changes, final boolean saveChanges) {
         Cell nextNeighbour = getCell(target.getX(), target.getY() - 1);
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
+        if (nextNeighbour != null && compareOwnerForDifference(target, nextNeighbour) && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
             processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
         }
         nextNeighbour = getCell(target.getX() + 1, target.getY());
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
+        if (nextNeighbour != null && compareOwnerForDifference(target, nextNeighbour) && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
             processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
         }
         nextNeighbour = getCell(target.getX(), target.getY() + 1);
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
+        if (nextNeighbour != null && compareOwnerForDifference(target, nextNeighbour) && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
             processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
         }
         nextNeighbour = getCell(target.getX() - 1, target.getY());
-        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
+        if (nextNeighbour != null && compareOwnerForDifference(target, nextNeighbour) && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
             processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
         }
+    }
+
+    /**
+     * @param cell
+     * @param otherCell
+     * @return
+     */
+    private boolean compareOwnerForDifference(final Cell cell, Cell otherCell) {
+        if (USE_OPTIMIZATION_2) {
+            return cell.getOwner() != otherCell.getOwner();
+        } return true;
     }
 
     /**
