@@ -128,7 +128,7 @@ public class GameGrid implements Serializable {
      * @param y coordinate
      * @return the cell
      */
-    public Cell getCell(int x, int y) {
+    public Cell getCell(final int x, final int y) {
         if (x < 0 || y < 0 || x > gridSize - 1 || y > gridSize - 1)
             return null;
         return gameGrid[x][y];
@@ -138,7 +138,7 @@ public class GameGrid implements Serializable {
      * @return copy of the GameGrid
      */
     public GameGrid getCopy() {
-        GameGrid g = new GameGrid();
+        final GameGrid g = new GameGrid();
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 // g.gameGrid[i][j] = new Cell(i, j, gameGrid[i][j].getOwner(), gameGrid[i][j].getDirection());
@@ -153,7 +153,7 @@ public class GameGrid implements Serializable {
     /**
      * @param c cell to be added
      */
-    public void addCellPlayer(Cell c) {
+    public void addCellPlayer(final Cell c) {
         write.lock();
         try {
             cellsPossessedByAI.remove(c);
@@ -167,7 +167,7 @@ public class GameGrid implements Serializable {
     /**
      * @param c cell to be added
      */
-    public void addCellAI(Cell c) {
+    public void addCellAI(final Cell c) {
         write.lock();
         try {
             cellsPossessedByPlayer.remove(c);
@@ -178,7 +178,7 @@ public class GameGrid implements Serializable {
         }
     }
 
-    public void removeOwner(Cell c, int owner) {
+    public void removeOwner(final Cell c, final int owner) {
         write.lock();
         try {
             cellsPossessedByPlayer.remove(c);
@@ -194,7 +194,7 @@ public class GameGrid implements Serializable {
      * @param y coordinate of the cell to be turned
      * @return list of changes, mutating
      */
-    public LinkedList<CellChange> processChanges(int x, int y, boolean saveChanges) {
+    public LinkedList<CellChange> processChanges(final int x, final int y, final boolean saveChanges) {
         LinkedList<CellChange> changes = new LinkedList<CellChange>();
         Cell target = getCell(x, y);
 
@@ -216,7 +216,7 @@ public class GameGrid implements Serializable {
      * @param target the Cell
      * @return list of changes, mutating
      */
-    public LinkedList<CellChange> processChanges(Cell target, boolean saveChanges) {
+    public LinkedList<CellChange> processChanges(final Cell target, final boolean saveChanges) {
         return processChanges(target.getX(), target.getY(), saveChanges);
     }
 
@@ -224,18 +224,18 @@ public class GameGrid implements Serializable {
      * @param cellChange
      * @return
      */
-    public LinkedList<CellChange> processChanges(CellChange cellChange, boolean saveChanges) {
+    public LinkedList<CellChange> processChanges(final CellChange cellChange, final boolean saveChanges) {
         return processChanges(cellChange.getX(), cellChange.getY(), saveChanges);
     }
 
     /**
-     * @param origin cell edited before
-     * @param target cell to be edited
-     * @param rs counter for the recursive step
-     * @param owner of the cells
-     * @param saveChanges 
+     * @param processedCells
+     * @param target
+     * @param owner
+     * @param changes
+     * @param saveChanges
      */
-    private void processChanges(HashSet<Cell> processedCells, final Cell target, int owner, LinkedList<CellChange> changes, boolean saveChanges) {
+    private void processChanges(final HashSet<Cell> processedCells, final Cell target, final int owner, final LinkedList<CellChange> changes, final boolean saveChanges) {
 
         if (processedCells.add(target)) {
             if (saveChanges) {
@@ -249,23 +249,34 @@ public class GameGrid implements Serializable {
                 }
             }
 
-            Cell nextNeighbour = getCell(target.getX(), target.getY() - 1);
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
-                processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
-            }
-            nextNeighbour = getCell(target.getX() + 1, target.getY());
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
-                processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
-            }
-            nextNeighbour = getCell(target.getX(), target.getY() + 1);
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
-                processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
-            }
-            nextNeighbour = getCell(target.getX() - 1, target.getY());
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
-                processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
-            }
+            createMoreWork(processedCells, target, owner, changes, saveChanges);
 
+        }
+    }
+
+    /**
+     * @param processedCells
+     * @param target
+     * @param owner
+     * @param changes
+     * @param saveChanges
+     */
+    private void createMoreWork(final HashSet<Cell> processedCells, final Cell target, final int owner, final LinkedList<CellChange> changes, final boolean saveChanges) {
+        Cell nextNeighbour = getCell(target.getX(), target.getY() - 1);
+        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
+            processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
+        }
+        nextNeighbour = getCell(target.getX() + 1, target.getY());
+        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
+            processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
+        }
+        nextNeighbour = getCell(target.getX(), target.getY() + 1);
+        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
+            processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
+        }
+        nextNeighbour = getCell(target.getX() - 1, target.getY());
+        if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
+            processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
         }
     }
 
@@ -273,7 +284,7 @@ public class GameGrid implements Serializable {
      * @param target cell to be edited
      * @param owner to be set
      */
-    private boolean changeOwner(Cell target, int owner) {
+    private boolean changeOwner(final Cell target, final int owner) {
         if (target.getOwner() == owner) {
             return false;
         }
@@ -291,11 +302,11 @@ public class GameGrid implements Serializable {
         return true;
     }
 
-    public CellChange produceCellChange(Cell cell) {
+    public CellChange produceCellChange(final Cell cell) {
         return new CellChange(cell);
     }
 
-    public void consumeCellChange(CellChange cellChange) {
+    public void consumeCellChange(final CellChange cellChange) {
         Cell tmpCell = getCell(cellChange.getX(), cellChange.getY());
         tmpCell.setDirection(cellChange.getDirection());
         changeOwner(tmpCell, cellChange.getOwner());
