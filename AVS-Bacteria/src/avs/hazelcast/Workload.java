@@ -28,6 +28,8 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 
     WorkLoadReturn bestReturned = null;
 
+    private int bestReturnedInt = Integer.MIN_VALUE;
+
     public Workload(GameGrid grid, Cell c, int initialX, int initialY, int deepness) {
         this.grid = grid;
         this.cell = c;
@@ -38,67 +40,42 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 
     @Override
     public WorkLoadReturn call() throws Exception {
-        doWork(cell, grid);
-
-        if (null != bestReturned) {
-            bestReturned.setCounter(counter);
-            return bestReturned;
-        }
-        return null;
+        processCellInsideWorkload(cell, grid, deepness);
+        return new WorkLoadReturn(initialX, initialY, bestReturnedInt, counter);
     }
 
-    //TODO everything should be done as doWork so no new Workloads are created. This should speed up the process significant
-    private void doWork(Cell tmpCell, final GameGrid tmpGrid) throws Exception {
+
+    private void processCellInsideWorkload(final Cell cell, final GameGrid gameGrid, final int currentDeepNess) throws Exception {
         if (USE_OPTIMIZATION_1) {
-            final LinkedList<CellChange> changes = tmpGrid.processChanges(tmpCell, false);
+            final LinkedList<CellChange> changes = gameGrid.processChanges(cell, false);
             counter++;
-            if (deepness < WORK_DEEPNESS) {
-                for (Cell c : tmpGrid.getCellsPossessedByAI()) {
-                    final Workload myTmpWorkload = new Workload(tmpGrid, c, initialX, initialY, deepness + 1);
-                    final WorkLoadReturn myReturn = myTmpWorkload.call();
-                    if (null != myReturn) {
-                        counter += myReturn.getCounter();
-                        bestReturned = compareWorkloads(bestReturned, myReturn);
-                    }
+            if (currentDeepNess != MAX_DEEPNESS) {
+                for (Cell c : gameGrid.getCellsPossessedByAI()) {
+                    processCellInsideWorkload(c, gameGrid, currentDeepNess + 1);
                 }
             } else {
-                bestReturned = new WorkLoadReturn(tmpCell, initialX, initialY, tmpGrid.getRating(), counter);
+                if (gameGrid.getRating() > bestReturnedInt) {
+                    bestReturnedInt = gameGrid.getRating();
+                }
             }
             for (CellChange change : changes) {
-                tmpGrid.consumeCellChange(change);
+                gameGrid.consumeCellChange(change);
             }
         } else {
-            tmpGrid.processChanges(tmpCell, false);
+            gameGrid.processChanges(cell, false);
             counter++;
-            if (deepness < WORK_DEEPNESS) {
-                for (Cell c : tmpGrid.getCellsPossessedByAI()) {
-                    final Workload myTmpWorkload = new Workload(tmpGrid.getCopy(), c, initialX, initialY, deepness + 1);
-                    final WorkLoadReturn myReturn = myTmpWorkload.call();
-                    if (null != myReturn) {
-                        counter += myReturn.getCounter();
-                        bestReturned = compareWorkloads(bestReturned, myReturn);
-                    }
+            if (currentDeepNess != MAX_DEEPNESS) {
+                for (Cell c : gameGrid.getCellsPossessedByAI()) {
+                    processCellInsideWorkload(c, gameGrid.getCopy(), currentDeepNess +1);
                 }
             } else {
-                bestReturned = new WorkLoadReturn(tmpCell, initialX, initialY, tmpGrid.getRating(), counter);
+                if (gameGrid.getRating() > bestReturnedInt) {
+                    bestReturnedInt = gameGrid.getRating();
+                }
             }
         }
-        
-        
     }
 
-    /**
-     * @param bestReturned
-     * @param myReturn
-     * @return
-     */
-    private WorkLoadReturn compareWorkloads(WorkLoadReturn bestReturned, final WorkLoadReturn myReturn) {
-        if (null == bestReturned) {
-            return myReturn;
-        } else if (bestReturned.getRating() < myReturn.getRating()) {
-            return myReturn;
-        }
-        return bestReturned;
-    }
+ 
 
 }

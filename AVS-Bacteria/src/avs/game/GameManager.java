@@ -85,8 +85,8 @@ public class GameManager {
             userInterface.setWorkDone(aiCore.getWorkDone());
 
             try {
-                userInterface.setMemberStats(myHazelcastInstance.getInstance().getCluster().getMembers());
-                userInterface.setStats(myHazelcastInstance.getInstance().getExecutorService("default").getLocalExecutorStats());
+                userInterface.setMemberStats(HazelcastInstanceImpl.getInstance().getCluster().getMembers());
+                userInterface.setStats(HazelcastInstanceImpl.getInstance().getExecutorService("default").getLocalExecutorStats());
             } catch (HazelcastInstanceNotActiveException hze) {
                 // Do nothing here
             }
@@ -111,7 +111,7 @@ public class GameManager {
                 }
             }
         }
-        myHazelcastInstance.getInstance().getLifecycleService().shutdown();
+        HazelcastInstanceImpl.getInstance().getLifecycleService().shutdown();
 
     }
 

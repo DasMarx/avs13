@@ -153,8 +153,8 @@ public class AICore implements Runnable {
                     int nextTurnY = ownedCells.get(chosenCell).getY();
                     gm.chooseCell(nextTurnX, nextTurnY, Attributes.AI);
                 } else {
-                    System.out.println("Best choice is: " + bestReturned.getInitialX() + ":" + bestReturned.getInitialY());
-                    gm.chooseCell(bestReturned.getInitialX(), bestReturned.getInitialY(), Attributes.AI);
+                    System.out.println("Best choice is: " + bestReturned.getX() + ":" + bestReturned.getY());
+                    gm.chooseCell(bestReturned.getX(), bestReturned.getY(), Attributes.AI);
                 }
 
             } else {
