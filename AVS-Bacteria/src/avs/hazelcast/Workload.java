@@ -24,9 +24,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 
     private final Cell cell;
 
-    int counter = 0;
-
-    WorkLoadReturn bestReturned = null;
+    private int counter = 0;
 
     private int bestReturnedInt = Integer.MIN_VALUE;
 

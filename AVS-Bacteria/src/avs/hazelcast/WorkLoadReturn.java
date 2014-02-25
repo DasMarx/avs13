@@ -7,9 +7,7 @@ public class WorkLoadReturn implements Serializable {
 
     private static final long serialVersionUID = -2581477518340282629L;
 
-    private final int x, y, rating;
-
-    private int counter;
+    private final int x, y, rating, counter;
 
     public WorkLoadReturn(int x, int y, int rating, int counter) {
         this.x = x;
@@ -33,10 +31,6 @@ public class WorkLoadReturn implements Serializable {
 
     public int getRating() {
         return rating;
-    }
-
-    public void setCounter(int counter) {
-        this.counter = counter;
     }
 
 }
