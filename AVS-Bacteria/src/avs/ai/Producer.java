@@ -1,12 +1,9 @@
 
 package avs.ai;
 
-import static avs.game.Constants.WORK_DEEPNESS;
-import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import avs.game.Cell;
-import avs.game.CellChange;
 import avs.game.GameGrid;
 import avs.hazelcast.WorkLoadReturn;
 import avs.hazelcast.Workload;

@@ -47,7 +47,8 @@ public class AICore implements Runnable {
 
     public void run() {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-        setExecutorService(getMyHazelcastInstanceImpl().getInstance().getExecutorService("default"));
+        getMyHazelcastInstanceImpl();
+        setExecutorService(HazelcastInstanceImpl.getInstance().getExecutorService("default"));
         
         while (isRunning()) {
             
@@ -65,9 +66,11 @@ public class AICore implements Runnable {
 
                 ProducerStillRunning = true;
                 
-                Set<Member> members = getMyHazelcastInstanceImpl().getInstance().getCluster().getMembers();
+                getMyHazelcastInstanceImpl();
+                Set<Member> members = HazelcastInstanceImpl.getInstance().getCluster().getMembers();
                 if (members.size() >= 2) {
-                    members.remove(getMyHazelcastInstanceImpl().getInstance().getCluster().getLocalMember());
+                    getMyHazelcastInstanceImpl();
+                    members.remove(HazelcastInstanceImpl.getInstance().getCluster().getLocalMember());
                 }
                 Member[] memberArray = new Member[members.size()];
                 Semaphore[]  semaphoreArray = new Semaphore[members.size()];

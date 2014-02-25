@@ -3,11 +3,10 @@ package avs.game;
 
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
-import com.hazelcast.monitor.LocalExecutorStats;
 import avs.ai.AICore;
 import avs.hazelcast.HazelcastInstanceImpl;
 import avs.ui.UserInterface;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
 
 /**
  * @author HZU

@@ -8,7 +8,7 @@ public class HazelcastInstanceImpl {
     
     private static volatile HazelcastInstance hz;
     
-    public synchronized HazelcastInstance getInstance() {
+    public synchronized static HazelcastInstance getInstance() {
         if (hz == null) {
             hz = Hazelcast.newHazelcastInstance();
         }

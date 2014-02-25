@@ -47,24 +47,44 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
         return null;
     }
 
-    private void doWork(Cell tmpCell, GameGrid tmpGrid) throws Exception {
-        final LinkedList<CellChange> changes = tmpGrid.processChanges(tmpCell, false);
-        counter++;
-        if (deepness < WORK_DEEPNESS) {
-            for (Cell c : tmpGrid.getCellsPossessedByAI()) {
-                final Workload myTmpWorkload = new Workload(tmpGrid, c, initialX, initialY, deepness + 1);
-                final WorkLoadReturn myReturn = myTmpWorkload.call();
-                if (null != myReturn) {
-                    counter += myReturn.getCounter();
-                    bestReturned = compareWorkloads(bestReturned, myReturn);
+    //TODO everything should be done as doWork so no new Workloads are created. This should speed up the process significant
+    private void doWork(Cell tmpCell, final GameGrid tmpGrid) throws Exception {
+        if (USE_OPTIMIZATION_1) {
+            final LinkedList<CellChange> changes = tmpGrid.processChanges(tmpCell, false);
+            counter++;
+            if (deepness < WORK_DEEPNESS) {
+                for (Cell c : tmpGrid.getCellsPossessedByAI()) {
+                    final Workload myTmpWorkload = new Workload(tmpGrid, c, initialX, initialY, deepness + 1);
+                    final WorkLoadReturn myReturn = myTmpWorkload.call();
+                    if (null != myReturn) {
+                        counter += myReturn.getCounter();
+                        bestReturned = compareWorkloads(bestReturned, myReturn);
+                    }
                 }
+            } else {
+                bestReturned = new WorkLoadReturn(tmpCell, initialX, initialY, tmpGrid.getRating(), counter);
+            }
+            for (CellChange change : changes) {
+                tmpGrid.consumeCellChange(change);
             }
         } else {
-            bestReturned = new WorkLoadReturn(tmpCell, initialX, initialY, tmpGrid.getRating(), counter);
+            tmpGrid.processChanges(tmpCell, false);
+            counter++;
+            if (deepness < WORK_DEEPNESS) {
+                for (Cell c : tmpGrid.getCellsPossessedByAI()) {
+                    final Workload myTmpWorkload = new Workload(tmpGrid.getCopy(), c, initialX, initialY, deepness + 1);
+                    final WorkLoadReturn myReturn = myTmpWorkload.call();
+                    if (null != myReturn) {
+                        counter += myReturn.getCounter();
+                        bestReturned = compareWorkloads(bestReturned, myReturn);
+                    }
+                }
+            } else {
+                bestReturned = new WorkLoadReturn(tmpCell, initialX, initialY, tmpGrid.getRating(), counter);
+            }
         }
-        for (CellChange change : changes) {
-            tmpGrid.consumeCellChange(change);
-        }
+        
+        
     }
 
     /**
