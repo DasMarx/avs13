@@ -14,4 +14,6 @@ public class Constants {
     public static final int MAX_WAIT_TIME_FOR_SEMAPHORE_ACQUIRE = 5;
 
     public static final boolean USE_OPTIMIZATION_1 = true;
+    
+    public static final boolean USE_SMALLER_WORKLOADS = true;
 }

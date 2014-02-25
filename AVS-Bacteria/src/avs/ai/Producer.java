@@ -9,6 +9,7 @@ import avs.hazelcast.WorkLoadReturn;
 import avs.hazelcast.Workload;
 import com.hazelcast.core.ISemaphore;
 import com.hazelcast.core.Member;
+import static avs.game.Constants.*;
 
 // Producer Class in java
 class Producer implements Runnable {
@@ -26,11 +27,21 @@ class Producer implements Runnable {
         this.aiCore = aiCore;
     }
 
-    private void doWork(Cell tmpCell, GameGrid tmpGrid) {
-        tmpGrid.processChanges(tmpCell, false);
-
-        for (Cell c : tmpGrid.getCellsPossessedByAI()) {
-            Callable<WorkLoadReturn> task = new Workload(tmpGrid.getCopy(), c, tmpCell.getX(), tmpCell.getY(), 2);
+    private void doWork(Cell cell, GameGrid gameGrid) {
+        if (USE_SMALLER_WORKLOADS) {
+            GameGrid internalGrid = gameGrid.getCopy();
+            internalGrid.processChanges(cell, false);
+            for (Cell c : gameGrid.getCellsPossessedByAI()) {
+                Callable<WorkLoadReturn> task = new Workload(internalGrid.getCopy(), c, cell.getX(), cell.getY(), 2);
+                try {
+                    workQueue.put(task);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                aiCore.incrementWork();
+            }
+        } else {
+            Callable<WorkLoadReturn> task = new Workload(gameGrid.getCopy(), cell, cell.getX(), cell.getY(), 1);
             try {
                 workQueue.put(task);
             } catch (InterruptedException e) {
@@ -38,7 +49,6 @@ class Producer implements Runnable {
             }
             aiCore.incrementWork();
         }
-
     }
 
     @Override
@@ -48,7 +58,7 @@ class Producer implements Runnable {
         aiCore.setWork(0);
         aiCore.setWorkDone(0);
         for (Cell c : aiCore.getGrid().getCellsPossessedByAI()) {
-            doWork(c, aiCore.getGrid().getCopy());
+            doWork(c, aiCore.getGrid());
         }
     }
 

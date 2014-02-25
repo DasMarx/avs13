@@ -194,19 +194,19 @@ public class GameGrid implements Serializable {
      * @param y coordinate of the cell to be turned
      * @return list of changes, mutating
      */
-    public LinkedList<CellChange> processChanges(int x, int y, boolean afterChanges) {
+    public LinkedList<CellChange> processChanges(int x, int y, boolean saveChanges) {
         LinkedList<CellChange> changes = new LinkedList<CellChange>();
         Cell target = getCell(x, y);
 
         HashSet<Cell> processedCells = new HashSet<Cell>();
-        if (afterChanges) {
+        if (saveChanges) {
             target.turn();
             changes.add(produceCellChange(target));
-            processChangesAndSaveStateAfterProcessing(processedCells, target, target.getOwner(), changes);
+            processChanges(processedCells, target, target.getOwner(), changes, saveChanges);
         } else {
             changes.add(produceCellChange(target));
             target.turn();
-            processChangesAndSaveStateBeforeProcessing(processedCells, target, target.getOwner(), changes);
+            processChanges(processedCells, target, target.getOwner(), changes, saveChanges);
         }
 
         return changes;
@@ -216,16 +216,16 @@ public class GameGrid implements Serializable {
      * @param target the Cell
      * @return list of changes, mutating
      */
-    public LinkedList<CellChange> processChanges(Cell target, boolean afterChanges) {
-        return processChanges(target.getX(), target.getY(), afterChanges);
+    public LinkedList<CellChange> processChanges(Cell target, boolean saveChanges) {
+        return processChanges(target.getX(), target.getY(), saveChanges);
     }
 
     /**
      * @param cellChange
      * @return
      */
-    public LinkedList<CellChange> processChanges(CellChange cellChange, boolean afterChanges) {
-        return processChanges(cellChange.getX(), cellChange.getY(), afterChanges);
+    public LinkedList<CellChange> processChanges(CellChange cellChange, boolean saveChanges) {
+        return processChanges(cellChange.getX(), cellChange.getY(), saveChanges);
     }
 
     /**
@@ -233,64 +233,37 @@ public class GameGrid implements Serializable {
      * @param target cell to be edited
      * @param rs counter for the recursive step
      * @param owner of the cells
+     * @param saveChanges 
      */
-    private void processChangesAndSaveStateAfterProcessing(HashSet<Cell> processedCells, Cell target, int owner, LinkedList<CellChange> changes) {
+    private void processChanges(HashSet<Cell> processedCells, final Cell target, int owner, LinkedList<CellChange> changes, boolean saveChanges) {
 
         if (processedCells.add(target)) {
-            if (changeOwner(target, owner)) {
-                changes.add(produceCellChange(target));
+            if (saveChanges) {
+                if (changeOwner(target, owner)) {
+                    changes.add(produceCellChange(target));
+                }
+            } else {
+                final CellChange beforeChange = produceCellChange(target);
+                if (changeOwner(target, owner)) {
+                    changes.add(beforeChange);
+                }
             }
 
             Cell nextNeighbour = getCell(target.getX(), target.getY() - 1);
             if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
-                processChangesAndSaveStateAfterProcessing(processedCells, nextNeighbour, owner, changes);
+                processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
             }
             nextNeighbour = getCell(target.getX() + 1, target.getY());
             if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
-                processChangesAndSaveStateAfterProcessing(processedCells, nextNeighbour, owner, changes);
+                processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
             }
             nextNeighbour = getCell(target.getX(), target.getY() + 1);
             if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
-                processChangesAndSaveStateAfterProcessing(processedCells, nextNeighbour, owner, changes);
+                processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
             }
             nextNeighbour = getCell(target.getX() - 1, target.getY());
             if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
-                processChangesAndSaveStateAfterProcessing(processedCells, nextNeighbour, owner, changes);
-            }
-
-        }
-
-    }
-
-    /**
-     * @param origin cell edited before
-     * @param target cell to be edited
-     * @param rs counter for the recursive step
-     * @param owner of the cells
-     */
-    private void processChangesAndSaveStateBeforeProcessing(HashSet<Cell> processedCells, Cell target, int owner, LinkedList<CellChange> changes) {
-
-        if (processedCells.add(target)) {
-            final CellChange beforeChange = produceCellChange(target);
-            if (changeOwner(target, owner)) {
-                changes.add(beforeChange);
-            }
-
-            Cell nextNeighbour = getCell(target.getX(), target.getY() - 1);
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.DOWN) || target.getDirection() == Attributes.UP)) {
-                processChangesAndSaveStateBeforeProcessing(processedCells, nextNeighbour, owner, changes);
-            }
-            nextNeighbour = getCell(target.getX() + 1, target.getY());
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.LEFT) || target.getDirection() == Attributes.RIGHT)) {
-                processChangesAndSaveStateBeforeProcessing(processedCells, nextNeighbour, owner, changes);
-            }
-            nextNeighbour = getCell(target.getX(), target.getY() + 1);
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.UP) || target.getDirection() == Attributes.DOWN)) {
-                processChangesAndSaveStateBeforeProcessing(processedCells, nextNeighbour, owner, changes);
-            }
-            nextNeighbour = getCell(target.getX() - 1, target.getY());
-            if (nextNeighbour != null && ((nextNeighbour.getDirection() == Attributes.RIGHT) || target.getDirection() == Attributes.LEFT)) {
-                processChangesAndSaveStateBeforeProcessing(processedCells, nextNeighbour, owner, changes);
+                processChanges(processedCells, nextNeighbour, owner, changes, saveChanges);
             }
 
         }
