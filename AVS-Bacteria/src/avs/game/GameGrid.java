@@ -24,9 +24,9 @@ public class GameGrid implements Serializable {
 
     private final Cell[][] gameGrid;
 
-    private HashSet<Cell> cellsPossessedByPlayer = new HashSet<Cell>();
+    private final HashSet<Cell> cellsPossessedByPlayer;
 
-    private HashSet<Cell> cellsPossessedByAI = new HashSet<Cell>();
+    private final HashSet<Cell> cellsPossessedByAI;
 
     private final int gridSize = 30;
 
@@ -43,6 +43,21 @@ public class GameGrid implements Serializable {
      */
     public GameGrid() {
         gameGrid = new Cell[gridSize][gridSize];
+        cellsPossessedByAI = new HashSet<Cell>();
+        cellsPossessedByPlayer = new HashSet<Cell>();
+        
+    }
+
+    public GameGrid(final GameGrid gameGrid2) {
+        gameGrid = new Cell[gridSize][gridSize];
+        for (int i = 0; i < gameGrid2.gridSize; i++) {
+            for (int j = 0; j < gameGrid2.gridSize; j++) {
+                // g.gameGrid[i][j] = new Cell(i, j, gameGrid[i][j].getOwner(), gameGrid[i][j].getDirection());
+                gameGrid[i][j] = new Cell(gameGrid2.gameGrid[i][j]);
+            }
+        }
+        cellsPossessedByAI = gameGrid2.getCellsPossessedByAI();
+        cellsPossessedByPlayer = gameGrid2.getCellsPossessedByPlayer();
     }
 
     /**
@@ -69,7 +84,7 @@ public class GameGrid implements Serializable {
     public int getRating() {
         read.lock();
         try {
-            return cellsPossessedByAI.size() - cellsPossessedByPlayer.size() * 100;
+            return cellsPossessedByAI.size() - cellsPossessedByPlayer.size() * 9000;
         } finally {
             read.unlock();
         }
@@ -139,16 +154,7 @@ public class GameGrid implements Serializable {
      * @return copy of the GameGrid
      */
     public GameGrid getCopy() {
-        final GameGrid g = new GameGrid();
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
-                // g.gameGrid[i][j] = new Cell(i, j, gameGrid[i][j].getOwner(), gameGrid[i][j].getDirection());
-                g.gameGrid[i][j] = new Cell(gameGrid[i][j]);
-            }
-        }
-        g.cellsPossessedByAI = getCellsPossessedByAI();
-        g.cellsPossessedByPlayer = getCellsPossessedByPlayer();
-        return g;
+        return new GameGrid(this);
     }
 
     /**

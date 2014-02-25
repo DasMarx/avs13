@@ -28,15 +28,12 @@ public class AICore implements Runnable {
 
     private GameGrid grid;
 
-    private HazelcastInstanceImpl myHazelcastInstanceImpl;
-
     private IExecutorService executorService;
 
     private boolean ProducerStillRunning = false;
 
     public void initialize(GameManager gm) {
         this.setGm(gm);
-        setMyHazelcastInstanceImpl(gm.getHazelCastWorker());
     }
 
     public void setGameGrid(GameGrid grid) {
@@ -45,9 +42,9 @@ public class AICore implements Runnable {
 
     private int work = 0, workDone = 0;
 
+    @SuppressWarnings("unused")
     public void run() {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-        getMyHazelcastInstanceImpl();
         setExecutorService(HazelcastInstanceImpl.getInstance().getExecutorService("default"));
 
         while (isRunning()) {
@@ -68,10 +65,8 @@ public class AICore implements Runnable {
 
                 ProducerStillRunning = true;
 
-                getMyHazelcastInstanceImpl();
                 Set<Member> members = HazelcastInstanceImpl.getInstance().getCluster().getMembers();
                 if (members.size() >= 2) {
-                    getMyHazelcastInstanceImpl();
                     members.remove(HazelcastInstanceImpl.getInstance().getCluster().getLocalMember());
                 }
                 Member[] memberArray = new Member[members.size()];
@@ -223,14 +218,6 @@ public class AICore implements Runnable {
 
     public void setRunning(boolean running) {
         this.running = running;
-    }
-
-    public HazelcastInstanceImpl getMyHazelcastInstanceImpl() {
-        return myHazelcastInstanceImpl;
-    }
-
-    public void setMyHazelcastInstanceImpl(HazelcastInstanceImpl myWorker) {
-        this.myHazelcastInstanceImpl = myWorker;
     }
 
     public int getWork() {

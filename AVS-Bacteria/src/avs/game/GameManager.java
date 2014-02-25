@@ -43,8 +43,6 @@ public class GameManager {
 
     private LinkedList<CellChange> allChanges = new LinkedList<CellChange>();
 
-    private HazelcastInstanceImpl myHazelcastInstance = new HazelcastInstanceImpl();
-
     /**
      * Initializes a new {@link GameManager}.
      * 
@@ -174,9 +172,5 @@ public class GameManager {
         if (locked)
             return false;
         return !isPlayersTurn();
-    }
-
-    public HazelcastInstanceImpl getHazelCastWorker() {
-        return myHazelcastInstance;
     }
 }
