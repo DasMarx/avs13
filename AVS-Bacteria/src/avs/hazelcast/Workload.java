@@ -28,7 +28,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
 
     private int bestReturnedInt = Integer.MIN_VALUE;
 
-    public Workload(GameGrid grid, Cell c, int initialX, int initialY, int deepness) {
+    public Workload(final GameGrid grid, final Cell c, final int initialX, final int initialY, final int deepness) {
         this.grid = grid;
         this.cell = c;
         this.initialX = initialX;
@@ -52,7 +52,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
                     processCellInsideWorkload(c, gameGrid, currentDeepNess + 1);
                 }
             } else {
-                if (gameGrid.getRating() > bestReturnedInt) {
+                if (bestReturnedInt < gameGrid.getRating()) {
                     bestReturnedInt = gameGrid.getRating();
                 }
             }
@@ -67,7 +67,7 @@ public class Workload implements Callable<WorkLoadReturn>, Serializable {
                     processCellInsideWorkload(c, gameGrid.getCopy(), currentDeepNess +1);
                 }
             } else {
-                if (gameGrid.getRating() > bestReturnedInt) {
+                if (bestReturnedInt < gameGrid.getRating()) {
                     bestReturnedInt = gameGrid.getRating();
                 }
             }

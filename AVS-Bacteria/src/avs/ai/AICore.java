@@ -57,11 +57,11 @@ public class AICore implements Runnable {
                 long startTime = System.currentTimeMillis();
 
                 // Creating shared object
-                BlockingQueue<Callable<WorkLoadReturn>> workQueue = new LinkedBlockingQueue<Callable<WorkLoadReturn>>(FULL_SEMAPHORE_COUNT);
-                Semaphore semaphore = new Semaphore(FULL_SEMAPHORE_COUNT, true);
+                final BlockingQueue<Callable<WorkLoadReturn>> workQueue = new LinkedBlockingQueue<Callable<WorkLoadReturn>>(FULL_SEMAPHORE_COUNT);
+                final Semaphore semaphore = new Semaphore(FULL_SEMAPHORE_COUNT, true);
 
                 // Creating Producer and Consumer Thread
-                Thread prodThread = new Thread(new Producer(workQueue, this));
+                final Thread prodThread = new Thread(new Producer(workQueue, this));
 
                 ProducerStillRunning = true;
 
@@ -69,8 +69,8 @@ public class AICore implements Runnable {
                 if (members.size() >= 2) {
                     members.remove(HazelcastInstanceImpl.getInstance().getCluster().getLocalMember());
                 }
-                Member[] memberArray = new Member[members.size()];
-                Semaphore[] semaphoreArray = new Semaphore[members.size()];
+                final Member[] memberArray = new Member[members.size()];
+                final Semaphore[] semaphoreArray = new Semaphore[members.size()];
 
                 int index = 0;
                 for (Member m : members) {
@@ -80,8 +80,8 @@ public class AICore implements Runnable {
                 }
 
                 int consumerThreadCount = CONSUMER_THREAD_COUNT_PLUS_MEMBER + members.size();
-                Consumer[] consumerArray = new Consumer[consumerThreadCount];
-                Thread[] consumerThreadArray = new Thread[consumerThreadCount];
+                final Consumer[] consumerArray = new Consumer[consumerThreadCount];
+                final Thread[] consumerThreadArray = new Thread[consumerThreadCount];
                 for (int i = 0; i < consumerThreadCount; i++) {
                     consumerArray[i] = new Consumer(workQueue, this, semaphore, memberArray, semaphoreArray);
                     consumerThreadArray[i] = new Thread(consumerArray[i]);
@@ -120,13 +120,13 @@ public class AICore implements Runnable {
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
-                long endTime = System.currentTimeMillis();
-                long calcTime = endTime - startTime;
+                final long endTime = System.currentTimeMillis();
+                final long calcTime = endTime - startTime;
                 int calc = 0;
                 for (int i = 0; i < consumerThreadCount; i++) {
                     calc += consumerArray[i].getCounter();
                 }
-                long calcPerSec = (calc / calcTime);
+                final long calcPerSec = (calc / calcTime);
 
                 WorkLoadReturn bestReturned = null;
                 for (int i = 0; i < consumerThreadCount; i++) {

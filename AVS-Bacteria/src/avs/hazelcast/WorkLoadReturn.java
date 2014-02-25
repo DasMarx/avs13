@@ -9,7 +9,7 @@ public class WorkLoadReturn implements Serializable {
 
     private final int x, y, rating, counter;
 
-    public WorkLoadReturn(int x, int y, int rating, int counter) {
+    public WorkLoadReturn(final int x, final int y, final int rating, final int counter) {
         this.x = x;
         this.y = y;
         this.rating = rating;

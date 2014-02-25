@@ -1,6 +1,7 @@
 
 package avs.ai;
 
+import java.util.MissingResourceException;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -78,8 +79,8 @@ class Consumer implements Runnable {
         this.counter += count;
     }
 
-    public synchronized void compareWorkload(WorkLoadReturn response) {
-//        System.out.println("response rating for " + response.getInitialX() + " " + response.getInitialY() + " is: " + response.getRating());
+    public synchronized void compareWorkload(final WorkLoadReturn response) {
+        // System.out.println("response rating for " + response.getY() + " " + response.getY() + " is: " + response.getRating());
         if (null == getInternalReturn()) {
             setInternalReturn(response);
         } else if (getInternalReturn().getRating() < response.getRating()) {
@@ -106,7 +107,7 @@ class Consumer implements Runnable {
         while (!sendToHazelcast) {
             final int item = r.nextInt(memberArray.length);
             if (semaphoreArray[item].tryAcquire(MAX_WAIT_TIME_FOR_SEMAPHORE_ACQUIRE, TimeUnit.MILLISECONDS)) {
-//                System.out.println("Sending job to member " + memberArray[item].toString());
+                // System.out.println("Sending job to member " + memberArray[item].toString());
                 try {
                     aiCore.getExecutorService().submitToMember(task, memberArray[item], new ExecutionCallback<WorkLoadReturn>() {
 
