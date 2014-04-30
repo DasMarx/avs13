@@ -21,7 +21,7 @@ public class Constants {
 
     public static final boolean USE_SMALLER_WORKLOADS = true;
 
-    public static final boolean LOGGING = true;
+    public static final boolean LOGGING = false;
 
     public static final boolean MORE_LOGGING = true;
 }
